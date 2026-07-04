@@ -1,0 +1,231 @@
+/* GENFIN Design System — Tokens (verbatim from approved reference — do not edit values) */
+/* ==========================================================================
+   GENFIN Design System — Color Tokens
+   Brand: gold plate (#FBBD3E), ink black, slate gray (#6A6870 from wordmark)
+   ========================================================================== */
+
+:root {
+  /* ---- Brand gold / amber scale --------------------------------------- */
+  --gold-50:  #FFF9EC;
+  --gold-100: #FEEFCB;
+  --gold-200: #FDE099;
+  --gold-300: #FCCF64;
+  --gold-400: #FBBD3E;   /* ← brand plate gold */
+  --gold-500: #F0A81C;
+  --gold-600: #D18808;
+  --gold-700: #A6650A;
+  --gold-800: #855010;
+  --gold-900: #6F4111;
+
+  /* ---- Ink (near-black wordmark) -------------------------------------- */
+  --ink:      #14141A;
+  --ink-soft: #26252E;
+
+  /* ---- Slate neutrals (tuned to #6A6870 wordmark gray) ---------------- */
+  --slate-50:  #F7F7F9;
+  --slate-100: #EEEEF1;
+  --slate-200: #E1E0E5;
+  --slate-300: #CAC9D1;
+  --slate-400: #A6A5AF;
+  --slate-500: #82818C;
+  --slate-600: #6A6870;   /* ← brand wordmark gray */
+  --slate-700: #4E4D55;
+  --slate-800: #33323A;
+  --slate-900: #1E1D24;
+  --white:     #FFFFFF;
+
+  /* ---- Semantic hues (harmonized to brand warmth) --------------------- */
+  --green-50:  #E8F6EE;
+  --green-100: #C7E9D4;
+  --green-500: #1F9D57;   /* approved / paid / success */
+  --green-600: #178247;
+  --green-700: #146B3B;
+
+  --red-50:   #FCEBEA;
+  --red-100:  #F7CFCD;
+  --red-500:  #D64545;    /* declined / error */
+  --red-600:  #B93636;
+  --red-700:  #97292A;
+
+  --blue-50:  #EAF2FE;
+  --blue-100: #CBDEFB;
+  --blue-500: #2D7FF0;    /* informational */
+  --blue-600: #1C63C9;
+  --blue-700: #17509F;
+
+  --orange-50:  #FDF0E6;
+  --orange-100: #F9D9BE;
+  --orange-500: #E8792B;  /* pending / in-review / warning */
+  --orange-600: #C6611C;
+  --orange-700: #9E4D17;
+
+  /* =====================================================================
+     SEMANTIC ALIASES — reference these in product code, not raw scales
+     ===================================================================== */
+
+  /* Brand */
+  --brand:            var(--gold-400);
+  --brand-hover:      var(--gold-500);
+  --brand-active:     var(--gold-600);
+  --brand-subtle:     var(--gold-100);
+  --brand-subtle-bg:  var(--gold-50);
+  --brand-contrast:   var(--ink);        /* ink text sits on gold */
+  --brand-ring:       color-mix(in oklch, var(--gold-400) 45%, transparent);
+
+  /* Text */
+  --text-strong:   var(--ink);
+  --text-body:     var(--slate-800);
+  --text-muted:    var(--slate-600);
+  --text-faint:    var(--slate-500);
+  --text-inverse:  var(--white);
+  --text-on-brand: var(--ink);
+  --text-link:     var(--blue-600);
+
+  /* Surfaces */
+  --surface-page:    var(--slate-50);
+  --surface-card:    var(--white);
+  --surface-sunken:  var(--slate-100);
+  --surface-hover:   var(--slate-50);
+  --surface-inverse: var(--ink);
+  --surface-brand:   var(--gold-400);
+  --surface-brand-tint: var(--gold-50);
+
+  /* Borders */
+  --border-subtle:  var(--slate-200);
+  --border-default: var(--slate-300);
+  --border-strong:  var(--slate-400);
+  --border-brand:   var(--gold-400);
+
+  /* Status */
+  --status-success-fg: var(--green-700);
+  --status-success-bg: var(--green-50);
+  --status-success-bd: var(--green-100);
+  --status-danger-fg:  var(--red-700);
+  --status-danger-bg:  var(--red-50);
+  --status-danger-bd:  var(--red-100);
+  --status-info-fg:    var(--blue-700);
+  --status-info-bg:    var(--blue-50);
+  --status-info-bd:    var(--blue-100);
+  --status-pending-fg: var(--orange-700);
+  --status-pending-bg: var(--orange-50);
+  --status-pending-bd: var(--orange-100);
+
+  /* Focus */
+  --focus-ring: var(--brand-ring);
+}
+
+/* ==========================================================================
+   GENFIN Design System — Typography Tokens
+   Display: Sora · UI/Body: Manrope · Mono: IBM Plex Mono
+   ========================================================================== */
+
+:root {
+  /* Families */
+  --font-display: 'Sora', 'Segoe UI', system-ui, sans-serif;
+  --font-sans:    'Manrope', 'Segoe UI', system-ui, sans-serif;
+  --font-mono:    'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Weights */
+  --fw-regular:  400; /* @kind font */
+  --fw-medium:   500; /* @kind font */
+  --fw-semibold: 600; /* @kind font */
+  --fw-bold:     700; /* @kind font */
+  --fw-extra:    800; /* @kind font */
+
+  /* Type scale (rem, 16px base) */
+  --fs-display:  3.5rem;   /* 56 — hero */
+  --fs-h1:       2.5rem;   /* 40 */
+  --fs-h2:       2rem;     /* 32 */
+  --fs-h3:       1.5rem;   /* 24 */
+  --fs-h4:       1.25rem;  /* 20 */
+  --fs-lg:       1.125rem; /* 18 */
+  --fs-base:     1rem;     /* 16 */
+  --fs-sm:       0.875rem; /* 14 */
+  --fs-xs:       0.75rem;  /* 12 */
+  --fs-2xs:      0.6875rem;/* 11 — labels/eyebrows */
+
+  /* Line heights */
+  --lh-tight:   1.1;  /* @kind font */
+  --lh-snug:    1.25; /* @kind font */
+  --lh-normal:  1.5;  /* @kind font */
+  --lh-relaxed: 1.65; /* @kind font */
+
+  /* Letter spacing */
+  --ls-tight:  -0.02em; /* @kind font */
+  --ls-snug:   -0.01em; /* @kind font */
+  --ls-normal: 0;       /* @kind font */
+  --ls-wide:   0.04em;  /* @kind font */
+  --ls-eyebrow: 0.12em; /* @kind font */ /* uppercase eyebrows / plate style */
+
+  /* Semantic text roles */
+  --text-hero:    var(--fw-extra) var(--fs-display)/var(--lh-tight) var(--font-display);
+  --text-title:   var(--fw-bold) var(--fs-h2)/var(--lh-snug) var(--font-display);
+  --text-heading: var(--fw-semibold) var(--fs-h4)/var(--lh-snug) var(--font-display);
+  --text-body-md: var(--fw-regular) var(--fs-base)/var(--lh-normal) var(--font-sans);
+}
+
+/* ==========================================================================
+   GENFIN Design System — Spacing, Radius, Shadow, Layout Tokens
+   4px base grid. Clean, generous whitespace for a healthcare/enterprise feel.
+   ========================================================================== */
+
+:root {
+  /* Spacing (4px base) */
+  --space-0:  0;
+  --space-1:  0.25rem;  /* 4  */
+  --space-2:  0.5rem;   /* 8  */
+  --space-3:  0.75rem;  /* 12 */
+  --space-4:  1rem;     /* 16 */
+  --space-5:  1.25rem;  /* 20 */
+  --space-6:  1.5rem;   /* 24 */
+  --space-8:  2rem;     /* 32 */
+  --space-10: 2.5rem;   /* 40 */
+  --space-12: 3rem;     /* 48 */
+  --space-16: 4rem;     /* 64 */
+  --space-20: 5rem;     /* 80 */
+  --space-24: 6rem;     /* 96 */
+
+  /* Radius — the logo plate is a soft superellipse; UI mirrors that warmth */
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   10px;   /* default control radius */
+  --radius-lg:   14px;   /* cards */
+  --radius-xl:   20px;   /* panels / plate motif */
+  --radius-2xl:  28px;
+  --radius-pill: 999px;
+
+  /* Elevation — soft, low-spread, cool-tinted for clean clinical surfaces */
+  --shadow-xs: 0 1px 2px rgba(20, 20, 26, 0.05);
+  --shadow-sm: 0 1px 3px rgba(20, 20, 26, 0.07), 0 1px 2px rgba(20, 20, 26, 0.04);
+  --shadow-md: 0 4px 12px rgba(20, 20, 26, 0.08), 0 2px 4px rgba(20, 20, 26, 0.04);
+  --shadow-lg: 0 12px 28px rgba(20, 20, 26, 0.10), 0 4px 10px rgba(20, 20, 26, 0.05);
+  --shadow-xl: 0 24px 56px rgba(20, 20, 26, 0.14), 0 8px 18px rgba(20, 20, 26, 0.06);
+  --shadow-brand: 0 8px 24px rgba(240, 168, 28, 0.28);
+
+  /* Borders */
+  --border-width: 1px;          /* @kind spacing */
+  --border-width-strong: 1.5px; /* @kind spacing */
+
+  /* Layout */
+  --container-sm:  640px;  /* @kind spacing */
+  --container-md:  960px;  /* @kind spacing */
+  --container-lg:  1200px; /* @kind spacing */
+  --container-xl:  1360px; /* @kind spacing */
+  --sidebar-w:     264px;  /* @kind spacing */
+  --topbar-h:      64px;   /* @kind spacing */
+
+  /* Motion — calm, professional; ease-out with a touch of confidence */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);   /* @kind other */
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1.1); /* @kind other */
+  --dur-fast:   120ms; /* @kind other */
+  --dur-base:   200ms; /* @kind other */
+  --dur-slow:   320ms; /* @kind other */
+
+  /* Z-index */
+  --z-sticky:  100; /* @kind other */
+  --z-drawer:  200; /* @kind other */
+  --z-dialog:  300; /* @kind other */
+  --z-toast:   400; /* @kind other */
+  --z-tooltip: 500; /* @kind other */
+}
+

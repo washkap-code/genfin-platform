@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical Aid Plans — GENFIN Medical Aid Fund</title>
+<meta name="description" content="Compare GENFIN medical aid plans side by side. Cover for individuals, families, corporates and government groups — priced to your needs.">
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="shared/genfin.css">
+<script src="vendor/lucide.min.js" defer></script>
+<script src="shared/site.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site" id="header">
+  <div class="wrap-xl navbar">
+    <a class="brand" href="#top" aria-label="GENFIN Medical Aid Fund home">
+      <img src="assets/genfin-logo.png" alt="GENFIN Medical Aid Fund">
+    </a>
+    <nav class="nav-links">
+      <a href="index.html" data-nav="home">Home</a>
+      <a href="plans.html" data-nav="plans" class="active" aria-current="page">Plans</a>
+      <a href="members.html" data-nav="members">Members</a>
+      <a href="employers.html" data-nav="employers">Employers</a>
+      <a href="providers.html" data-nav="providers">Providers</a>
+      <a href="about.html" data-nav="about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="nav-login" href="login.html" data-nav="login"><i data-lucide="user-round"></i>Member Login</a>
+      <a class="btn btn-primary" data-quote=""><i data-lucide="shield-check"></i>Get a quote</a>
+      <button class="burger" id="burger" aria-label="Menu"><i data-lucide="menu"></i></button>
+    </div>
+  </div>
+</header>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" data-nav="home">Home</a>
+  <a href="plans.html" data-nav="plans" class="active" aria-current="page">Plans</a>
+  <a href="members.html" data-nav="members">Members</a>
+  <a href="employers.html" data-nav="employers">Employers</a>
+  <a href="providers.html" data-nav="providers">Providers</a>
+  <a href="about.html" data-nav="about">About</a>
+  <a href="#contact">Contact</a>
+  <a class="btn btn-primary" data-quote="">Get a quote</a>
+</div>
+<span id="top"></span>
+<main class="pages" id="main">
+<div class="page" id="page-plans">
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="crumbs"><a href="index.html" data-nav="home">Home</a><i data-lucide="chevron-right"></i><span>Plans</span></div>
+      <span class="eyebrow">Membership plans</span>
+      <h1>Cover for every stage of life</h1>
+      <p class="lead">From individuals to large corporates, every GENFIN package is priced to the specific needs of the client — so you get quality health care without the major costs. Compare what's included, then talk to us for a quote tailored to you. Figures shown are indicative.</p>
+    </div>
+  </section>
+
+  <!-- ================= PLAN FINDER (Phase C signature experience) ================= -->
+  <section class="sec finder-sec" id="finder" style="padding-bottom:0;">
+    <div class="wrap">
+      <div class="finder reveal" data-finder>
+        <div class="finder-q">
+          <span class="eyebrow">Find your fit</span>
+          <h2 class="finder-title">Tell us three things</h2>
+
+          <fieldset class="fq">
+            <legend>Who needs cover?</legend>
+            <div class="seg" role="presentation">
+              <label><input type="radio" name="fWho" value="me" checked><span>Just me</span></label>
+              <label><input type="radio" name="fWho" value="family"><span>Me &amp; my family</span></label>
+              <label><input type="radio" name="fWho" value="company"><span>My company / organisation</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="fq" data-fq="personal">
+            <legend>Is anyone on repeat (chronic) medication?</legend>
+            <div class="seg" role="presentation">
+              <label><input type="radio" name="fChronic" value="no" checked><span>No</span></label>
+              <label><input type="radio" name="fChronic" value="yes"><span>Yes</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="fq" data-fq="personal">
+            <legend>Will you need glasses or eye care?</legend>
+            <div class="seg" role="presentation">
+              <label><input type="radio" name="fOptical" value="no" checked><span>No</span></label>
+              <label><input type="radio" name="fOptical" value="yes"><span>Yes</span></label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="finder-r" aria-live="polite">
+          <span class="fr-eyebrow">Our suggestion</span>
+          <div class="fr-name" id="frName">Essential</div>
+          <div class="fr-price" id="frPrice"><span class="fr-cur">$</span>29<span class="fr-per">/ month · indicative</span></div>
+          <ul class="fr-why" id="frWhy">
+            <li><i data-lucide="check"></i>Core GP &amp; acute medication cover</li>
+          </ul>
+          <div class="fr-actions">
+            <a class="btn btn-primary" id="frCta" data-quote="Essential">Choose Essential</a>
+            <a class="btn btn-ghost" href="#compare">Compare all plans</a>
+          </div>
+          <p class="fr-note">Every GENFIN package is finally priced to your specific needs — a quote confirms your exact cover and premium.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" style="padding-top:var(--space-10);">
+    <div class="wrap">
+      <div class="plans">
+        <div class="plan reveal" data-plan="Essential">
+          <div class="pname">Essential</div>
+          <div class="pdesc">Core cover for individuals and young families getting started.</div>
+          <div class="price"><span class="cur">$</span><span class="amt gf-tnum">29</span><span class="per">/ month</span></div>
+          <ul>
+            <li><i data-lucide="check"></i>GP consultations &amp; acute medication</li>
+            <li><i data-lucide="check"></i>Access to the provider network</li>
+            <li><i data-lucide="check"></i>Member web portal &amp; WhatsApp support</li>
+            <li class="off"><i data-lucide="x"></i>In-house optical &amp; spectacles</li>
+            <li class="off"><i data-lucide="x"></i>Chronic medication delivery</li>
+          </ul>
+          <a class="btn btn-ghost" data-quote="Essential">Choose Essential</a>
+        </div>
+        <div class="plan featured reveal" data-plan="Comprehensive">
+          <span class="rec">Most popular</span>
+          <div class="pname">Comprehensive</div>
+          <div class="pdesc">Full managed care for families who want everything covered.</div>
+          <div class="price"><span class="cur">$</span><span class="amt gf-tnum">59</span><span class="per">/ month</span></div>
+          <ul>
+            <li><i data-lucide="check"></i>Everything in Essential</li>
+            <li><i data-lucide="check"></i>In-house optical &amp; spectacles</li>
+            <li><i data-lucide="check"></i>Dental &amp; specialist cover</li>
+            <li><i data-lucide="check"></i>Chronic medication delivery nationwide</li>
+            <li><i data-lucide="check"></i>Cover for dependants</li>
+          </ul>
+          <a class="btn btn-primary" data-quote="Comprehensive">Choose Comprehensive</a>
+        </div>
+        <div class="plan reveal" data-plan="Corporate">
+          <div class="pname">Corporate</div>
+          <div class="pdesc">Group cover with wellness programs for companies &amp; government.</div>
+          <div class="price"><span class="amt" style="font-size:1.9rem;">Custom</span><span class="per">/ per group</span></div>
+          <ul>
+            <li><i data-lucide="check"></i>Everything in Comprehensive</li>
+            <li><i data-lucide="check"></i>Free health &amp; wellness programs</li>
+            <li><i data-lucide="check"></i>Group billing &amp; consolidated reporting</li>
+            <li><i data-lucide="check"></i>On-site delivery to your premises</li>
+            <li><i data-lucide="check"></i>Dedicated account manager</li>
+          </ul>
+          <a class="btn btn-ink" data-quote="Corporate">Talk to sales</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec plans-sec" id="compare">
+    <div class="wrap">
+      <div class="sec-head center reveal">
+        <span class="eyebrow">Full comparison</span>
+        <h2>Every benefit, side by side</h2>
+      </div>
+      <div class="compare-wrap reveal">
+        <table class="compare">
+          <thead>
+            <tr>
+              <th style="text-align:left;">Benefit</th>
+              <th>Essential<span class="csub">$29 / mo</span></th>
+              <th class="feat">Comprehensive<span class="csub">$59 / mo</span></th>
+              <th>Corporate<span class="csub">Custom</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th>GP consultations</th><td><i data-lucide="check"></i></td><td class="feat"><i data-lucide="check"></i></td><td><i data-lucide="check"></i></td></tr>
+            <tr><th>Acute medication</th><td><i data-lucide="check"></i></td><td class="feat"><i data-lucide="check"></i></td><td><i data-lucide="check"></i></td></tr>
+            <tr><th>Provider network access</th><td><i data-lucide="check"></i></td><td class="feat"><i data-lucide="check"></i></td><td><i data-lucide="check"></i></td></tr>
+            <tr><th>Member portal &amp; WhatsApp</th><td><i data-lucide="check"></i></td><td class="feat"><i data-lucide="check"></i></td><td><i data-lucide="check"></i></td></tr>
+            <tr><th>In-house optical &amp; spectacles</th><td><span class="dash">–</span></td><td class="feat"><i data-lucide="check"></i></td><td><i data-lucide="check"></i></td></tr>
+            <tr><th>Dental &amp; specialist cover</th><td><span class="dash">–</span></td><td class="feat"><i data-lucide="check"></i></td><td><i data-lucide="check"></i></td></tr>
+            <tr><th>Chronic medication delivery</th><td><span class="dash">–</span></td><td class="feat"><i data-lucide="check"></i></td><td><i data-lucide="check"></i></td></tr>
+            <tr><th>Cover for dependants</th><td><span class="dash">–</span></td><td class="feat"><i data-lucide="check"></i></td><td><i data-lucide="check"></i></td></tr>
+            <tr><th>Free wellness programs</th><td><span class="dash">–</span></td><td class="feat"><span class="dash">–</span></td><td><i data-lucide="check"></i></td></tr>
+            <tr><th>Group billing &amp; reporting</th><td><span class="dash">–</span></td><td class="feat"><span class="dash">–</span></td><td><i data-lucide="check"></i></td></tr>
+            <tr><th>Dedicated account manager</th><td><span class="dash">–</span></td><td class="feat"><span class="dash">–</span></td><td><i data-lucide="check"></i></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="text-align:center;color:var(--text-faint);font-size:var(--fs-xs);margin-top:var(--space-6);max-width:70ch;margin-inline:auto;">Waiting periods and terms &amp; conditions apply. Optical benefits (consultation and in-house spectacles) are accessible after one month of membership; certain benefits require a minimum of 12 months' membership.</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head center reveal">
+        <span class="eyebrow">Good to know</span>
+        <h2>Frequently asked questions</h2>
+      </div>
+      <div class="faq reveal">
+        <div class="faq-item"><div class="faq-q">How do I join GENFIN?<i data-lucide="plus"></i></div><div class="faq-a"><p>Choose a plan and request a quote online, or call us on +263 78 632 3131. Corporate and government groups receive a tailored proposal. Once you're a member you'll get access to the online member portal to manage everything in one place.</p></div></div>
+        <div class="faq-item"><div class="faq-q">Are there waiting periods?<i data-lucide="plus"></i></div><div class="faq-a"><p>Yes. Optical benefits — consultation and in-house spectacles — become accessible after one month of membership, and some benefits require a minimum of 12 months' membership. Full terms are confirmed on your plan schedule.</p></div></div>
+        <div class="faq-item"><div class="faq-q">Where do you deliver medication?<i data-lucide="plus"></i></div><div class="faq-a"><p>We deliver chronic medication nationwide — to homes, schools and companies across Zimbabwe — with live driver tracking and PIN-confirmed delivery, all visible in the member portal.</p></div></div>
+        <div class="faq-item"><div class="faq-q">Can I add my family?<i data-lucide="plus"></i></div><div class="faq-a"><p>Yes. Comprehensive and Corporate plans include cover for dependants. You can add them during onboarding or later from the member portal.</p></div></div>
+        <div class="faq-item"><div class="faq-q">What does “managed health care” mean?<i data-lucide="plus"></i></div><div class="faq-a"><p>We coordinate your care across our provider network and in-house clinic — from consultation through to medication — so your care is joined up and you avoid major out-of-pocket costs.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="wrap cta-inner">
+      <div>
+        <h2>Not sure which plan fits?</h2>
+        <p>Tell us about you or your organisation and we'll tailor a quote.</p>
+      </div>
+      <div class="cta-actions">
+        <a class="btn btn-ink btn-lg" data-quote=""><i data-lucide="shield-check"></i>Get a quote</a>
+        <a class="btn btn-white btn-lg" href="tel:+263786323131"><i data-lucide="phone"></i>+263 78 632 3131</a>
+      </div>
+    </div>
+  </section>
+</div><!-- /page-plans -->
+
+<!-- ================================================================ -->
+<!-- ========================== PROVIDERS =========================== -->
+<!-- ================================================================ -->
+</main>
+<footer class="site" id="contact">
+  <div class="wrap-xl">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="assets/genfin-logo.png" alt="GENFIN Medical Aid Fund">
+        <p>More than a health insurer — your health partner. Managed health care, a wide provider network, and medication delivered across Zimbabwe.</p>
+        <div class="foot-social">
+          <a href="https://www.facebook.com/Genfinmedicalaidfund" aria-label="Facebook"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07c0 6 4.39 10.97 10.13 11.85v-8.38H7.08v-3.47h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.47h-2.8v8.38C19.61 23.04 24 18.07 24 12.07z"></path></svg></a>
+          <a href="https://www.linkedin.com/company/genfin-medical" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.75v20.5C0 23.22.8 24 1.77 24h20.45C23.2 24 24 23.22 24 22.25V1.75C24 .78 23.2 0 22.22 0z"></path></svg></a>
+          <a href="https://www.instagram.com/genfin_medical_aid" aria-label="Instagram"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zM12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63c-.79.31-1.46.72-2.12 1.38A5.85 5.85 0 0 0 .63 4.14c-.3.76-.5 1.64-.56 2.91C.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.72 1.46 1.38 2.12.66.66 1.33 1.07 2.12 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56a5.85 5.85 0 0 0 2.12-1.38 5.85 5.85 0 0 0 1.38-2.12c.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91a5.85 5.85 0 0 0-1.38-2.12A5.85 5.85 0 0 0 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.41-10.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"></path></svg></a>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h4>Explore</h4>
+        <a href="index.html" data-nav="home">Home</a>
+        <a href="plans.html" data-nav="plans">Plans</a>
+      <a href="members.html" data-nav="members">Members</a>
+      <a href="employers.html" data-nav="employers">Employers</a>
+        <a href="providers.html" data-nav="providers">Provider network</a>
+        <a href="about.html" data-nav="about">About us</a>
+      </div>
+      <div class="foot-col">
+        <h4>Members</h4>
+        <a href="login.html" data-nav="login">Member login</a>
+        <a data-quote="">Join now</a>
+        <a href="login.html" data-nav="login">Submit a claim</a>
+        <a href="login.html" data-nav="login">Track a delivery</a>
+      </div>
+      <div class="foot-col foot-contact">
+        <h4>Contact</h4>
+        <div class="ci"><i data-lucide="building-2"></i><span>Head Office<br>10 Hughson Wynd, Mt Pleasant, Harare</span></div>
+        <div class="ci"><i data-lucide="cross"></i><span>Harare Clinic<br>89 Fife Avenue</span></div>
+        <div class="ci"><i data-lucide="phone"></i><span>+263 78 632 3131</span></div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 GENFIN Medical Aid Fund. All rights reserved.</span>
+      <span class="mock-note"><i data-lucide="flask-conical"></i>Concept mockup — for client review, not a live site</span>
+    </div>
+  </div>
+</footer>
+<div class="modal-overlay" id="quoteModal" hidden="">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="qmTitle">
+    <button class="modal-close" id="qmClose" aria-label="Close"><i data-lucide="x"></i></button>
+    <div class="modal-body" id="qmForm">
+      <span class="eyebrow">Request a quote</span>
+      <h3 id="qmTitle">Let's tailor your cover</h3>
+      <p class="qm-sub">Tell us a little about you and we'll come back with a plan priced to your needs.</p>
+      <form id="quoteForm">
+        <div class="fld"><label>Full name</label><input required="" type="text" name="name" placeholder="e.g. Tadiwa Moyo"></div>
+        <div class="fld-row">
+          <div class="fld"><label>Phone</label><input required="" type="tel" name="phone" placeholder="+263 …"></div>
+          <div class="fld"><label>Email <span>(optional)</span></label><input type="email" name="email" placeholder="you@email.com"></div>
+        </div>
+        <div class="fld-row">
+          <div class="fld"><label>Plan of interest</label>
+            <select name="plan" id="qmPlan"><option>Essential</option><option selected="">Comprehensive</option><option>Corporate</option><option>Not sure yet</option></select>
+          </div>
+          <div class="fld"><label>People to cover</label>
+            <select name="people"><option>Just me</option><option>Me + partner</option><option>Family (3–5)</option><option>Corporate / group</option></select>
+          </div>
+        </div>
+        <div class="fld"><label>Anything we should know? <span>(optional)</span></label><textarea name="msg" rows="2" placeholder="Chronic conditions, existing cover, timing…"></textarea></div>
+        <button class="btn btn-primary btn-lg" type="submit" style="width:100%;justify-content:center;"><i data-lucide="send"></i>Request my quote</button>
+        <p class="qm-fine">By submitting you agree we may contact you about GENFIN cover. This is a concept mockup — no data is stored.</p>
+      </form>
+    </div>
+    <div class="modal-body qm-success" id="qmSuccess" hidden="">
+      <div class="qm-tick"><i data-lucide="check"></i></div>
+      <h3>Thank you — we'll be in touch</h3>
+      <p class="qm-sub">We've received your request for the <b id="qmPlanEcho">Comprehensive</b> plan. A GENFIN advisor will call you shortly on the number you provided.</p>
+      <p class="qm-sub" style="margin-top:8px;">Prefer to talk now? Call <b>+263 78 632 3131</b>.</p>
+      <button class="btn btn-ghost" id="qmDone">Close</button>
+    </div>
+  </div>
+</div>
+</body></html>
