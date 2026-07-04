@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioVerify — Pharmacy Verification Terminal</title>
+<link rel="icon" type="image/png" href="../assets/genfin-logo.png">
+<link rel="stylesheet" href="../shared/fonts.css">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="biometric.css">
+<style>
+  body { margin:0; }
+  /* State panels */
+  .bv-state-idle    { display:flex; }
+  .bv-state-scan    { display:none; }
+  .bv-state-success { display:none; }
+  .bv-state-fail    { display:none; }
+  /* Simulate cycling with CSS animation trigger */
+</style>
+</head>
+<body class="bv-root">
+
+<!-- Terminal top bar -->
+<div class="bv-terminal">
+<div class="bv-terminal-bar">
+  <div class="bv-logo">
+    <div class="bv-logo-mark" style="width:32px;height:32px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:18px;height:18px;color:var(--bv-ink)"><path d="M12 11c0-1.1.9-2 2-2s2 .9 2 2v1a2 2 0 0 1-4 0v-1z"/><path d="M6 9a6 6 0 0 1 12 0"/><path d="M6 9c0 5 2 8 6 10"/><path d="M18 9c0 5-2 8-6 10"/></svg>
+    </div>
+    <div>
+      <div class="bv-logo-text" style="font-size:0.85rem">Bio<span>Verify</span></div>
+      <div class="bv-logo-by">Pharmacy Terminal v2.4.1</div>
+    </div>
+  </div>
+  <div class="bv-terminal-info">
+    <span><strong>Site:</strong> Ambuya Stella Pharmacy, Harare CBD</span>
+    <span><strong>Terminal:</strong> TERM-0041</span>
+    <span>Fri 27 Jun 2025 · 14:23</span>
+    <div class="bv-terminal-online">ONLINE</div>
+  </div>
+</div>
+
+<!-- Terminal body -->
+<div class="bv-terminal-body">
+
+  <!-- Left: scan panel -->
+  <div class="bv-verify-panel" id="verifyPanel">
+
+    <!-- IDLE STATE -->
+    <div class="bv-verify-state" id="stateIdle">
+      <div class="bv-verify-ring" id="scanRing">
+        <svg class="bv-fp-large" viewBox="0 0 100 100" fill="none">
+          <path d="M50 10 C28 10 12 26 12 48 C12 70 28 86 50 86 C72 86 88 70 88 48 C88 26 72 10 50 10Z" stroke="rgba(0,212,170,0.55)" stroke-width="1.5"/>
+          <path d="M50 20 C34 20 22 32 22 48 C22 64 34 76 50 76 C66 76 78 64 78 48 C78 32 66 20 50 20Z" stroke="rgba(0,212,170,0.45)" stroke-width="1.5"/>
+          <path d="M50 30 C40 30 32 38 32 48 C32 58 40 66 50 66 C60 66 68 58 68 48 C68 38 60 30 50 30Z" stroke="rgba(0,212,170,0.4)" stroke-width="1.5"/>
+          <path d="M50 40 C46 40 42 44 42 48 C42 52 46 56 50 56 C54 56 58 52 58 48 C58 44 54 40 50 40Z" stroke="rgba(0,212,170,0.35)" stroke-width="1.5"/>
+          <circle cx="50" cy="48" r="4" fill="rgba(0,212,170,0.25)"/>
+        </svg>
+      </div>
+      <div class="bv-verify-title">Awaiting fingerprint</div>
+      <div class="bv-verify-sub">Ask the member to place their finger on the scanner</div>
+      <div style="display:flex; gap:0.75rem; justify-content:center; margin-top:1rem">
+        <button class="bv-btn bv-btn-primary" onclick="startScan()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:17px;height:17px"><path d="M12 11c0-1.1.9-2 2-2s2 .9 2 2v1a2 2 0 0 1-4 0v-1z"/><path d="M6 9a6 6 0 0 1 12 0"/></svg>
+          Simulate Scan
+        </button>
+        <button class="bv-btn bv-btn-ghost" style="color:rgba(255,255,255,0.5); border-color:rgba(255,255,255,0.15)" onclick="showOverride()">Manual ID lookup</button>
+      </div>
+    </div>
+
+    <!-- SCANNING STATE -->
+    <div class="bv-verify-state" id="stateScan" style="display:none">
+      <div class="bv-verify-ring scanning" id="scanRingScan">
+        <svg class="bv-fp-large" viewBox="0 0 100 100" fill="none">
+          <path d="M50 10 C28 10 12 26 12 48 C12 70 28 86 50 86 C72 86 88 70 88 48 C88 26 72 10 50 10Z" stroke="rgba(0,212,170,0.8)" stroke-width="2"/>
+          <path d="M50 20 C34 20 22 32 22 48 C22 64 34 76 50 76 C66 76 78 64 78 48 C78 32 66 20 50 20Z" stroke="rgba(0,212,170,0.65)" stroke-width="2"/>
+          <path d="M50 30 C40 30 32 38 32 48 C32 58 40 66 50 66 C60 66 68 58 68 48 C68 38 60 30 50 30Z" stroke="rgba(0,212,170,0.55)" stroke-width="1.5"/>
+          <path d="M50 40 C46 40 42 44 42 48 C42 52 46 56 50 56 C54 56 58 52 58 48 C58 44 54 40 50 40Z" stroke="rgba(0,212,170,0.45)" stroke-width="1.5"/>
+          <circle cx="50" cy="48" r="4" fill="rgba(0,212,170,0.4)"/>
+        </svg>
+      </div>
+      <div class="bv-verify-title">Scanning…</div>
+      <div class="bv-verify-sub">Hold still — processing fingerprint</div>
+      <div class="bv-verify-progress"><div class="bv-verify-bar" id="progressBar"></div></div>
+      <div class="bv-verify-percent" id="progressPct">0%</div>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div class="bv-verify-state" id="stateSuccess" style="display:none">
+      <div class="bv-verify-ring success">
+        <svg style="width:72px;height:72px;color:#1F9D57" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="bv-verify-title" style="color:#1F9D57">Identity verified</div>
+      <div class="bv-verify-sub">Match confidence: 99.8% · 1.4 seconds</div>
+      <div style="background:rgba(31,157,87,0.1); border:1px solid rgba(31,157,87,0.25); border-radius:12px; padding:0.875rem 1.5rem; margin-top:1rem; font-family:var(--bv-font-mono); font-size:0.8125rem; color:rgba(255,255,255,0.65); line-height:1.6">
+        <div>Member: <span style="color:#fff">Chiedza Nyamuzihwa</span></div>
+        <div>ID: <span style="color:#fff">GF-0041882</span></div>
+        <div>Event: <span style="color:#fff">RX-889244 dispensed</span></div>
+        <div>Logged: <span style="color:#fff">2025-06-27T14:23:41Z</span></div>
+      </div>
+      <button class="bv-btn bv-btn-primary" style="margin-top:1.25rem" onclick="resetScan()">
+        New verification
+      </button>
+    </div>
+
+    <!-- FAIL STATE -->
+    <div class="bv-verify-state" id="stateFail" style="display:none">
+      <div class="bv-verify-ring fail">
+        <svg style="width:64px;height:64px;color:#D64545" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+      <div class="bv-verify-title" style="color:#D64545">No match found</div>
+      <div class="bv-verify-sub">Ask the member to try again or escalate to the pharmacist</div>
+      <div style="display:flex; gap:0.75rem; justify-content:center; margin-top:1rem">
+        <button class="bv-btn bv-btn-danger" onclick="startScan()">Retry scan</button>
+        <button class="bv-btn bv-btn-ghost" style="color:rgba(255,255,255,0.5); border-color:rgba(255,255,255,0.15)" onclick="resetScan()">Cancel</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right: member info panel -->
+  <div class="bv-member-panel">
+    <div class="bv-mp-header">
+      <div class="bv-eyebrow" style="color:var(--bv-scan); font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:700; margin-bottom:0.5rem">Active Prescription</div>
+      <div class="bv-mp-name" id="memberName">Chiedza Nyamuzihwa</div>
+      <div class="bv-mp-meta">
+        <span>Female · DOB 12 Mar 1984</span>
+        <span>·</span>
+        <span style="color:var(--bv-success); font-weight:700">Active member</span>
+      </div>
+      <div class="bv-mp-id">Member #GF-0041882 · Plan: Gold</div>
+    </div>
+
+    <div class="bv-mp-body">
+
+      <!-- Prescriptions -->
+      <div class="bv-mp-section">
+        <div class="bv-mp-section-title">Pending Prescriptions</div>
+
+        <div class="bv-mp-card">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px">
+            <div class="bv-mc-name">Metformin 500mg</div>
+            <span class="bv-status-chip auth">Authorised</span>
+          </div>
+          <div class="bv-mc-detail">Chronic — Type 2 Diabetes Management</div>
+          <div class="bv-mc-detail" style="margin-top:3px">Prescribed by Dr. S. Mupamha · 24 Jun 2025</div>
+          <div class="bv-mc-qty">Qty: 60 tablets · 1 refill remaining</div>
+        </div>
+
+        <div class="bv-mp-card">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px">
+            <div class="bv-mc-name">Enalapril 10mg</div>
+            <span class="bv-status-chip auth">Authorised</span>
+          </div>
+          <div class="bv-mc-detail">Chronic — Hypertension</div>
+          <div class="bv-mc-detail" style="margin-top:3px">Prescribed by Dr. S. Mupamha · 24 Jun 2025</div>
+          <div class="bv-mc-qty">Qty: 30 tablets · 2 refills remaining</div>
+        </div>
+
+        <div class="bv-mp-card">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px">
+            <div class="bv-mc-name">Vitamin B12 Injection</div>
+            <span class="bv-status-chip pend">Pending auth</span>
+          </div>
+          <div class="bv-mc-detail">Acute — Deficiency treatment</div>
+          <div class="bv-mc-detail" style="margin-top:3px">Prescribed by Dr. S. Mupamha · 26 Jun 2025</div>
+          <div class="bv-mc-qty">Qty: 4 vials</div>
+        </div>
+      </div>
+
+      <!-- Benefit balance -->
+      <div class="bv-mp-section">
+        <div class="bv-mp-section-title">Benefit Balance · June 2025</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.625rem">
+          <div class="bv-mp-card" style="padding:0.75rem">
+            <div style="font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--bv-faint); margin-bottom:4px">Medicines</div>
+            <div style="font-family:var(--bv-font-mono); font-weight:700; font-size:1.1rem; color:var(--bv-success)">$41.20</div>
+            <div style="font-size:0.7rem; color:var(--bv-faint)">of $80.00 remaining</div>
+          </div>
+          <div class="bv-mp-card" style="padding:0.75rem">
+            <div style="font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--bv-faint); margin-bottom:4px">Acute Benefit</div>
+            <div style="font-family:var(--bv-font-mono); font-weight:700; font-size:1.1rem; color:var(--bv-text)">$280.00</div>
+            <div style="font-size:0.7rem; color:var(--bv-faint)">of $500.00 remaining</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Co-payment -->
+      <div class="bv-mp-section">
+        <div class="bv-mp-section-title">Co-payment Due</div>
+        <div class="bv-mp-card" style="display:flex; align-items:center; justify-content:space-between">
+          <div>
+            <div class="bv-mc-name">Metformin + Enalapril</div>
+            <div class="bv-mc-detail">Standard chronic co-pay applies</div>
+          </div>
+          <div style="font-family:var(--bv-font-mono); font-weight:700; font-size:1.25rem; color:var(--bv-text)">$3.00</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer actions -->
+    <div class="bv-mp-footer">
+      <button class="bv-btn bv-btn-success" style="flex:1; justify-content:center" onclick="dispenseRx()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:17px;height:17px"><polyline points="20 6 9 17 4 12"/></svg>
+        Dispense &amp; confirm
+      </button>
+      <button class="bv-btn bv-btn-ghost" style="flex:0 0 auto" onclick="resetScan()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:17px;height:17px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Cancel
+      </button>
+    </div>
+  </div>
+
+</div>
+</div><!-- /.bv-terminal -->
+
+<script>
+function hide(id){ document.getElementById(id).style.display='none'; }
+function show(id){ document.getElementById(id).style.display='flex'; }
+
+function startScan(){
+  hide('stateIdle'); hide('stateSuccess'); hide('stateFail');
+  show('stateScan');
+  // Animate progress
+  var bar = document.getElementById('progressBar');
+  var pct = document.getElementById('progressPct');
+  bar.style.animation = 'none'; bar.style.width = '0%';
+  var p = 0;
+  var iv = setInterval(function(){
+    p += Math.random() * 14;
+    if(p > 100) p = 100;
+    bar.style.width = Math.round(p) + '%';
+    pct.textContent = Math.round(p) + '%';
+    if(p >= 100){
+      clearInterval(iv);
+      setTimeout(function(){
+        hide('stateScan');
+        show('stateSuccess');
+      }, 400);
+    }
+  }, 120);
+}
+
+function resetScan(){
+  hide('stateScan'); hide('stateSuccess'); hide('stateFail');
+  document.getElementById('progressBar').style.width='0%';
+  document.getElementById('progressPct').textContent='0%';
+  show('stateIdle');
+}
+
+function showOverride(){
+  var id = prompt('Enter member ID or national ID number:');
+  if(id){ alert('Manual lookup for: ' + id + '\n\nIn production this would query the BioVerify API.'); }
+}
+
+function dispenseRx(){
+  alert('Dispensing event logged:\nRX-889244 — Chiedza Nyamuzihwa\nEvent ID: EVT-' + Math.random().toString(36).substr(2,9).toUpperCase() + '\nTimestamp: ' + new Date().toISOString());
+  resetScan();
+}
+</script>
+</body>
+</html>

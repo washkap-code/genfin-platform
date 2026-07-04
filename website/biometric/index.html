@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioVerify — Biometric Identity Verification for Healthcare</title>
+<meta name="description" content="BioVerify is a fingerprint identity verification platform built for pharmacies, clinics, hospitals, and financial institutions. Prevent fraud. Confirm identity in under 2 seconds.">
+<link rel="icon" type="image/png" href="../assets/genfin-logo.png">
+<link rel="stylesheet" href="../shared/fonts.css">
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="biometric.css">
+</head>
+<body class="bv-root">
+
+<!-- ===== NAV ===== -->
+<nav class="bv-nav">
+  <div class="bv-wrap-xl bv-nav-inner">
+    <a class="bv-logo" href="index.html">
+      <div class="bv-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--bv-ink)">
+          <path d="M12 11c0-1.1.9-2 2-2s2 .9 2 2v1a2 2 0 0 1-4 0v-1z"/>
+          <path d="M6 9a6 6 0 0 1 12 0"/>
+          <path d="M6 9c0 5 2 8 6 10"/>
+          <path d="M18 9c0 5-2 8-6 10"/>
+          <path d="M9 9v3a3 3 0 0 0 6 0V9"/>
+        </svg>
+      </div>
+      <div>
+        <div class="bv-logo-text">Bio<span>Verify</span></div>
+        <div class="bv-logo-by">by GENFIN Technology</div>
+      </div>
+    </a>
+    <nav class="bv-nav-links">
+      <a href="#use-cases">Use Cases</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="docs.html">Docs</a>
+      <a href="../providers.html">For Providers</a>
+    </nav>
+    <div class="bv-nav-actions">
+      <a href="admin.html" class="bv-btn bv-btn-outline" style="font-size:0.8125rem; padding:8px 16px;">Admin Login</a>
+      <a href="#pricing" class="bv-btn bv-btn-primary">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="bv-hero">
+  <div class="bv-wrap-xl bv-hero-grid">
+    <div>
+      <div class="bv-eyebrow">Biometric Identity Platform</div>
+      <h1>Confirm who<br>is <em>really</em> collecting<br>the prescription.</h1>
+      <p class="bv-hero lead">BioVerify authenticates member identity at the point of dispensing using fingerprint scanning — preventing prescription fraud, protecting benefits, and closing the dispensary accountability gap.</p>
+      <div class="bv-hero-cta">
+        <a href="#pricing" class="bv-btn bv-btn-primary bv-btn-xl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 11c0-1.1.9-2 2-2s2 .9 2 2v1a2 2 0 0 1-4 0v-1z"/><path d="M6 9a6 6 0 0 1 12 0"/><path d="M6 9c0 5 2 8 6 10"/><path d="M18 9c0 5-2 8-6 10"/></svg>
+          Start free trial
+        </a>
+        <a href="docs.html" class="bv-btn bv-btn-outline bv-btn-xl">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+          View API docs
+        </a>
+      </div>
+      <div class="bv-trust-bar">
+        <div class="bv-trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          ISO/IEC 19794 fingerprint standard
+        </div>
+        <div class="bv-trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          &lt; 2 second verification
+        </div>
+        <div class="bv-trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Works offline with local fallback
+        </div>
+        <div class="bv-trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          REST API + JavaScript SDK
+        </div>
+      </div>
+    </div>
+
+    <!-- Scanner visual -->
+    <div class="bv-device">
+      <div style="position:relative">
+        <div class="bv-scanner-shell">
+          <div class="bv-scanner-header">
+            <span class="bv-scanner-brand">BIOVERIFY TERMINAL</span>
+            <span class="bv-scanner-status">READY</span>
+          </div>
+          <div class="bv-scanner-pad">
+            <!-- Fingerprint SVG (stylised) -->
+            <svg class="bv-fp-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M50 10 C28 10 12 26 12 48 C12 70 28 86 50 86 C72 86 88 70 88 48 C88 26 72 10 50 10Z" stroke="rgba(0,212,170,0.6)" stroke-width="1.5" fill="none"/>
+              <path d="M50 20 C34 20 22 32 22 48 C22 64 34 76 50 76 C66 76 78 64 78 48 C78 32 66 20 50 20Z" stroke="rgba(0,212,170,0.5)" stroke-width="1.5" fill="none"/>
+              <path d="M50 30 C40 30 32 38 32 48 C32 58 40 66 50 66 C60 66 68 58 68 48 C68 38 60 30 50 30Z" stroke="rgba(0,212,170,0.45)" stroke-width="1.5" fill="none"/>
+              <path d="M50 40 C46 40 42 44 42 48 C42 52 46 56 50 56 C54 56 58 52 58 48 C58 44 54 40 50 40Z" stroke="rgba(0,212,170,0.4)" stroke-width="1.5" fill="none"/>
+              <circle cx="50" cy="48" r="4" fill="rgba(0,212,170,0.3)"/>
+              <!-- Ridge lines -->
+              <path d="M24 36 Q30 30 38 28" stroke="rgba(0,212,170,0.3)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+              <path d="M76 36 Q70 30 62 28" stroke="rgba(0,212,170,0.3)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+              <path d="M18 52 Q16 60 20 68" stroke="rgba(0,212,170,0.25)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+              <path d="M82 52 Q84 60 80 68" stroke="rgba(0,212,170,0.25)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            </svg>
+            <div class="bv-scan-line"></div>
+            <div class="bv-scanner-prompt">Place finger on sensor</div>
+          </div>
+          <div class="bv-scanner-footer">
+            <div class="bv-sf-label">Last verified</div>
+            <div class="bv-sf-val">Chiedza N. — Member #GF-0041882</div>
+            <div class="bv-sf-sub">Today 14:23 · Ambuya Stella Pharmacy, Harare</div>
+          </div>
+        </div>
+
+        <!-- Float cards -->
+        <div class="bv-float bv-fc-match">
+          <div class="bv-fi" style="background:#E8F6EE; color:#1F9D57">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <div class="bv-ft">Identity matched</div>
+            <div class="bv-fc">99.8% confidence · 1.4s</div>
+          </div>
+        </div>
+        <div class="bv-float bv-fc-api">
+          <div class="bv-fi" style="background:#EAF2FE; color:#2D7FF0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+          </div>
+          <div>
+            <div class="bv-ft">Event logged</div>
+            <div class="bv-fc">Rx #RX-889244 dispensed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STATS ===== -->
+<section class="bv-stats-sec">
+  <div class="bv-wrap">
+    <div class="bv-stats">
+      <div class="bv-stat"><div class="n">60,000+</div><div class="l">Members enrolled across the GENFIN network</div></div>
+      <div class="bv-stat"><div class="n">&lt;2s</div><div class="l">Average verification time at point of dispensing</div></div>
+      <div class="bv-stat"><div class="n">99.97%</div><div class="l">True match rate across enrolled fingerprints</div></div>
+      <div class="bv-stat"><div class="n">0</div><div class="l">Prescription fraud incidents at BioVerify-enabled sites</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== USE CASES ===== -->
+<section class="bv-sec" id="use-cases">
+  <div class="bv-wrap">
+    <div class="bv-sec-head">
+      <div class="bv-eyebrow" style="color:var(--bv-muted)">Where it works</div>
+      <h2>Built for healthcare. Ready for everything else.</h2>
+      <p class="bv-lead">BioVerify was purpose-built for the dispensary counter, but the API is sector-agnostic. Any organisation that needs to confirm who is physically present can integrate it.</p>
+    </div>
+    <div class="bv-cases">
+      <div class="bv-case">
+        <div class="bv-case-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+        </div>
+        <h3>Pharmacies &amp; Dispensaries</h3>
+        <p>Confirm the member or their authorised representative before dispensing. Tie every dispensing event to a verified identity, with a full audit log for regulatory review.</p>
+        <span class="bv-case-tag green">Primary use case</span>
+      </div>
+      <div class="bv-case">
+        <div class="bv-case-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <h3>Hospitals &amp; Clinics</h3>
+        <p>Verify patient identity at admission, procedure check-in, and discharge. Eliminate paper-based identity checks. Integrate with existing PMS via REST API.</p>
+        <span class="bv-case-tag gold">Healthcare</span>
+      </div>
+      <div class="bv-case">
+        <div class="bv-case-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </div>
+        <h3>Financial Services</h3>
+        <p>Reduce FICA friction at branch level. Verify account holders for high-risk transactions, pension disbursements, and over-the-counter cash withdrawals.</p>
+        <span class="bv-case-tag">Finance</span>
+      </div>
+      <div class="bv-case">
+        <div class="bv-case-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3>Employer Access Control</h3>
+        <p>Replace proximity cards and PIN pads with fingerprint access at controlled entry points. Full event logging, time-attendance integration, and multi-site support.</p>
+        <span class="bv-case-tag">Enterprise</span>
+      </div>
+      <div class="bv-case">
+        <div class="bv-case-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <h3>Government Services</h3>
+        <p>Pension payout verification, social welfare disbursement, voter eligibility confirmation, and national ID cross-referencing — all through a single integration.</p>
+        <span class="bv-case-tag">Government</span>
+      </div>
+      <div class="bv-case">
+        <div class="bv-case-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/></svg>
+        </div>
+        <h3>Telecom &amp; Utilities</h3>
+        <p>Verify identity for SIM registration compliance, ZESA/NetOne prepaid account recovery, and in-branch customer service — meeting regulator KYC requirements.</p>
+        <span class="bv-case-tag">Telecoms</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="bv-sec" id="how-it-works" style="background:var(--bv-ink); color:#fff">
+  <div class="bv-wrap">
+    <div class="bv-sec-head center" style="color:#fff">
+      <div class="bv-eyebrow">Three steps</div>
+      <h2 style="color:#fff">From enrolment to verification<br>in under a minute.</h2>
+      <p class="bv-lead" style="color:rgba(255,255,255,0.55)">No specialised hardware required beyond a USB fingerprint reader. Our SDK handles the rest.</p>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(3,1fr); gap:1.5rem; margin-top:1rem">
+
+      <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:2rem">
+        <div style="width:48px; height:48px; border-radius:50%; background:var(--bv-accent); color:var(--bv-ink); display:grid; place-items:center; font-family:var(--bv-font-display); font-weight:800; font-size:1.25rem; margin-bottom:1.25rem">1</div>
+        <h3 style="color:#fff; font-family:var(--bv-font-display); font-weight:700; font-size:1.1rem; margin-bottom:0.5rem">Enrol once</h3>
+        <p style="color:rgba(255,255,255,0.55); font-size:0.875rem; line-height:1.65">The member scans their fingerprint(s) at enrolment — at a pharmacy, clinic, or during onboarding. The template is encrypted and stored against their account. No raw biometric data is ever stored.</p>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:2rem">
+        <div style="width:48px; height:48px; border-radius:50%; background:var(--bv-accent); color:var(--bv-ink); display:grid; place-items:center; font-family:var(--bv-font-display); font-weight:800; font-size:1.25rem; margin-bottom:1.25rem">2</div>
+        <h3 style="color:#fff; font-family:var(--bv-font-display); font-weight:700; font-size:1.1rem; margin-bottom:0.5rem">Scan at point of service</h3>
+        <p style="color:rgba(255,255,255,0.55); font-size:0.875rem; line-height:1.65">The pharmacy or clinic places a USB fingerprint reader at the counter. The member scans when collecting — BioVerify matches in under 2 seconds and returns a JSON result to your system via webhook or API poll.</p>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:2rem">
+        <div style="width:48px; height:48px; border-radius:50%; background:var(--bv-accent); color:var(--bv-ink); display:grid; place-items:center; font-family:var(--bv-font-display); font-weight:800; font-size:1.25rem; margin-bottom:1.25rem">3</div>
+        <h3 style="color:#fff; font-family:var(--bv-font-display); font-weight:700; font-size:1.1rem; margin-bottom:0.5rem">Log, audit, report</h3>
+        <p style="color:rgba(255,255,255,0.55); font-size:0.875rem; line-height:1.65">Every verification event is immutably logged — who, where, when, and the result. Pharmacy managers and medical aid administrators can pull full audit reports at any time from the BioVerify admin dashboard.</p>
+      </div>
+
+    </div>
+
+    <!-- SDK snippet -->
+    <div style="margin-top:3rem; max-width:760px; margin-inline:auto">
+      <div class="bv-code-block">
+        <div class="bv-code-head">
+          <span class="bv-code-lang">JavaScript — BioVerify SDK</span>
+          <button class="bv-code-copy">Copy</button>
+        </div>
+        <pre><code>import BioVerify from '@bioverify/sdk';
+
+const bv = new BioVerify({
+  apiKey: 'bvk_live_xxxxxx',
+  endpoint: 'https://api.bioverify.io/v1',
+  deviceId: 'term-0041'          // USB reader serial
+});
+
+// Trigger a verification against GENFIN member #GF-0041882
+const result = await bv.verify({
+  memberId: 'GF-0041882',
+  context:  'pharmacy_dispense',
+  rxId:     'RX-889244'
+});
+
+if (result.matched) {
+  console.log(`✓ ${result.member.name} verified — confidence ${result.score}%`);
+  dispense(result.rxId);
+} else {
+  console.warn('Identity not confirmed — escalate to pharmacist');
+}</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== INTEGRATIONS ===== -->
+<section class="bv-sec">
+  <div class="bv-wrap">
+    <div class="bv-sec-head center">
+      <div class="bv-eyebrow" style="color:var(--bv-muted)">Integrations</div>
+      <h2>Connects to the systems you already run.</h2>
+      <p class="bv-lead">REST API first. Native SDKs for JavaScript, Python, Java, and .NET. Pre-built connectors for the most common dispensary management systems in Africa.</p>
+    </div>
+    <div class="bv-integrations">
+      <div class="bv-integration">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#6366F1"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+        <span>GENFIN Portal</span>
+      </div>
+      <div class="bv-integration">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#0EA5E9"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        <span>PharmaSuite</span>
+      </div>
+      <div class="bv-integration">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#10B981"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>MedAid Manager</span>
+      </div>
+      <div class="bv-integration">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#F59E0B"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        <span>Sage Payroll</span>
+      </div>
+      <div class="bv-integration">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#EF4444"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span>iPHIS Zimbabwe</span>
+      </div>
+      <div class="bv-integration">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#8B5CF6"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span>REST / Webhook</span>
+      </div>
+      <div class="bv-integration">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#0369A1"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <span>Custom API</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRICING ===== -->
+<section class="bv-sec" id="pricing" style="background:var(--bv-surface)">
+  <div class="bv-wrap">
+    <div class="bv-sec-head center">
+      <div class="bv-eyebrow" style="color:var(--bv-muted)">Pricing</div>
+      <h2>Straightforward pricing.<br>No per-scan surprises.</h2>
+      <p class="bv-lead">Monthly subscription per terminal. Volume discounts available for pharmacy chains and hospital groups.</p>
+    </div>
+    <div class="bv-plans">
+
+      <div class="bv-plan">
+        <div class="bv-plan-name">Starter</div>
+        <div class="bv-plan-price"><sup>$</sup>49<sub>/mo per terminal</sub></div>
+        <div class="bv-plan-desc">For single pharmacies and independent clinics getting started with biometric verification.</div>
+        <div class="bv-plan-feats">
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Up to 2 terminals</div>
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Unlimited verifications</div>
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Basic audit log export</div>
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> REST API access</div>
+          <div class="bv-plan-feat na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Multi-branch dashboard</div>
+          <div class="bv-plan-feat na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> White-label option</div>
+        </div>
+        <a href="#contact" class="bv-btn bv-btn-ghost" style="width:100%; justify-content:center">Get Starter</a>
+      </div>
+
+      <div class="bv-plan featured">
+        <div class="bv-plan-badge">Most popular</div>
+        <div class="bv-plan-name">Professional</div>
+        <div class="bv-plan-price"><sup>$</sup>149<sub>/mo per site</sub></div>
+        <div class="bv-plan-desc">For pharmacy chains, clinic groups, and hospital departments with multiple dispensing points.</div>
+        <div class="bv-plan-feats">
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Up to 10 terminals per site</div>
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Unlimited verifications</div>
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Full audit reports + analytics</div>
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Multi-branch dashboard</div>
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Webhook events</div>
+          <div class="bv-plan-feat na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> White-label option</div>
+        </div>
+        <a href="#contact" class="bv-btn bv-btn-primary" style="width:100%; justify-content:center">Get Professional</a>
+      </div>
+
+      <div class="bv-plan">
+        <div class="bv-plan-name">Enterprise</div>
+        <div class="bv-plan-price" style="font-size:2rem">Custom</div>
+        <div class="bv-plan-desc">For hospital groups, national pharmacy chains, and organisations requiring white-label deployment and dedicated infrastructure.</div>
+        <div class="bv-plan-feats">
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Unlimited terminals</div>
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Dedicated cloud region</div>
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Full white-label branding</div>
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> On-premise deployment option</div>
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> SLA + dedicated support</div>
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Custom integrations</div>
+        </div>
+        <a href="#contact" class="bv-btn bv-btn-navy" style="width:100%; justify-content:center">Contact sales</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="bv-cta-band" id="contact">
+  <div class="bv-wrap">
+    <h2>Ready to eliminate prescription fraud?</h2>
+    <p>Join the pharmacies, clinics, and health funds already using BioVerify to confirm identity at the point of care.</p>
+    <div class="bv-cta-actions">
+      <a href="mailto:bioverify@genfin.co.zw?subject=BioVerify%20Trial%20Request" class="bv-btn bv-btn-primary bv-btn-xl">Request a trial</a>
+      <a href="docs.html" class="bv-btn bv-btn-outline bv-btn-xl">Read the docs</a>
+    </div>
+    <p style="font-size:0.8125rem; color:rgba(255,255,255,0.3); margin-top:1.5rem">
+      BioVerify is a product of GENFIN Technology (Pvt) Ltd · +263 78 632 3131 · bioverify@genfin.co.zw
+    </p>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="bv-footer">
+  <div class="bv-wrap">
+    <div class="bv-footer-grid">
+      <div class="bv-footer-col">
+        <div class="bv-logo" style="margin-bottom:0.75rem">
+          <div class="bv-logo-mark" style="width:30px;height:30px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:18px;height:18px;color:var(--bv-ink)"><path d="M12 11c0-1.1.9-2 2-2s2 .9 2 2v1a2 2 0 0 1-4 0v-1z"/><path d="M6 9a6 6 0 0 1 12 0"/><path d="M6 9c0 5 2 8 6 10"/><path d="M18 9c0 5-2 8-6 10"/></svg>
+          </div>
+          <div class="bv-logo-text" style="font-size:0.9rem">Bio<span>Verify</span></div>
+        </div>
+        <p style="font-size:0.8125rem; line-height:1.65; max-width:28ch; margin-top:0.5rem">Biometric identity verification built for healthcare and beyond.</p>
+        <p style="font-size:0.75rem; margin-top:0.75rem">A product of GENFIN Technology (Pvt) Ltd<br>Harare, Zimbabwe</p>
+      </div>
+      <div class="bv-footer-col">
+        <h5>Product</h5>
+        <a href="#use-cases">Use Cases</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="docs.html">Documentation</a>
+      </div>
+      <div class="bv-footer-col">
+        <h5>Portals</h5>
+        <a href="verify.html">Verify Terminal</a>
+        <a href="admin.html">Admin Dashboard</a>
+        <a href="../pharmacy-portal.html">Pharmacy Portal</a>
+        <a href="../portal.html">Member Portal</a>
+      </div>
+      <div class="bv-footer-col">
+        <h5>Company</h5>
+        <a href="../about.html">About GENFIN</a>
+        <a href="../index.html">GENFIN Medical Aid</a>
+        <a href="mailto:bioverify@genfin.co.zw">Contact</a>
+        <a href="#">Privacy Policy</a>
+      </div>
+    </div>
+    <div class="bv-footer-bottom">
+      <span>&copy; 2025 GENFIN Technology (Pvt) Ltd. BioVerify is a registered product.</span>
+      <span>ISO/IEC 19794 · GDPR-aligned · Zimbabwe Data Protection Act compliant</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documents — GENFIN Portal</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="shared/genfin.css">
+<link rel="stylesheet" href="shared/portal.css">
+<link rel="stylesheet" href="shared/site.css">
+<style>
+.doc-row {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1rem 0; border-bottom: 1px solid var(--c-border);
+}
+.doc-row:last-child { border-bottom: none; }
+.doc-icon {
+  width: 40px; height: 40px; border-radius: 8px;
+  background: rgba(251,189,62,0.1); display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+}
+.doc-icon svg { width: 18px; height: 18px; color: var(--c-ink); }
+.doc-detail { flex: 1; }
+.doc-name { font-weight: 700; font-size: 0.875rem; color: var(--c-ink); }
+.doc-meta { font-size: 0.75rem; color: var(--c-faint); margin-top: 0.2rem; }
+.doc-actions { display: flex; gap: 0.5rem; }
+</style>
+</head>
+<body class="portal-body">
+
+<div class="portal-topbar">
+  <div class="portal-topbar-inner">
+    <a href="portal.html" class="portal-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to portal
+    </a>
+    <div class="portal-topbar-logo">GEN<b>FIN</b></div>
+    <div class="portal-topbar-user">Tadiwa Moyo · GF-104928</div>
+  </div>
+</div>
+
+<div class="portal-page-body">
+  <div style="max-width:720px; margin:0 auto">
+
+    <h1 class="portal-page-title">Documents</h1>
+    <p class="portal-page-sub">Your membership certificates, benefit schedules, claim statements, and tax certificates.</p>
+
+    <!-- Membership documents -->
+    <h2 class="portal-section-title">Membership</h2>
+    <div class="portal-card" style="padding:0 1.5rem">
+      <div class="doc-row">
+        <div class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="doc-detail">
+          <div class="doc-name">Membership certificate 2025</div>
+          <div class="doc-meta">PDF · Issued 1 Jan 2025 · Gold Plan</div>
+        </div>
+        <div class="doc-actions">
+          <button class="btn btn-ghost btn-sm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download
+          </button>
+        </div>
+      </div>
+      <div class="doc-row">
+        <div class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="doc-detail">
+          <div class="doc-name">Benefit schedule 2025</div>
+          <div class="doc-meta">PDF · Gold Plan · Effective 1 Jan 2025</div>
+        </div>
+        <div class="doc-actions">
+          <button class="btn btn-ghost btn-sm">Download</button>
+        </div>
+      </div>
+      <div class="doc-row">
+        <div class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="doc-detail">
+          <div class="doc-name">Membership certificate 2024</div>
+          <div class="doc-meta">PDF · Issued 1 Jan 2024 · Gold Plan</div>
+        </div>
+        <div class="doc-actions">
+          <button class="btn btn-ghost btn-sm">Download</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Claim statements -->
+    <h2 class="portal-section-title" style="margin-top:2rem">Claim statements</h2>
+    <div class="portal-card" style="padding:0 1.5rem">
+      <div class="doc-row">
+        <div class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="doc-detail">
+          <div class="doc-name">Claims statement — May 2025</div>
+          <div class="doc-meta">PDF · 4 claims · $620 processed</div>
+        </div>
+        <div class="doc-actions">
+          <button class="btn btn-ghost btn-sm">Download</button>
+        </div>
+      </div>
+      <div class="doc-row">
+        <div class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="doc-detail">
+          <div class="doc-name">Claims statement — April 2025</div>
+          <div class="doc-meta">PDF · 2 claims · $340 processed</div>
+        </div>
+        <div class="doc-actions">
+          <button class="btn btn-ghost btn-sm">Download</button>
+        </div>
+      </div>
+      <div class="doc-row">
+        <div class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="doc-detail">
+          <div class="doc-name">Annual claims statement 2024</div>
+          <div class="doc-meta">PDF · 14 claims · $2,840 processed</div>
+        </div>
+        <div class="doc-actions">
+          <button class="btn btn-ghost btn-sm">Download</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tax certificate -->
+    <h2 class="portal-section-title" style="margin-top:2rem">Tax &amp; compliance</h2>
+    <div class="portal-card" style="padding:0 1.5rem">
+      <div class="doc-row">
+        <div class="doc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+        <div class="doc-detail">
+          <div class="doc-name">Medical aid contribution certificate 2024</div>
+          <div class="doc-meta">PDF · For ZIMRA tax submissions · $2,400 contributions</div>
+        </div>
+        <div class="doc-actions">
+          <button class="btn btn-ghost btn-sm">Download</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

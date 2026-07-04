@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found — GENFIN</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="shared/genfin.css">
+<link rel="stylesheet" href="shared/site.css">
+<style>
+.not-found-body {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: var(--c-ink); color: #fff; padding: 2rem;
+  font-family: var(--font-sans);
+}
+.nf-code {
+  font-family: var(--font-mono); font-size: 8rem;
+  font-weight: 700; color: var(--c-gold);
+  line-height: 1; margin-bottom: 1.5rem;
+  letter-spacing: -0.04em;
+}
+.nf-title {
+  font-family: var(--font-disp); font-weight: 800;
+  font-size: 1.75rem; color: #fff; margin-bottom: 0.75rem;
+  text-align: center;
+}
+.nf-body {
+  font-size: 1rem; color: rgba(255,255,255,0.6);
+  max-width: 380px; text-align: center; line-height: 1.65;
+  margin-bottom: 2.5rem;
+}
+.nf-actions { display: flex; gap: 0.75rem; }
+</style>
+</head>
+<body class="not-found-body">
+  <div class="nf-code">404</div>
+  <div class="nf-title">Page not found</div>
+  <p class="nf-body">The page you're looking for doesn't exist or may have moved. Try heading back to the homepage, or contact support if you think this is a mistake.</p>
+  <div class="nf-actions">
+    <a href="index.html" class="btn btn-primary">Go to homepage</a>
+    <a href="support.html" class="btn btn-ghost-light">Contact support</a>
+  </div>
+</body>
+</html>

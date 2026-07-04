@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit a Claim — GENFIN Portal</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="shared/genfin.css">
+<link rel="stylesheet" href="shared/portal.css">
+<link rel="stylesheet" href="shared/site.css">
+<style>
+.claim-wizard { max-width: 640px; margin: 0 auto; }
+.claim-steps { display: flex; gap: 0; margin-bottom: 2.5rem; }
+.claim-step {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  position: relative;
+}
+.claim-step:not(:last-child)::after {
+  content: ''; position: absolute; top: 18px; left: calc(50% + 18px); right: calc(-50% + 18px);
+  height: 2px; background: var(--c-border); z-index: 0;
+}
+.claim-step-dot {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--c-border); color: var(--c-faint);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.8125rem; z-index: 1;
+  transition: all 0.2s;
+}
+.claim-step.active .claim-step-dot { background: var(--c-gold); color: var(--c-ink); }
+.claim-step.done .claim-step-dot { background: var(--c-scan, #00C48A); color: #fff; }
+.claim-step-label { font-size: 0.75rem; color: var(--c-faint); font-weight: 600; text-align: center; }
+.claim-step.active .claim-step-label { color: var(--c-ink); }
+
+.claim-section { display: none; }
+.claim-section.active { display: block; }
+
+.claim-type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.875rem; margin-bottom: 1.5rem; }
+.claim-type-btn {
+  border: 1.5px solid var(--c-border); border-radius: 12px;
+  padding: 1.25rem; cursor: pointer; background: #fff;
+  text-align: left; transition: all 0.15s;
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.claim-type-btn:hover { border-color: var(--c-gold); background: rgba(251,189,62,0.03); }
+.claim-type-btn.selected { border-color: var(--c-gold); background: rgba(251,189,62,0.06); }
+.claim-type-btn svg { width: 22px; height: 22px; color: var(--c-ink); }
+.claim-type-name { font-weight: 700; font-size: 0.9375rem; color: var(--c-ink); }
+.claim-type-limit { font-size: 0.75rem; color: var(--c-muted); }
+
+.upload-zone {
+  border: 2px dashed var(--c-border); border-radius: 12px;
+  padding: 2.5rem 1.5rem; text-align: center; cursor: pointer;
+  transition: all 0.15s; background: var(--c-page);
+  margin-bottom: 1.5rem;
+}
+.upload-zone:hover { border-color: var(--c-gold); background: rgba(251,189,62,0.03); }
+.upload-zone svg { width: 36px; height: 36px; color: var(--c-muted); margin: 0 auto 0.75rem; }
+.upload-zone-label { font-weight: 600; color: var(--c-ink); margin-bottom: 0.25rem; }
+.upload-zone-sub { font-size: 0.8125rem; color: var(--c-faint); }
+
+.extracted-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+
+.review-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.875rem 0; border-bottom: 1px solid var(--c-border);
+  font-size: 0.9rem;
+}
+.review-row:last-child { border-bottom: none; }
+.review-label { color: var(--c-muted); }
+.review-value { font-weight: 700; color: var(--c-ink); }
+
+.success-screen { text-align: center; padding: 3rem 1rem; }
+.success-icon {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: rgba(0,196,138,0.12); display: flex;
+  align-items: center; justify-content: center; margin: 0 auto 1.5rem;
+}
+.success-icon svg { width: 36px; height: 36px; color: var(--c-scan); }
+</style>
+</head>
+<body class="portal-body">
+
+<div class="portal-topbar">
+  <div class="portal-topbar-inner">
+    <a href="portal.html" class="portal-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to portal
+    </a>
+    <div class="portal-topbar-logo">GEN<b>FIN</b></div>
+    <div class="portal-topbar-user">Tadiwa Moyo · GF-104928</div>
+  </div>
+</div>
+
+<div class="portal-page-body">
+  <div class="claim-wizard">
+
+    <h1 class="portal-page-title">Submit a claim</h1>
+    <p class="portal-page-sub">Upload your receipt or invoice. Most claims are approved within 24 hours.</p>
+
+    <!-- Progress steps -->
+    <div class="claim-steps">
+      <div class="claim-step active" id="step-1">
+        <div class="claim-step-dot">1</div>
+        <div class="claim-step-label">Claim type</div>
+      </div>
+      <div class="claim-step" id="step-2">
+        <div class="claim-step-dot">2</div>
+        <div class="claim-step-label">Upload</div>
+      </div>
+      <div class="claim-step" id="step-3">
+        <div class="claim-step-dot">3</div>
+        <div class="claim-step-label">Details</div>
+      </div>
+      <div class="claim-step" id="step-4">
+        <div class="claim-step-dot">4</div>
+        <div class="claim-step-label">Review</div>
+      </div>
+    </div>
+
+    <!-- Step 1: Type -->
+    <div class="claim-section active" id="section-1">
+      <div class="claim-type-grid">
+        <button class="claim-type-btn" onclick="selectType(this,'GP Visit')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          <div class="claim-type-name">GP / Primary care</div>
+          <div class="claim-type-limit">Up to $120/visit</div>
+        </button>
+        <button class="claim-type-btn" onclick="selectType(this,'Specialist')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div class="claim-type-name">Specialist</div>
+          <div class="claim-type-limit">Referral required</div>
+        </button>
+        <button class="claim-type-btn" onclick="selectType(this,'Dental')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          <div class="claim-type-name">Dental</div>
+          <div class="claim-type-limit">Up to $400/year</div>
+        </button>
+        <button class="claim-type-btn" onclick="selectType(this,'Optical')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>
+          <div class="claim-type-name">Optical</div>
+          <div class="claim-type-limit">1 pair/year</div>
+        </button>
+        <button class="claim-type-btn" onclick="selectType(this,'Pharmacy')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
+          <div class="claim-type-name">Prescription / pharmacy</div>
+          <div class="claim-type-limit">Chronic &amp; acute</div>
+        </button>
+        <button class="claim-type-btn" onclick="selectType(this,'Emergency')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <div class="claim-type-name">Emergency / hospital</div>
+          <div class="claim-type-limit">Pre-auth not required</div>
+        </button>
+      </div>
+      <button class="btn btn-primary btn-lg" style="width:100%" onclick="goStep(2)" id="next-1" disabled>Continue</button>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div class="claim-section" id="section-2">
+      <div class="upload-zone" onclick="simulateUpload()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div class="upload-zone-label" id="upload-label">Tap to photograph or upload receipt</div>
+        <div class="upload-zone-sub">JPEG, PNG, PDF · Max 10MB</div>
+      </div>
+      <div style="display:flex; gap:0.75rem">
+        <button class="btn btn-ghost btn-lg" style="flex:1" onclick="goStep(1)">Back</button>
+        <button class="btn btn-primary btn-lg" style="flex:2" onclick="goStep(3)" id="next-2" disabled>Continue</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Details (auto-extracted) -->
+    <div class="claim-section" id="section-3">
+      <div class="portal-alert portal-alert-info" style="margin-bottom:1.5rem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/></svg>
+        Receipt scanned — details pre-filled. Please verify before continuing.
+      </div>
+      <div class="extracted-fields">
+        <div class="form-group">
+          <label>Provider name</label>
+          <input type="text" value="Dr. M. Chikomo" style="font-family:var(--font-sans);font-size:0.9rem;border:1.5px solid var(--c-border);border-radius:10px;padding:11px 14px;background:#fff">
+        </div>
+        <div class="form-group">
+          <label>Date of service</label>
+          <input type="date" value="2025-06-14" style="font-family:var(--font-sans);font-size:0.9rem;border:1.5px solid var(--c-border);border-radius:10px;padding:11px 14px;background:#fff">
+        </div>
+        <div class="form-group">
+          <label>Invoice amount (USD)</label>
+          <input type="number" value="142.00" step="0.01" style="font-family:var(--font-sans);font-size:0.9rem;border:1.5px solid var(--c-border);border-radius:10px;padding:11px 14px;background:#fff">
+        </div>
+        <div class="form-group">
+          <label>Invoice number</label>
+          <input type="text" value="INV-20250614-0041" style="font-family:var(--font-sans);font-size:0.9rem;border:1.5px solid var(--c-border);border-radius:10px;padding:11px 14px;background:#fff">
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:1.5rem">
+        <label>Notes (optional)</label>
+        <textarea rows="3" placeholder="Any additional information…" style="font-family:var(--font-sans);font-size:0.9rem;border:1.5px solid var(--c-border);border-radius:10px;padding:11px 14px;background:#fff;resize:vertical;width:100%"></textarea>
+      </div>
+      <div style="display:flex; gap:0.75rem">
+        <button class="btn btn-ghost btn-lg" style="flex:1" onclick="goStep(2)">Back</button>
+        <button class="btn btn-primary btn-lg" style="flex:2" onclick="goStep(4)">Review claim</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Review -->
+    <div class="claim-section" id="section-4">
+      <div class="portal-card" style="margin-bottom:1.5rem">
+        <div class="review-row"><span class="review-label">Claim type</span><span class="review-value" id="r-type">GP Visit</span></div>
+        <div class="review-row"><span class="review-label">Provider</span><span class="review-value">Dr. M. Chikomo</span></div>
+        <div class="review-row"><span class="review-label">Date of service</span><span class="review-value">Jun 14, 2025</span></div>
+        <div class="review-row"><span class="review-label">Invoice amount</span><span class="review-value">$142.00</span></div>
+        <div class="review-row"><span class="review-label">Expected benefit</span><span class="review-value" style="color:var(--c-scan)">$120.00</span></div>
+        <div class="review-row"><span class="review-label">Payment to</span><span class="review-value">FBC Account ····4418</span></div>
+      </div>
+      <div class="portal-alert portal-alert-warn" style="margin-bottom:1.5rem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        Co-payment of $22.00 applies. The remaining $120.00 will be paid within 24 hours of approval.
+      </div>
+      <div style="display:flex; gap:0.75rem">
+        <button class="btn btn-ghost btn-lg" style="flex:1" onclick="goStep(3)">Back</button>
+        <button class="btn btn-primary btn-lg" style="flex:2" onclick="submitClaim()">Submit claim</button>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div class="claim-section" id="section-success">
+      <div class="success-screen">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h2 style="font-family:var(--font-disp);font-weight:800;color:var(--c-ink);margin-bottom:0.5rem">Claim submitted</h2>
+        <p style="color:var(--c-muted);margin-bottom:0.375rem">Claim #CLM-0041922 · Processing</p>
+        <p style="color:var(--c-muted);font-size:0.875rem;margin-bottom:2rem">You'll receive a notification when it's approved — usually within 24 hours.</p>
+        <div style="display:flex;gap:0.75rem;justify-content:center">
+          <a href="portal.html" class="btn btn-ghost">Back to portal</a>
+          <button class="btn btn-primary" onclick="resetForm()">Submit another</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let selectedType = '';
+function selectType(btn, type) {
+  document.querySelectorAll('.claim-type-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedType = type;
+  document.getElementById('next-1').disabled = false;
+  document.getElementById('r-type').textContent = type;
+}
+function goStep(n) {
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById('section-' + i).classList.remove('active');
+    document.getElementById('step-' + i).classList.remove('active');
+    if (i < n) document.getElementById('step-' + i).classList.add('done');
+    else document.getElementById('step-' + i).classList.remove('done');
+  }
+  document.getElementById('section-' + n).classList.add('active');
+  document.getElementById('step-' + n).classList.add('active');
+  window.scrollTo(0, 0);
+}
+function simulateUpload() {
+  const label = document.getElementById('upload-label');
+  label.textContent = 'Receipt_June14.jpg — ready';
+  document.getElementById('next-2').disabled = false;
+}
+function submitClaim() {
+  document.getElementById('section-4').classList.remove('active');
+  document.getElementById('section-success').classList.add('active');
+}
+function resetForm() {
+  document.querySelectorAll('.claim-type-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('upload-label').textContent = 'Tap to photograph or upload receipt';
+  document.getElementById('next-1').disabled = true;
+  document.getElementById('next-2').disabled = true;
+  document.getElementById('section-success').classList.remove('active');
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById('step-' + i).classList.remove('active','done');
+  }
+  goStep(1);
+}
+</script>
+</body>
+</html>

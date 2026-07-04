@@ -1,4 +1,60 @@
 /* GENFIN member portal (prototype) styles — verbatim from reference */
+
+/* ── Portal standalone page layout (used by portal-claims, portal-pharmacy, etc.) ── */
+.portal-body { background: #F4F4F0; min-height: 100vh; }
+.portal-topbar {
+  background: #fff; border-bottom: 1px solid rgba(20,20,26,0.08);
+  position: sticky; top: 0; z-index: 100;
+}
+.portal-topbar-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; align-items: center; height: 60px; padding: 0 2rem; gap: 1.5rem;
+}
+.portal-back {
+  display: flex; align-items: center; gap: 0.375rem;
+  font-family: 'Manrope', sans-serif; font-size: 0.8125rem;
+  font-weight: 600; color: #6A6870; text-decoration: none;
+  transition: color 0.15s;
+}
+.portal-back:hover { color: #14141A; text-decoration: none; }
+.portal-topbar-logo {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 1rem; color: #14141A; flex: 1; text-align: center;
+}
+.portal-topbar-logo b { color: #FBBD3E; }
+.portal-topbar-user {
+  font-size: 0.8125rem; color: #6A6870; font-family: 'Manrope', sans-serif;
+}
+.portal-page-body {
+  max-width: 1100px; margin: 0 auto;
+  padding: 2.5rem 2rem;
+}
+.portal-page-title {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 1.625rem; color: #14141A; margin-bottom: 0.5rem;
+}
+.portal-page-sub {
+  font-size: 0.9375rem; color: #6A6870; margin-bottom: 2rem; line-height: 1.6;
+}
+.portal-section-title {
+  font-family: 'Sora', sans-serif; font-weight: 700;
+  font-size: 1.0625rem; color: #14141A; margin-bottom: 1rem;
+}
+.portal-card {
+  background: #fff; border: 1px solid rgba(20,20,26,0.08);
+  border-radius: 14px; padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(20,20,26,0.06);
+  margin-bottom: 1.5rem;
+}
+.portal-alert {
+  border-radius: 10px; padding: 0.875rem 1.125rem;
+  font-size: 0.875rem; line-height: 1.6;
+  display: flex; gap: 0.625rem; align-items: flex-start;
+  font-family: 'Manrope', sans-serif;
+}
+.portal-alert-info { background: rgba(0,196,138,0.08); border: 1px solid rgba(0,196,138,0.2); color: #00A872; }
+.portal-alert-warn { background: rgba(251,189,62,0.08); border: 1px solid rgba(251,189,62,0.25); color: #946500; }
+
 /* ===== Member login page ===== */
   #page-login { min-height: calc(100vh - 76px); display: grid; grid-template-columns: 1.05fr 1fr; }
   .auth-brand { background:

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pharmacy Network — GENFIN</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="shared/genfin.css">
+<link rel="stylesheet" href="shared/site.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">
+      <img src="assets/genfin-logo.png" alt="GENFIN" width="28" height="28">
+      <span>GENFIN</span>
+    </a>
+    <nav class="site-nav">
+      <a href="plans.html">Plans</a>
+      <a href="members.html">Members</a>
+      <a href="employers.html">Employers</a>
+      <a href="providers.html">Providers</a>
+      <a href="benefits.html">Benefits</a>
+      <a href="claims.html">Claims</a>
+      <a href="pharmacy.html" class="active">Pharmacy</a>
+    </nav>
+    <div class="header-actions">
+      <a href="login.html" class="btn btn-ghost btn-sm">Log in</a>
+      <a href="plans.html" class="btn btn-primary btn-sm">Get covered</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- Hero -->
+  <section class="page-hero">
+    <div class="container">
+      <div class="page-hero-eyebrow">Pharmacy</div>
+      <h1 class="page-hero-title">Your prescription, collected<br>with a fingerprint</h1>
+      <p class="page-hero-body">Pick up chronic and acute medication at any accredited GENFIN pharmacy. No membership card needed — just your fingerprint, verified in under 2 seconds.</p>
+      <div class="hero-cta-row">
+        <a href="#find-pharmacy" class="btn btn-primary">Find a pharmacy</a>
+        <a href="biometric/index.html" class="btn btn-ghost">About BioVerify</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats-strip">
+    <div class="container stats-row">
+      <div class="stat-item">
+        <div class="stat-num">340+</div>
+        <div class="stat-label">Accredited pharmacies</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">&lt;2s</div>
+        <div class="stat-label">Biometric verification time</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Fraudulent dispensing incidents</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Digital prescription history</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How biometric dispensing works -->
+  <section class="content-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Collecting your medication</h2>
+        <p class="section-sub">Secure, simple, and takes under 30 seconds at the counter.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <h3>Tell the pharmacist your name</h3>
+          <p>The pharmacist enters your GENFIN member ID or searches by name to pull your prescription from the system.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <h3>Place your finger on the reader</h3>
+          <p>A USB fingerprint reader on the counter verifies your identity against your enrolled biometric in under 2 seconds. No card, no PIN, no paperwork.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <h3>Collect &amp; go</h3>
+          <p>The system authorises dispensing, records the transaction, and sends you a digital receipt. Your full prescription history is visible in your member portal.</p>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:2rem">
+        <a href="biometric/verify.html" class="btn btn-outline">See the terminal demo</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chronic medication -->
+  <section class="content-section bg-subtle">
+    <div class="container content-two-col">
+      <div class="content-col-text">
+        <div class="eyebrow-label">Chronic medication</div>
+        <h2>Never run out of your regular medication</h2>
+        <p>GENFIN manages chronic medication for over 18,000 members. Your monthly dispensing cycle is tracked automatically — when your supply is due for renewal, you'll receive a reminder to visit any accredited pharmacy.</p>
+        <p>Chronic conditions covered include hypertension, diabetes (Type 1 &amp; 2), asthma, epilepsy, HIV/AIDS, thyroid disorders, and cardiovascular disease. Your GP registers your chronic script directly into the GENFIN system — no paper copies to carry.</p>
+        <a href="portal.html" class="btn btn-primary">View my prescriptions</a>
+      </div>
+      <div class="content-col-visual">
+        <div class="feature-card-visual">
+          <div class="portal-mock-card">
+            <div class="portal-mock-label" style="font-weight:700; font-size:0.9rem; margin-bottom:1rem">Chronic medications</div>
+            <div class="rx-item">
+              <div class="rx-name">Metformin 500mg</div>
+              <div class="rx-meta">28 tabs · Monthly · Due Jun 28</div>
+              <div class="status-chip approved">Active</div>
+            </div>
+            <div class="rx-item">
+              <div class="rx-name">Enalapril 10mg</div>
+              <div class="rx-meta">28 tabs · Monthly · Due Jun 28</div>
+              <div class="status-chip approved">Active</div>
+            </div>
+            <div class="rx-item">
+              <div class="rx-name">Vitamin B12 500mcg</div>
+              <div class="rx-meta">30 tabs · Monthly · Due Jun 28</div>
+              <div class="status-chip approved">Active</div>
+            </div>
+            <div class="portal-mock-divider"></div>
+            <div style="font-size:0.8rem; color:var(--c-muted)">Next collection window opens Jun 25</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Join as pharmacy -->
+  <section class="content-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Are you a pharmacy?</h2>
+        <p class="section-sub">Join the GENFIN pharmacy network and serve 60,000+ insured members.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <h3>Apply for accreditation</h3>
+          <p>Complete our accreditation form. We verify your pharmacy council registration and Good Dispensing Practice certification.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <h3>Receive terminal &amp; training</h3>
+          <p>We supply and install the BioVerify fingerprint reader. Staff training takes under an hour. Full support available 24/7.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <h3>Settle instantly</h3>
+          <p>Claims are adjudicated in real time. Payment reaches your account within 48 hours. No monthly paper submission required.</p>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:2rem">
+        <a href="providers.html" class="btn btn-primary">Apply for network membership</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Find a pharmacy -->
+  <section class="content-section bg-subtle" id="find-pharmacy">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Find an accredited pharmacy</h2>
+        <p class="section-sub">Search by city or postcode to find your nearest accredited dispensing point.</p>
+      </div>
+      <div class="pharmacy-search">
+        <input type="text" placeholder="Enter city or area (e.g. Harare CBD, Bulawayo)" class="pharmacy-search-input">
+        <button class="btn btn-primary">Search</button>
+      </div>
+      <div class="pharmacy-list">
+        <div class="pharmacy-card">
+          <div class="pharmacy-name">Ambuya Stella Pharmacy — Harare CBD</div>
+          <div class="pharmacy-address">67 Nelson Mandela Ave, Harare</div>
+          <div class="pharmacy-hours">Mon–Fri 8am–6pm · Sat 8am–1pm</div>
+          <div class="pharmacy-tag bioverify">BioVerify enabled</div>
+        </div>
+        <div class="pharmacy-card">
+          <div class="pharmacy-name">Clicks Pharmacy — Sam Levy's Village</div>
+          <div class="pharmacy-address">Sam Levy's Village, Borrowdale, Harare</div>
+          <div class="pharmacy-hours">Mon–Sun 8am–8pm</div>
+          <div class="pharmacy-tag bioverify">BioVerify enabled</div>
+        </div>
+        <div class="pharmacy-card">
+          <div class="pharmacy-name">Alpha Pharmacy — Avondale</div>
+          <div class="pharmacy-address">27 King George Rd, Avondale, Harare</div>
+          <div class="pharmacy-hours">Mon–Fri 8am–5:30pm · Sat 8am–1pm</div>
+          <div class="pharmacy-tag bioverify">BioVerify enabled</div>
+        </div>
+        <div class="pharmacy-card">
+          <div class="pharmacy-name">MedPharm — Bulawayo</div>
+          <div class="pharmacy-address">114 Joshua Nkomo St, Bulawayo</div>
+          <div class="pharmacy-hours">Mon–Fri 8am–5:30pm</div>
+          <div class="pharmacy-tag bioverify">BioVerify enabled</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="container cta-inner">
+      <h2>Your health. Covered.</h2>
+      <p>Get a GENFIN plan and access 340+ pharmacies with biometric dispensing.</p>
+      <div class="cta-actions">
+        <a href="plans.html" class="btn btn-primary btn-lg">View plans</a>
+        <a href="biometric/index.html" class="btn btn-ghost-light btn-lg">Learn about BioVerify</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <img src="assets/genfin-logo.png" alt="GENFIN" width="24">
+      <span>GENFIN</span>
+    </div>
+    <div class="footer-links">
+      <a href="about.html">About</a>
+      <a href="plans.html">Plans</a>
+      <a href="claims.html">Claims</a>
+      <a href="pharmacy.html">Pharmacy</a>
+      <a href="support.html">Support</a>
+    </div>
+    <div class="footer-copy">© 2025 GENFIN Health. All rights reserved.</div>
+  </div>
+</footer>
+
+<script src="shared/site.js"></script>
+</body>
+</html>

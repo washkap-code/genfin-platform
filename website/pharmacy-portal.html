@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GENFIN Pharmacy Staff Portal</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="shared/genfin.css">
+<link rel="stylesheet" href="shared/portal.css">
+<style>
+:root {
+  --ph-font-sans: 'Manrope', 'Inter', sans-serif;
+  --ph-font-disp: 'Sora', 'Inter', sans-serif;
+  --ph-font-mono: 'IBM Plex Mono', monospace;
+  --ph-ink:    #14141A;
+  --ph-gold:   #FBBD3E;
+  --ph-scan:   #00C48A;
+  --ph-card:   #FFFFFF;
+  --ph-page:   #F4F4F0;
+  --ph-border: rgba(20,20,26,0.09);
+  --ph-muted:  #6A6870;
+  --ph-faint:  #9A98A0;
+  --ph-r:      14px;
+  --ph-shadow: 0 2px 10px rgba(20,20,26,0.07);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--ph-font-sans); background: var(--ph-page); color: var(--ph-ink); -webkit-font-smoothing: antialiased; }
+
+/* Layout */
+.ph-layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+
+/* Sidebar */
+.ph-sidebar {
+  background: var(--ph-ink); color: #fff;
+  padding: 1.5rem 0; display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100vh;
+}
+.ph-sidebar-logo {
+  padding: 0 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 0.75rem;
+}
+.ph-logo-text {
+  font-family: var(--ph-font-disp); font-weight: 800;
+  font-size: 1rem; color: #fff;
+}
+.ph-logo-text span { color: var(--ph-gold); }
+.ph-logo-sub { font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-top: 0.15rem; }
+.ph-nav-item {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 1.25rem; font-size: 0.875rem;
+  font-weight: 600; color: rgba(255,255,255,0.6);
+  cursor: pointer; transition: all 0.15s; text-decoration: none;
+  border-left: 2px solid transparent;
+}
+.ph-nav-item:hover { color: #fff; background: rgba(255,255,255,0.06); }
+.ph-nav-item.active { color: var(--ph-gold); border-left-color: var(--ph-gold); background: rgba(251,189,62,0.08); }
+.ph-nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+.ph-sidebar-foot {
+  margin-top: auto; padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.ph-terminal-info { font-size: 0.75rem; color: rgba(255,255,255,0.4); line-height: 1.5; }
+.ph-terminal-info strong { color: rgba(255,255,255,0.7); display: block; }
+
+/* Main */
+.ph-main { overflow: auto; }
+.ph-topbar {
+  background: var(--ph-card); border-bottom: 1px solid var(--ph-border);
+  padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+.ph-topbar-title {
+  font-family: var(--ph-font-disp); font-weight: 700;
+  font-size: 1rem; color: var(--ph-ink);
+}
+.ph-topbar-actions { display: flex; align-items: center; gap: 0.75rem; }
+.ph-online-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--ph-scan);
+  box-shadow: 0 0 0 3px rgba(0,196,138,0.15);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+.ph-body { padding: 2rem; }
+
+/* Search bar */
+.ph-search-bar {
+  display: flex; gap: 1rem; margin-bottom: 2rem; align-items: center;
+}
+.ph-search-input {
+  flex: 1; font-family: var(--ph-font-sans); font-size: 0.9375rem;
+  border: 1.5px solid var(--ph-border); border-radius: 10px;
+  padding: 12px 16px; background: var(--ph-card);
+}
+.ph-search-input:focus { outline: none; border-color: var(--ph-gold); }
+.ph-btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: var(--ph-font-sans); font-weight: 700;
+  font-size: 0.875rem; border-radius: 10px; border: none;
+  cursor: pointer; padding: 12px 20px; transition: all 0.15s;
+  text-decoration: none;
+}
+.ph-btn-primary { background: var(--ph-gold); color: var(--ph-ink); }
+.ph-btn-primary:hover { filter: brightness(1.06); }
+.ph-btn-ghost { background: var(--ph-card); color: var(--ph-ink); border: 1.5px solid var(--ph-border); }
+.ph-btn-ghost:hover { border-color: rgba(20,20,26,0.2); }
+
+/* Member card */
+.ph-member-card {
+  background: var(--ph-card); border: 1px solid var(--ph-border);
+  border-radius: var(--ph-r); padding: 1.5rem;
+  box-shadow: var(--ph-shadow); margin-bottom: 1.5rem;
+}
+.ph-member-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+.ph-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--ph-ink); color: var(--ph-gold);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ph-font-disp); font-weight: 800;
+  font-size: 1.25rem; flex-shrink: 0;
+}
+.ph-member-name { font-family: var(--ph-font-disp); font-weight: 700; font-size: 1.125rem; color: var(--ph-ink); }
+.ph-member-id { font-family: var(--ph-font-mono); font-size: 0.8125rem; color: var(--ph-muted); }
+.ph-member-meta { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
+.ph-meta-field label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ph-faint); }
+.ph-meta-field div { font-size: 0.875rem; font-weight: 700; color: var(--ph-ink); margin-top: 0.25rem; }
+
+/* Biometric panel */
+.ph-biometric-panel {
+  display: grid; grid-template-columns: 220px 1fr; gap: 1.5rem;
+  margin-bottom: 1.5rem; align-items: start;
+}
+.ph-scanner {
+  background: var(--ph-card); border: 1px solid var(--ph-border);
+  border-radius: var(--ph-r); padding: 1.5rem;
+  box-shadow: var(--ph-shadow); display: flex; flex-direction: column;
+  align-items: center; gap: 1rem; text-align: center;
+}
+.ph-fp-ring {
+  width: 100px; height: 100px; border-radius: 50%;
+  border: 3px solid var(--ph-border);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.ph-fp-ring.scanning {
+  border-color: var(--ph-gold);
+  animation: ph-ring-spin 1s linear infinite;
+}
+.ph-fp-ring.matched { border-color: var(--ph-scan); }
+@keyframes ph-ring-spin { to { transform: rotate(360deg); } }
+.ph-fp-icon { opacity: 0.25; }
+.ph-fp-ring.scanning .ph-fp-icon { opacity: 0.6; }
+.ph-fp-ring.matched .ph-fp-icon { opacity: 1; }
+.ph-scan-state { font-size: 0.8125rem; font-weight: 600; color: var(--ph-muted); }
+.ph-scan-state.scanning { color: #946500; }
+.ph-scan-state.matched { color: var(--ph-scan); }
+
+/* Prescriptions */
+.ph-rx-list {
+  background: var(--ph-card); border: 1px solid var(--ph-border);
+  border-radius: var(--ph-r); box-shadow: var(--ph-shadow);
+}
+.ph-rx-header {
+  padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--ph-border);
+  font-family: var(--ph-font-disp); font-weight: 700; font-size: 0.9375rem;
+}
+.ph-rx-row {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1rem 1.5rem; border-bottom: 1px solid var(--ph-border);
+}
+.ph-rx-row:last-child { border-bottom: none; }
+.ph-rx-check {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid var(--ph-border); flex-shrink: 0; cursor: pointer;
+  transition: all 0.15s;
+}
+.ph-rx-check.selected { background: var(--ph-scan); border-color: var(--ph-scan); display: flex; align-items: center; justify-content: center; }
+.ph-rx-check.selected::after { content: '✓'; font-size: 0.6875rem; color: #fff; font-weight: 700; }
+.ph-rx-drug { font-weight: 700; font-size: 0.9rem; color: var(--ph-ink); flex: 1; }
+.ph-rx-dose { font-size: 0.8125rem; color: var(--ph-muted); }
+.ph-rx-qty { font-family: var(--ph-font-mono); font-size: 0.8125rem; color: var(--ph-faint); }
+
+/* KPI row */
+.ph-kpi-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 2rem; }
+.ph-kpi {
+  background: var(--ph-card); border: 1px solid var(--ph-border);
+  border-radius: var(--ph-r); padding: 1.25rem;
+  box-shadow: var(--ph-shadow);
+}
+.ph-kpi-label { font-size: 0.75rem; color: var(--ph-faint); font-weight: 600; margin-bottom: 0.5rem; }
+.ph-kpi-val {
+  font-family: var(--ph-font-disp); font-weight: 800;
+  font-size: 1.75rem; color: var(--ph-ink);
+}
+.ph-kpi-sub { font-size: 0.75rem; color: var(--ph-muted); margin-top: 0.25rem; }
+
+/* Dispense log table */
+.ph-table-wrap { background: var(--ph-card); border: 1px solid var(--ph-border); border-radius: var(--ph-r); overflow: hidden; box-shadow: var(--ph-shadow); }
+.ph-table-head { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--ph-border); display: flex; justify-content: space-between; align-items: center; }
+.ph-table-head h3 { font-family: var(--ph-font-disp); font-weight: 700; font-size: 0.9375rem; color: var(--ph-ink); }
+table.ph-table { width: 100%; border-collapse: collapse; }
+.ph-table th { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ph-faint); padding: 0.75rem 1.5rem; text-align: left; background: rgba(20,20,26,0.02); border-bottom: 1px solid var(--ph-border); }
+.ph-table td { padding: 0.875rem 1.5rem; font-size: 0.8125rem; border-bottom: 1px solid var(--ph-border); color: var(--ph-muted); }
+.ph-table tr:last-child td { border-bottom: none; }
+.ph-chip { font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 20px; }
+.ph-chip-ok { background: rgba(0,196,138,0.12); color: #00A872; }
+.ph-chip-pend { background: rgba(251,189,62,0.15); color: #946500; }
+.ph-td-mono { font-family: var(--ph-font-mono); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+
+<div class="ph-layout">
+
+  <!-- Sidebar -->
+  <aside class="ph-sidebar">
+    <div class="ph-sidebar-logo">
+      <div class="ph-logo-text">GEN<span>FIN</span></div>
+      <div class="ph-logo-sub">Pharmacy Staff Portal</div>
+    </div>
+
+    <a class="ph-nav-item active" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a class="ph-nav-item" href="biometric/verify.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 11c0-1.1.9-2 2-2s2 .9 2 2v1a2 2 0 0 1-4 0v-1z"/><path d="M6 9a6 6 0 0 1 12 0"/></svg>
+      Verify &amp; Dispense
+    </a>
+    <a class="ph-nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
+      Prescriptions
+    </a>
+    <a class="ph-nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Dispense log
+    </a>
+    <a class="ph-nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      Members
+    </a>
+    <a class="ph-nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Claims &amp; billing
+    </a>
+
+    <div class="ph-sidebar-foot">
+      <div class="ph-terminal-info">
+        <strong>TERM-0041 · Harare CBD</strong>
+        Staff: Rudo Chikwanda<br>
+        <span style="color:rgba(0,196,138,0.8)">● Online</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="ph-main">
+    <div class="ph-topbar">
+      <div class="ph-topbar-title">Dashboard — Ambuya Stella Pharmacy, Harare CBD</div>
+      <div class="ph-topbar-actions">
+        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.8125rem;color:var(--ph-muted)">
+          <div class="ph-online-dot"></div>
+          BioVerify connected
+        </div>
+        <a href="biometric/verify.html" class="ph-btn ph-btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:15px;height:15px"><path d="M12 11c0-1.1.9-2 2-2s2 .9 2 2v1a2 2 0 0 1-4 0v-1z"/></svg>
+          Open verify terminal
+        </a>
+      </div>
+    </div>
+
+    <div class="ph-body">
+
+      <!-- KPIs -->
+      <div class="ph-kpi-row">
+        <div class="ph-kpi">
+          <div class="ph-kpi-label">Dispensed today</div>
+          <div class="ph-kpi-val">34</div>
+          <div class="ph-kpi-sub">Prescriptions processed</div>
+        </div>
+        <div class="ph-kpi">
+          <div class="ph-kpi-label">Verified members</div>
+          <div class="ph-kpi-val">28</div>
+          <div class="ph-kpi-sub">Biometric · 6 manual override</div>
+        </div>
+        <div class="ph-kpi">
+          <div class="ph-kpi-label">Claims submitted</div>
+          <div class="ph-kpi-val">$1,248</div>
+          <div class="ph-kpi-sub">Value · Settled within 48h</div>
+        </div>
+        <div class="ph-kpi">
+          <div class="ph-kpi-label">Escalations</div>
+          <div class="ph-kpi-val">1</div>
+          <div class="ph-kpi-sub">Fingerprint quality issue</div>
+        </div>
+      </div>
+
+      <!-- Member search + verify panel -->
+      <div style="margin-bottom:1.5rem">
+        <h2 style="font-family:var(--ph-font-disp);font-weight:700;font-size:1rem;color:var(--ph-ink);margin-bottom:1rem">Member lookup</h2>
+        <div class="ph-search-bar">
+          <input class="ph-search-input" type="text" placeholder="Search by name or member ID (e.g. GF-0041882)" id="member-search">
+          <button class="ph-btn ph-btn-primary" onclick="lookupMember()">Look up</button>
+          <button class="ph-btn ph-btn-ghost" onclick="clearSearch()">Clear</button>
+        </div>
+      </div>
+
+      <!-- Member card (shown after search) -->
+      <div id="member-result" style="display:none">
+        <div class="ph-member-card">
+          <div class="ph-member-head">
+            <div class="ph-avatar">CN</div>
+            <div>
+              <div class="ph-member-name">Chiedza Nyamuzihwa</div>
+              <div class="ph-member-id">GF-0041882 · Gold Plan · Active</div>
+            </div>
+            <span class="ph-chip ph-chip-ok" style="margin-left:auto">Covered</span>
+          </div>
+          <div class="ph-member-meta">
+            <div class="ph-meta-field"><label>Date of birth</label><div>12 Apr 1978</div></div>
+            <div class="ph-meta-field"><label>Benefit remaining</label><div>$3,840</div></div>
+            <div class="ph-meta-field"><label>Biometrics</label><div style="color:var(--ph-scan)">Enrolled ✓</div></div>
+            <div class="ph-meta-field"><label>Employer</label><div>Harare City Council</div></div>
+          </div>
+        </div>
+
+        <!-- Biometric + prescription -->
+        <div class="ph-biometric-panel">
+          <div class="ph-scanner">
+            <div class="ph-fp-ring" id="ph-fp-ring">
+              <svg class="ph-fp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:44px;height:44px;color:var(--ph-muted)"><path d="M12 11c0-1.1.9-2 2-2s2 .9 2 2v1a2 2 0 0 1-4 0v-1z"/><path d="M6 9a6 6 0 0 1 12 0"/><path d="M6 9c0 5 2 8 6 10"/><path d="M18 9c0 5-2 8-6 10"/></svg>
+            </div>
+            <div class="ph-scan-state" id="ph-scan-state">Awaiting scan</div>
+            <button class="ph-btn ph-btn-primary" onclick="startPhScan()" id="ph-scan-btn" style="width:100%;justify-content:center">
+              Scan fingerprint
+            </button>
+          </div>
+
+          <div class="ph-rx-list">
+            <div class="ph-rx-header">Active prescriptions — select to dispense</div>
+            <div class="ph-rx-row">
+              <div class="ph-rx-check" onclick="toggleRx(this)"></div>
+              <div style="flex:1">
+                <div class="ph-rx-drug">Metformin 500mg</div>
+                <div class="ph-rx-dose">Tablet · 28-day supply · Chronic · 8 repeats remaining</div>
+              </div>
+              <div class="ph-rx-qty">28 tabs</div>
+            </div>
+            <div class="ph-rx-row">
+              <div class="ph-rx-check" onclick="toggleRx(this)"></div>
+              <div style="flex:1">
+                <div class="ph-rx-drug">Enalapril 10mg</div>
+                <div class="ph-rx-dose">Tablet · 28-day supply · Chronic · 6 repeats remaining</div>
+              </div>
+              <div class="ph-rx-qty">28 tabs</div>
+            </div>
+            <div class="ph-rx-row">
+              <div class="ph-rx-check" onclick="toggleRx(this)"></div>
+              <div style="flex:1">
+                <div class="ph-rx-drug">Vitamin B12 500mcg</div>
+                <div class="ph-rx-dose">Tablet · 30-day supply · Chronic · 10 repeats remaining</div>
+              </div>
+              <div class="ph-rx-qty">30 tabs</div>
+            </div>
+            <div style="padding:1rem 1.5rem;border-top:1px solid var(--ph-border)">
+              <button class="ph-btn ph-btn-primary" id="ph-dispense-btn" disabled onclick="dispenseRx()" style="width:100%;justify-content:center;opacity:0.5;cursor:not-allowed">
+                Authorise &amp; dispense selected
+              </button>
+              <div id="ph-dispense-confirm" style="display:none;text-align:center;font-size:0.875rem;color:var(--ph-scan);margin-top:0.75rem;font-weight:700">
+                ✓ Dispensed — claim submitted · Ref: TXN-20250627-0041
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's dispense log -->
+      <div class="ph-table-wrap">
+        <div class="ph-table-head">
+          <h3>Today's dispense log</h3>
+          <button class="ph-btn ph-btn-ghost" style="font-size:0.75rem;padding:6px 12px">Export</button>
+        </div>
+        <table class="ph-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Member</th>
+              <th>Medication</th>
+              <th>Verified</th>
+              <th>Claim ref</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="ph-td-mono">14:23</td>
+              <td><div style="font-weight:700;color:var(--ph-ink)">Chiedza Nyamuzihwa</div><div class="ph-td-mono">GF-0041882</div></td>
+              <td>Metformin, Enalapril, B12</td>
+              <td><span class="ph-chip ph-chip-ok">Biometric</span></td>
+              <td class="ph-td-mono">TXN-0041</td>
+              <td><span class="ph-chip ph-chip-ok">Submitted</span></td>
+            </tr>
+            <tr>
+              <td class="ph-td-mono">14:11</td>
+              <td><div style="font-weight:700;color:var(--ph-ink)">Tatenda Moyo</div><div class="ph-td-mono">GF-0038841</div></td>
+              <td>Atorvastatin 40mg</td>
+              <td><span class="ph-chip ph-chip-ok">Biometric</span></td>
+              <td class="ph-td-mono">TXN-0040</td>
+              <td><span class="ph-chip ph-chip-ok">Submitted</span></td>
+            </tr>
+            <tr>
+              <td class="ph-td-mono">13:58</td>
+              <td><div style="font-weight:700;color:var(--ph-ink)">Farai Dube</div><div class="ph-td-mono">GF-0029045</div></td>
+              <td>Metformin 500mg</td>
+              <td><span class="ph-chip ph-chip-pend">Override</span></td>
+              <td class="ph-td-mono">TXN-0039</td>
+              <td><span class="ph-chip ph-chip-ok">Submitted</span></td>
+            </tr>
+            <tr>
+              <td class="ph-td-mono">13:44</td>
+              <td><div style="font-weight:700;color:var(--ph-ink)">Nyasha Mhaka</div><div class="ph-td-mono">GF-0061778</div></td>
+              <td>Lisinopril 5mg, Furosemide</td>
+              <td><span class="ph-chip ph-chip-ok">Biometric</span></td>
+              <td class="ph-td-mono">TXN-0038</td>
+              <td><span class="ph-chip ph-chip-ok">Submitted</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function lookupMember() {
+  const q = document.getElementById('member-search').value.trim();
+  if (q.length > 1) {
+    document.getElementById('member-result').style.display = 'block';
+    document.getElementById('member-result').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+}
+function clearSearch() {
+  document.getElementById('member-search').value = '';
+  document.getElementById('member-result').style.display = 'none';
+}
+let scanVerified = false;
+function startPhScan() {
+  const ring = document.getElementById('ph-fp-ring');
+  const state = document.getElementById('ph-scan-state');
+  const btn = document.getElementById('ph-scan-btn');
+  ring.classList.add('scanning');
+  state.textContent = 'Scanning…';
+  state.className = 'ph-scan-state scanning';
+  btn.disabled = true;
+  setTimeout(() => {
+    ring.classList.remove('scanning');
+    ring.classList.add('matched');
+    state.textContent = 'Identity matched ✓ (99.7%)';
+    state.className = 'ph-scan-state matched';
+    scanVerified = true;
+    const db = document.getElementById('ph-dispense-btn');
+    db.style.opacity = '1';
+    db.style.cursor = 'pointer';
+    db.disabled = false;
+  }, 2200);
+}
+function toggleRx(el) { el.classList.toggle('selected'); }
+function dispenseRx() {
+  document.getElementById('ph-dispense-btn').style.display = 'none';
+  document.getElementById('ph-dispense-confirm').style.display = 'block';
+}
+document.getElementById('member-search').addEventListener('keydown', e => { if (e.key === 'Enter') lookupMember(); });
+</script>
+</body>
+</html>
