@@ -99,10 +99,44 @@
       addEventListener('keydown', function (e) { if (e.key === 'Escape' && !qm.hidden) closeQuote(); });
       document.getElementById('quoteForm').addEventListener('submit', function (e) {
         e.preventDefault();
-        document.getElementById('qmPlanEcho').textContent = qmPlan.value;
-        document.getElementById('qmForm').hidden = true;
-        document.getElementById('qmSuccess').hidden = false;
-        if (window.lucide) lucide.createIcons();
+        var form = e.target;
+        var cfg = window.GENFIN_CONFIG || {};
+        var showSuccess = function () {
+          document.getElementById('qmPlanEcho').textContent = qmPlan.value;
+          document.getElementById('qmForm').hidden = true;
+          document.getElementById('qmSuccess').hidden = false;
+          if (window.lucide) lucide.createIcons();
+        };
+        if (cfg.SUPABASE_URL && cfg.SUPABASE_PUBLISHABLE_KEY) {
+          var btn = form.querySelector('button[type="submit"]');
+          if (btn) { btn.disabled = true; btn.textContent = 'Sending\u2026'; }
+          fetch(cfg.SUPABASE_URL + '/rest/v1/quote_requests', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': cfg.SUPABASE_PUBLISHABLE_KEY,
+              'Authorization': 'Bearer ' + cfg.SUPABASE_PUBLISHABLE_KEY,
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({
+              name: form.elements.name.value.trim(),
+              phone: form.elements.phone.value.trim(),
+              email: form.elements.email.value.trim() || null,
+              plan: form.elements.plan.value,
+              people: form.elements.people.value,
+              message: form.elements.msg.value.trim() || null,
+              source: 'website'
+            })
+          }).then(function (r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            showSuccess();
+          }).catch(function () {
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i data-lucide="send"></i>Request my quote'; if (window.lucide) lucide.createIcons(); }
+            alert('Something went wrong sending your request. Please try again, or call +263 78 632 3131.');
+          });
+        } else {
+          showSuccess();
+        }
       });
       document.addEventListener('click', function (e) {
         var t = e.target.closest('[data-quote]');
