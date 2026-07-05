@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsApp — GENFIN Communications</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/staff.css">
+<style>
+/* ── Chat layout ── */
+.wa-layout { display:grid; grid-template-columns:300px 1fr 280px; height:calc(100vh - 72px); gap:0; border:1px solid var(--s-border); border-radius:var(--s-r); overflow:hidden; background:var(--s-card); }
+.wa-sidebar { border-right:1px solid var(--s-border); display:flex; flex-direction:column; }
+.wa-sidebar-head { padding:1rem; border-bottom:1px solid var(--s-border); background:var(--s-ink); }
+.wa-sidebar-search { padding:0.625rem; border-bottom:1px solid var(--s-border); }
+.wa-convo-list { flex:1; overflow-y:auto; }
+.wa-convo { display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; cursor:pointer; transition:background 0.12s; border-bottom:1px solid var(--s-border); }
+.wa-convo:hover { background:var(--s-bg); }
+.wa-convo.active { background:var(--s-bg); border-left:3px solid #25D366; }
+.wa-av { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.75rem; flex-shrink:0; }
+.wa-convo-info { flex:1; min-width:0; }
+.wa-convo-name { font-weight:700; font-size:0.8125rem; color:var(--s-ink); }
+.wa-convo-preview { font-size:0.72rem; color:var(--s-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px; }
+.wa-convo-meta { display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0; }
+.wa-convo-time { font-size:0.65rem; color:var(--s-muted); }
+.wa-unread { background:#25D366; color:#fff; font-size:0.62rem; font-weight:800; padding:1px 5px; border-radius:99px; min-width:16px; text-align:center; }
+
+/* ── Chat area ── */
+.wa-chat { display:flex; flex-direction:column; background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 40L40 0H30L0 30M40 40V30L10 0H0L40 40' fill='%23e8ede3' fill-opacity='0.4'/%3E%3C/svg%3E") repeat; background-color:#DFD9D0; }
+.wa-chat-head { background:var(--s-ink); padding:0.75rem 1rem; display:flex; align-items:center; gap:0.75rem; flex-shrink:0; }
+.wa-chat-head-name { font-weight:700; color:#fff; font-size:0.875rem; }
+.wa-chat-head-sub { font-size:0.7rem; color:#25D366; }
+.wa-messages { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column; gap:0.5rem; }
+.wa-msg { max-width:68%; }
+.wa-msg.incoming { align-self:flex-start; }
+.wa-msg.outgoing { align-self:flex-end; }
+.wa-bubble { padding:0.5rem 0.75rem; border-radius:12px; font-size:0.8125rem; line-height:1.45; position:relative; }
+.wa-bubble.incoming { background:#fff; border-top-left-radius:2px; }
+.wa-bubble.outgoing { background:#DCF8C6; border-top-right-radius:2px; }
+.wa-bubble-time { font-size:0.62rem; color:var(--s-muted); text-align:right; margin-top:2px; }
+.wa-tick { color:#4FC3F7; }
+.wa-date-sep { text-align:center; font-size:0.7rem; color:var(--s-muted); background:rgba(255,255,255,0.7); padding:0.25rem 0.75rem; border-radius:99px; align-self:center; }
+.wa-compose { padding:0.625rem; background:#F0F0F0; border-top:1px solid #DDD; display:flex; gap:0.5rem; align-items:flex-end; flex-shrink:0; }
+.wa-input { flex:1; background:#fff; border:none; border-radius:24px; padding:0.5rem 1rem; font-size:0.875rem; font-family:var(--s-font-sans); resize:none; max-height:100px; outline:none; }
+.wa-send { width:40px; height:40px; border-radius:50%; background:#25D366; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+/* ── Right panel ── */
+.wa-info { border-left:1px solid var(--s-border); display:flex; flex-direction:column; overflow-y:auto; }
+.wa-info-head { padding:1rem; border-bottom:1px solid var(--s-border); font-weight:800; font-size:0.875rem; }
+.wa-info-section { padding:0.875rem 1rem; border-bottom:1px solid var(--s-border); }
+.wa-info-label { font-size:0.68rem; color:var(--s-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.5rem; }
+.wa-info-val { font-size:0.8125rem; color:var(--s-ink); }
+.template-chip { display:inline-flex; align-items:center; gap:0.375rem; background:var(--s-bg); border:1px solid var(--s-border); border-radius:6px; padding:0.375rem 0.625rem; font-size:0.75rem; cursor:pointer; margin:0.25rem 0.25rem 0.25rem 0; transition:all 0.12s; }
+.template-chip:hover { border-color:#25D366; background:#E8FBF0; }
+
+/* ── Status badge ── */
+.wa-status-bar { background:#25D366; color:#fff; padding:0.5rem 1rem; font-size:0.75rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem; border-radius:var(--s-r); }
+</style>
+</head>
+<body>
+<div class="s-layout">
+
+<!-- Sidebar -->
+<aside class="s-sidebar">
+  <div class="s-sidebar-logo">
+    <div class="s-logo-mark" style="background:#25D366;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" style="width:16px;height:16px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    </div>
+    <div>
+      <div class="s-logo-text">GEN<span>FIN</span></div>
+      <div class="s-logo-sub">WhatsApp Business</div>
+    </div>
+  </div>
+  <div class="s-nav-section">Overview</div>
+  <a href="superadmin.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+  <a href="staff-members.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Members</a>
+  <a href="staff-claims.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Claims</a>
+  <div class="s-nav-section">Business Ops</div>
+  <a href="staff-hr.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>HR &amp; People</a>
+  <a href="staff-finance.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Finance</a>
+  <a href="staff-inventory.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Inventory</a>
+  <div class="s-nav-section">Operations</div>
+  <a href="staff-tracking.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Order Tracking</a>
+  <a href="staff-whatsapp.html" class="s-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>WhatsApp<span class="s-nav-badge">6</span></a>
+  <a href="bioverify-facial.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>BioVerify Facial</a>
+  <div class="s-sidebar-foot">
+    <div class="s-foot-av">GM</div>
+    <div><div class="s-foot-name">Grace Moyo</div><div class="s-foot-role">Operations Manager</div></div>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="s-main" style="padding:1.5rem;">
+  <header class="s-topbar" style="margin-bottom:1rem;">
+    <div>
+      <div class="s-page-title">WhatsApp Business</div>
+      <div class="s-page-sub">Connected · +263 867 700 4422 · GENFIN Medical Aid</div>
+    </div>
+    <div style="display:flex;gap:0.75rem;align-items:center;">
+      <div class="wa-status-bar" style="margin:0;">
+        <svg viewBox="0 0 24 24" fill="#fff" style="width:14px;height:14px;"><circle cx="12" cy="12" r="10"/></svg>
+        WhatsApp Business API Connected
+      </div>
+      <button class="s-btn s-btn-ghost" onclick="showSettings()">Settings</button>
+    </div>
+  </header>
+
+  <!-- Stats row -->
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:1rem;">
+    <div class="s-card" style="padding:0.875rem;"><div style="font-size:0.68rem;color:var(--s-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Open Chats</div><div style="font-size:1.5rem;font-weight:800;color:var(--s-gold);font-family:var(--s-font-mono);margin-top:0.25rem;">6</div></div>
+    <div class="s-card" style="padding:0.875rem;"><div style="font-size:0.68rem;color:var(--s-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Messages Today</div><div style="font-size:1.5rem;font-weight:800;font-family:var(--s-font-mono);margin-top:0.25rem;">84</div></div>
+    <div class="s-card" style="padding:0.875rem;"><div style="font-size:0.68rem;color:var(--s-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Templates Sent</div><div style="font-size:1.5rem;font-weight:800;font-family:var(--s-font-mono);margin-top:0.25rem;">31</div></div>
+    <div class="s-card" style="padding:0.875rem;"><div style="font-size:0.68rem;color:var(--s-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Avg Response</div><div style="font-size:1.5rem;font-weight:800;font-family:var(--s-font-mono);color:var(--s-scan);margin-top:0.25rem;">4 min</div></div>
+    <div class="s-card" style="padding:0.875rem;"><div style="font-size:0.68rem;color:var(--s-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Auto-Resolved</div><div style="font-size:1.5rem;font-weight:800;font-family:var(--s-font-mono);margin-top:0.25rem;">18</div></div>
+  </div>
+
+  <!-- Main chat interface -->
+  <div class="wa-layout">
+
+    <!-- Left: conversation list -->
+    <div class="wa-sidebar">
+      <div class="wa-sidebar-head">
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <div style="width:30px;height:30px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="#fff" style="width:16px;height:16px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg></div>
+          <div style="color:#fff;font-weight:800;font-size:0.875rem;">GENFIN Inbox</div>
+          <div style="margin-left:auto;background:#25D366;color:#fff;font-size:0.65rem;font-weight:800;padding:2px 7px;border-radius:99px;">6</div>
+        </div>
+      </div>
+      <div class="wa-sidebar-search">
+        <input type="text" class="s-search" placeholder="🔍  Search conversations…" style="width:100%;box-sizing:border-box;font-size:0.8rem;">
+      </div>
+      <div class="wa-convo-list">
+        <div class="wa-convo active" onclick="switchChat('Chipo Mabika','CM','#3B5BDB')">
+          <div class="wa-av" style="background:#3B5BDB;color:#fff;">CM</div>
+          <div class="wa-convo-info">
+            <div class="wa-convo-name">Chipo Mabika</div>
+            <div class="wa-convo-preview">What time will my medication arrive?</div>
+          </div>
+          <div class="wa-convo-meta"><div class="wa-convo-time">12:31</div><div class="wa-unread">2</div></div>
+        </div>
+        <div class="wa-convo" onclick="switchChat('Farai Mutasa','FM','#25D366')">
+          <div class="wa-av" style="background:#25D366;color:#fff;">FM</div>
+          <div class="wa-convo-info">
+            <div class="wa-convo-name">Farai Mutasa</div>
+            <div class="wa-convo-preview">✓✓ Thank you! Claim approved 🙏</div>
+          </div>
+          <div class="wa-convo-meta"><div class="wa-convo-time">11:58</div></div>
+        </div>
+        <div class="wa-convo" onclick="switchChat('Rudo Ncube','RN','#FF8C00')">
+          <div class="wa-av" style="background:#FF8C00;color:#fff;">RN</div>
+          <div class="wa-convo-info">
+            <div class="wa-convo-name">Rudo Ncube</div>
+            <div class="wa-convo-preview">Hi, I need help with pre-auth for…</div>
+          </div>
+          <div class="wa-convo-meta"><div class="wa-convo-time">11:42</div><div class="wa-unread">1</div></div>
+        </div>
+        <div class="wa-convo" onclick="switchChat('Tatenda Moyo','TM','#E53935')">
+          <div class="wa-av" style="background:#E53935;color:#fff;">TM</div>
+          <div class="wa-convo-info">
+            <div class="wa-convo-name">Tatenda Moyo</div>
+            <div class="wa-convo-preview">My card was declined at the pharmacy</div>
+          </div>
+          <div class="wa-convo-meta"><div class="wa-convo-time">11:14</div><div class="wa-unread">3</div></div>
+        </div>
+        <div class="wa-convo" onclick="switchChat('Memory Dube','MD','#6B21A8')">
+          <div class="wa-av" style="background:#6B21A8;color:#fff;">MD</div>
+          <div class="wa-convo-info">
+            <div class="wa-convo-name">Memory Dube</div>
+            <div class="wa-convo-preview">Received, medication delivered ✓</div>
+          </div>
+          <div class="wa-convo-meta"><div class="wa-convo-time">10:51</div></div>
+        </div>
+        <div class="wa-convo" onclick="switchChat('Blessing Sithole','BS','#0D9488')">
+          <div class="wa-av" style="background:#0D9488;color:#fff;">BS</div>
+          <div class="wa-convo-info">
+            <div class="wa-convo-name">Blessing Sithole</div>
+            <div class="wa-convo-preview">Can you send my policy certificate?</div>
+          </div>
+          <div class="wa-convo-meta"><div class="wa-convo-time">09:28</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Middle: chat window -->
+    <div class="wa-chat">
+      <div class="wa-chat-head">
+        <div class="wa-av" style="width:34px;height:34px;background:#3B5BDB;color:#fff;font-size:0.7rem;" id="chatAv">CM</div>
+        <div>
+          <div class="wa-chat-head-name" id="chatName">Chipo Mabika</div>
+          <div class="wa-chat-head-sub">Member · GF-024918 · Platinum Plan</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:0.5rem;">
+          <button style="background:none;border:none;cursor:pointer;" title="Assign" onclick="alert('Assign to agent')"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" style="width:16px;height:16px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
+          <button style="background:none;border:none;cursor:pointer;" title="Mark resolved" onclick="alert('Marked as resolved')"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" style="width:16px;height:16px;"><polyline points="20 6 9 17 4 12"/></svg></button>
+        </div>
+      </div>
+      <div class="wa-messages" id="chatMessages">
+        <div class="wa-date-sep">Today — 5 July 2026</div>
+
+        <div class="wa-msg incoming">
+          <div class="wa-bubble incoming">Hi GENFIN! My name is Chipo Mabika, member GF-024918. I placed a medication delivery this morning — when will it arrive?</div>
+          <div class="wa-bubble-time">12:18 PM</div>
+        </div>
+
+        <div class="wa-msg outgoing">
+          <div class="wa-bubble outgoing">Hi Chipo! 👋 Thank you for reaching out. Your delivery (tracking code <b>GF-TRK-441822</b>) is currently in transit. Your driver Tendai is approximately 0.8 km away — estimated arrival is <b>8 minutes</b>. You can track live at: genfin.co.zw/track</div>
+          <div class="wa-bubble-time">12:26 PM <span class="wa-tick">✓✓</span></div>
+        </div>
+
+        <div class="wa-msg incoming">
+          <div class="wa-bubble incoming">What time will my medication arrive exactly?</div>
+          <div class="wa-bubble-time">12:31 PM</div>
+        </div>
+
+        <div class="wa-msg incoming">
+          <div class="wa-bubble incoming">And which pharmacy is it coming from?</div>
+          <div class="wa-bubble-time">12:31 PM</div>
+        </div>
+      </div>
+      <div class="wa-compose">
+        <button style="background:none;border:none;cursor:pointer;padding:0.25rem;" title="Templates" onclick="showTemplates()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="1.8" style="width:20px;height:20px;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        </button>
+        <textarea class="wa-input" id="msgInput" placeholder="Type a message…" rows="1" onkeydown="handleKey(event)"></textarea>
+        <button class="wa-send" onclick="sendMsg()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" style="width:16px;height:16px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: info panel -->
+    <div class="wa-info">
+      <div class="wa-info-head">Member Profile</div>
+      <div class="wa-info-section">
+        <div style="text-align:center;margin-bottom:0.75rem;">
+          <div style="width:52px;height:52px;border-radius:50%;background:#3B5BDB;color:#fff;font-weight:800;font-size:1rem;display:flex;align-items:center;justify-content:center;margin:0 auto 0.5rem;">CM</div>
+          <div style="font-weight:800;">Chipo Mabika</div>
+          <div style="font-size:0.72rem;color:var(--s-muted);">GF-024918</div>
+          <div style="margin-top:0.375rem;"><span class="s-badge" style="background:#EEF2FF;color:#3B5BDB;font-size:0.68rem;">Platinum Plan</span></div>
+        </div>
+        <div style="font-size:0.78rem;color:var(--s-muted);line-height:1.8;">
+          <div>📞 +263 77 456 7890</div>
+          <div>✉️ chipo.m@email.com</div>
+          <div>🏠 14 Glen Eagles, Borrowdale</div>
+          <div>🗓 Member since Jan 2021</div>
+        </div>
+      </div>
+      <div class="wa-info-section">
+        <div class="wa-info-label">Quick Templates</div>
+        <div id="templateList">
+          <div class="template-chip" onclick="insertTemplate('claim_approved')">✅ Claim Approved</div>
+          <div class="template-chip" onclick="insertTemplate('delivery_eta')">🚚 Delivery ETA</div>
+          <div class="template-chip" onclick="insertTemplate('preauth_confirm')">📋 Pre-Auth Confirm</div>
+          <div class="template-chip" onclick="insertTemplate('benefit_balance')">💊 Benefit Balance</div>
+          <div class="template-chip" onclick="insertTemplate('cert_link')">📄 Policy Certificate</div>
+          <div class="template-chip" onclick="insertTemplate('payment_received')">💳 Payment Received</div>
+          <div class="template-chip" onclick="insertTemplate('renewal_reminder')">🔔 Renewal Reminder</div>
+          <div class="template-chip" onclick="insertTemplate('provider_denied')">⚠️ Provider Denied</div>
+        </div>
+      </div>
+      <div class="wa-info-section">
+        <div class="wa-info-label">Assign To</div>
+        <select class="s-search" style="width:100%;padding:0 0.75rem;font-size:0.78rem;" onchange="alert('Conversation assigned to: '+this.value)">
+          <option>Unassigned</option>
+          <option>Grace Moyo</option>
+          <option>Kudzai Choto</option>
+          <option>Rudo Makoni</option>
+          <option>Member Services Bot</option>
+        </select>
+      </div>
+      <div class="wa-info-section">
+        <div class="wa-info-label">Active Delivery</div>
+        <div style="background:var(--s-bg);border-radius:8px;padding:0.75rem;font-size:0.78rem;">
+          <div style="font-weight:700;margin-bottom:0.25rem;">GF-TRK-441822</div>
+          <div style="color:var(--s-muted);">In Transit · ETA 8 min</div>
+          <div style="color:var(--s-muted);">Driver: Tendai Mhuka</div>
+          <button class="s-btn s-btn-ghost" style="font-size:0.72rem;margin-top:0.5rem;padding:0.25rem 0.625rem;" onclick="insertTemplate('delivery_eta')">Send ETA Update</button>
+        </div>
+      </div>
+      <div class="wa-info-section">
+        <div class="wa-info-label">Conversation Status</div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <button class="s-btn s-btn-ghost" style="font-size:0.72rem;padding:0.25rem 0.625rem;background:var(--s-scan);color:#fff;border:none;" onclick="alert('Marked resolved')">Mark Resolved</button>
+          <button class="s-btn s-btn-ghost" style="font-size:0.72rem;padding:0.25rem 0.625rem;" onclick="alert('Snoozed 1 hour')">Snooze 1hr</button>
+          <button class="s-btn s-btn-ghost" style="font-size:0.72rem;padding:0.25rem 0.625rem;" onclick="alert('Escalated to manager')">Escalate</button>
+        </div>
+      </div>
+      <div class="wa-info-section">
+        <div class="wa-info-label">Auto-Reply Rules</div>
+        <div style="font-size:0.78rem;display:flex;flex-direction:column;gap:0.5rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;"><span>Out of hours reply</span><div style="width:32px;height:18px;background:var(--s-scan);border-radius:9px;position:relative;cursor:pointer;"><div style="position:absolute;right:2px;top:2px;width:14px;height:14px;border-radius:50%;background:#fff;"></div></div></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><span>FAQ auto-responses</span><div style="width:32px;height:18px;background:var(--s-scan);border-radius:9px;position:relative;cursor:pointer;"><div style="position:absolute;right:2px;top:2px;width:14px;height:14px;border-radius:50%;background:#fff;"></div></div></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><span>Delivery notifications</span><div style="width:32px;height:18px;background:var(--s-scan);border-radius:9px;position:relative;cursor:pointer;"><div style="position:absolute;right:2px;top:2px;width:14px;height:14px;border-radius:50%;background:#fff;"></div></div></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;"><span>Claim status updates</span><div style="width:32px;height:18px;background:var(--s-scan);border-radius:9px;position:relative;cursor:pointer;"><div style="position:absolute;right:2px;top:2px;width:14px;height:14px;border-radius:50%;background:#fff;"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+const TEMPLATES = {
+  claim_approved: 'Hi {name}! ✅ Great news — your claim #{ref} has been *approved*. Payment of *{amount}* will be processed within 3–5 business days. If you have questions, reply to this message. — GENFIN Medical Aid',
+  delivery_eta: 'Hi {name}! 🚚 Your medication delivery (Tracking: *GF-TRK-441822*) is on its way. Your driver Tendai is *approximately 8 minutes* away. Track live at: *genfin.co.zw/track* — GENFIN',
+  preauth_confirm: 'Hi {name}! 📋 Your pre-authorisation request has been *approved*. Reference: *PA-2026-{ref}*. Valid for 30 days. Present this confirmation at the provider. — GENFIN Medical Aid',
+  benefit_balance: 'Hi {name}! 💊 Your current benefit balance: *GP: $240 remaining | Specialist: $800 remaining | Hospital: $12,000 remaining | Pharmacy: $1,200 remaining*. — GENFIN',
+  cert_link: 'Hi {name}! 📄 Your 2026 Policy Certificate is ready. Download at: *genfin.co.zw/portal → Documents → Policy Certificate*. QR code included for provider verification. — GENFIN',
+  payment_received: 'Hi {name}! 💳 Payment of *${amount}* received on {date}. Thank you! Your premium is now up to date. — GENFIN Medical Aid',
+  renewal_reminder: 'Hi {name}! 🔔 Your GENFIN Medical Aid plan renews on *1 January 2027*. No action needed if your employer deducts premiums. Individual members: ensure payment by 25 December. — GENFIN',
+  provider_denied: 'Hi {name}! ⚠️ We were unable to pre-authorise treatment at the requested provider. This provider is not on our network. Please contact member services to find a network provider near you. — GENFIN',
+};
+
+function insertTemplate(key) {
+  const t = TEMPLATES[key] || '';
+  document.getElementById('msgInput').value = t;
+  document.getElementById('msgInput').focus();
+}
+function sendMsg() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'wa-msg outgoing';
+  const now = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  div.innerHTML = `<div class="wa-bubble outgoing">${text}</div><div class="wa-bubble-time">${now} <span class="wa-tick">✓✓</span></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  input.value = '';
+}
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+}
+function switchChat(name, initials, color) {
+  document.getElementById('chatName').textContent = name;
+  document.getElementById('chatAv').textContent = initials;
+  document.getElementById('chatAv').style.background = color;
+  document.querySelectorAll('.wa-convo').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+function showTemplates() { alert('Template library:\n\nClaim Approved · Delivery ETA · Pre-Auth Confirm · Benefit Balance · Policy Certificate · Payment Received · Renewal Reminder · Provider Denied\n\nClick any template chip in the right panel to insert.'); }
+function showSettings() { alert('WhatsApp Business Settings:\n\nConnected number: +263 867 700 4422\nBusiness name: GENFIN Medical Aid Fund\nVerified: ✓\nAPI status: Active\n\nSend limits: 1,000 conversations/day\nTemplate approval: 8 approved templates\n\nTo change settings, contact your Meta Business Manager.'); }
+</script>
+</body>
+</html>

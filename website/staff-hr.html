@@ -3,38 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HR &amp; People — GENFIN Staff</title>
+<title>HR &amp; Payroll — GENFIN Staff</title>
 <link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="stylesheet" href="shared/fonts.css">
 <link rel="stylesheet" href="shared/staff.css">
 <style>
-.hr-tabs { display:flex; gap:0; border-bottom:2px solid var(--s-border); margin-bottom:1.5rem; }
-.hr-tab {
-  font-family:var(--s-font-sans); font-weight:700; font-size:0.8375rem;
-  padding:0.75rem 1.25rem; border:none; background:none; cursor:pointer;
-  color:var(--s-muted); border-bottom:2px solid transparent; margin-bottom:-2px;
-  transition:all 0.15s;
-}
-.hr-tab.active { color:var(--s-ink); border-bottom-color:var(--s-ink); }
-.hr-tab:hover:not(.active) { color:var(--s-ink); }
+.hr-tabs { display:flex; gap:0; border-bottom:2px solid var(--s-border); margin-bottom:1.5rem; overflow-x:auto; }
+.hr-tab { font-family:var(--s-font-sans); font-weight:700; font-size:0.8125rem; padding:0.75rem 1.05rem; border:none; background:none; cursor:pointer; color:var(--s-muted); border-bottom:2px solid transparent; margin-bottom:-2px; transition:all 0.15s; white-space:nowrap; }
+.hr-tab.active { color:var(--s-ink); border-bottom-color:var(--s-gold); }
+.hr-tab:hover:not(.active){ color:var(--s-ink); }
 .hr-view { display:none; }
 .hr-view.active { display:block; }
 
-.hr-staff-card {
-  display:flex; align-items:center; gap:0.875rem;
-  padding:0.875rem 1.25rem; border-bottom:1px solid var(--s-border);
-}
-.hr-staff-card:last-child { border-bottom:none; }
-.hr-sc-info { flex:1; }
-.hr-sc-name { font-weight:700; font-size:0.875rem; color:var(--s-ink); }
-.hr-sc-meta { font-size:0.75rem; color:var(--s-muted); margin-top:0.125rem; }
-.hr-sc-actions { display:flex; gap:0.375rem; }
+.ps-row { display:flex; justify-content:space-between; padding:0.5rem 0; border-bottom:1px solid var(--s-border); font-size:0.85rem; }
+.ps-row:last-child { border-bottom:none; }
+.ps-lbl { color:var(--s-muted); }
+.ps-val { font-family:var(--s-font-mono); font-weight:700; }
+.ps-sub { font-family:var(--s-font-disp); font-weight:800; font-size:0.7rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--s-faint); padding:0.75rem 0 0.35rem; }
 
-.hr-leave-row {
-  display:flex; align-items:center; gap:0.75rem;
-  padding:0.75rem 1.25rem; border-bottom:1px solid var(--s-border);
-}
-.hr-leave-row:last-child { border-bottom:none; }
+.stars { color:var(--s-gold); letter-spacing:2px; font-size:0.9rem; }
+.stars .off { color:var(--s-border); }
+.rating-bar { height:6px; border-radius:4px; background:var(--s-border); overflow:hidden; width:120px; }
+.rating-bar > span { display:block; height:100%; background:var(--s-scan); }
+@media (max-width:900px){ .s-grid-2{grid-template-columns:1fr;} }
 </style>
 </head>
 <body>
@@ -46,312 +38,278 @@
       <div class="s-logo-mark">
         <svg viewBox="0 0 24 24" fill="none" stroke="#14141A" stroke-width="2.5" style="width:16px;height:16px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </div>
-      <div>
-        <div class="s-logo-text">GEN<span>FIN</span></div>
-        <div class="s-logo-sub">HR &amp; People</div>
-      </div>
+      <div><div class="s-logo-text">GEN<span>FIN</span></div><div class="s-logo-sub">HR &amp; Payroll</div></div>
     </div>
     <div class="s-nav-section">Navigation</div>
-    <a href="superadmin.html" class="s-nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-      Dashboard
-    </a>
-    <a href="staff-claims.html" class="s-nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      Claims
-      <span class="s-nav-badge">47</span>
-    </a>
-    <a href="staff-hr.html" class="s-nav-item active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      HR &amp; People
-    </a>
-    <a href="staff-finance.html" class="s-nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      Finance
-    </a>
-    <a href="staff-inventory.html" class="s-nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-      Inventory
-    </a>
-    <a href="staff-members.html" class="s-nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Members
-    </a>
+    <a href="superadmin.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="staff-claims.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Claims<span class="s-nav-badge">47</span></a>
+    <a href="staff-hr.html" class="s-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>HR &amp; Payroll</a>
+    <a href="staff-finance.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Accounts</a>
+    <a href="staff-inventory.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Inventory</a>
+    <a href="staff-logistics.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Logistics</a>
+    <a href="staff-tracking.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Order Tracking<span class="s-nav-badge warn">8</span></a>
+    <a href="staff-whatsapp.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>WhatsApp<span class="s-nav-badge">6</span></a>
+    <a href="bioverify-facial.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>BioVerify</a>
+    <a href="staff-members.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Members</a>
+    <a href="staff-audit.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Audit log</a>
     <div class="s-sidebar-foot">
-      <div class="s-foot-av">CD</div>
-      <div>
-        <div class="s-foot-name">Chido Dlamini</div>
-        <div class="s-foot-role">HR Coordinator</div>
-      </div>
+      <div class="s-foot-av">TM</div>
+      <div><div class="s-foot-name">Tendai Mangwiro</div><div class="s-foot-role">HR Manager</div></div>
     </div>
   </aside>
 
   <!-- Main -->
   <main class="s-main">
     <div class="s-topbar">
-      <div class="s-topbar-title">HR &amp; People</div>
+      <div class="s-topbar-title">HR &amp; Payroll</div>
       <div class="s-topbar-actions">
         <input class="s-topbar-search" placeholder="Search staff…">
         <button class="s-btn s-btn-ghost">Export</button>
-        <button class="s-btn s-btn-primary" onclick="openAddStaff()">+ Add employee</button>
+        <button class="s-btn s-btn-primary" onclick="alert('Opens new-employee onboarding wizard:\n\n• Personal + next of kin\n• Contract, grade, salary\n• Statutory: NSSA, tax number\n• Bank details, medical aid enrolment\n• System role &amp; access')">+ Add employee</button>
       </div>
     </div>
 
     <div class="s-body">
 
       <div class="s-kpi-grid">
-        <div class="s-kpi">
-          <div class="s-kpi-label">Total headcount</div>
-          <div class="s-kpi-val">84</div>
-          <div class="s-kpi-sub">Active employees</div>
-        </div>
-        <div class="s-kpi">
-          <div class="s-kpi-label">Open positions</div>
-          <div class="s-kpi-val">6</div>
-          <div class="s-kpi-delta neutral">3 in final stages</div>
-        </div>
-        <div class="s-kpi">
-          <div class="s-kpi-label">Leave requests</div>
-          <div class="s-kpi-val">4</div>
-          <div class="s-kpi-sub">Awaiting approval</div>
-        </div>
-        <div class="s-kpi">
-          <div class="s-kpi-label">Monthly payroll</div>
-          <div class="s-kpi-val">$148K</div>
-          <div class="s-kpi-sub">Jul payrun due 25 Jul</div>
-        </div>
+        <div class="s-kpi"><div class="s-kpi-label">Headcount</div><div class="s-kpi-val">84</div><div class="s-kpi-delta up">+3 this quarter</div></div>
+        <div class="s-kpi"><div class="s-kpi-label">Monthly payroll (net)</div><div class="s-kpi-val">$148.2K</div><div class="s-kpi-sub">Gross $196.4K</div></div>
+        <div class="s-kpi"><div class="s-kpi-label">Reviews due</div><div class="s-kpi-val">11</div><div class="s-kpi-delta dn">Q2 cycle · 8 overdue</div></div>
+        <div class="s-kpi"><div class="s-kpi-label">Open positions</div><div class="s-kpi-val">6</div><div class="s-kpi-sub">38 applicants</div></div>
       </div>
 
-      <!-- Tabs -->
       <div class="hr-tabs">
-        <button class="hr-tab active" onclick="showHrTab(this,'tab-staff')">Staff directory</button>
-        <button class="hr-tab" onclick="showHrTab(this,'tab-leave')">Leave management</button>
-        <button class="hr-tab" onclick="showHrTab(this,'tab-payroll')">Payroll</button>
-        <button class="hr-tab" onclick="showHrTab(this,'tab-recruit')">Recruitment</button>
+        <button class="hr-tab active" onclick="showHrTab(this,'htab-people')">People</button>
+        <button class="hr-tab" onclick="showHrTab(this,'htab-payroll')">Payroll</button>
+        <button class="hr-tab" onclick="showHrTab(this,'htab-leave')">Leave</button>
+        <button class="hr-tab" onclick="showHrTab(this,'htab-perf')">Performance</button>
+        <button class="hr-tab" onclick="showHrTab(this,'htab-recruit')">Recruitment</button>
+        <button class="hr-tab" onclick="showHrTab(this,'htab-training')">Training</button>
+        <button class="hr-tab" onclick="showHrTab(this,'htab-statutory')">Statutory</button>
       </div>
 
-      <!-- STAFF DIRECTORY -->
-      <div class="hr-view active s-card" id="tab-staff">
-        <div class="s-card-head">
-          <h3>All staff (84)</h3>
-          <div style="display:flex;gap:0.5rem">
-            <select class="s-select" style="padding:6px 12px;font-size:0.8rem;width:auto">
-              <option>All departments</option>
-              <option>Claims</option><option>Finance</option>
-              <option>HR</option><option>IT</option>
-              <option>Member Services</option><option>Operations</option>
-            </select>
+      <!-- PEOPLE -->
+      <div class="hr-view active" id="htab-people">
+        <div class="s-card">
+          <div class="s-card-head"><h3>Employee directory (84)</h3>
+            <select class="s-select" style="width:auto;padding:6px 10px;font-size:0.8rem"><option>All departments</option><option>Claims</option><option>Finance</option><option>Pharmacy</option><option>Logistics</option><option>IT</option></select>
           </div>
-        </div>
-        <div>
-          <div class="hr-staff-card">
-            <div class="s-avatar s-avatar-md" style="background:rgba(59,91,219,0.1);color:var(--s-info)">RK</div>
-            <div class="hr-sc-info">
-              <div class="hr-sc-name">Rutendo Kanyowa</div>
-              <div class="hr-sc-meta">IT · System Administrator · rutendo@genfin.health · +263 77 100 0001</div>
-            </div>
-            <span class="s-chip s-chip-green">Active</span>
-            <div class="hr-sc-actions">
-              <button class="s-btn s-btn-ghost s-btn-sm">View</button>
-              <button class="s-btn s-btn-ghost s-btn-sm">Edit</button>
-            </div>
-          </div>
-          <div class="hr-staff-card">
-            <div class="s-avatar s-avatar-md" style="background:rgba(0,196,138,0.1);color:#00A872">TM</div>
-            <div class="hr-sc-info">
-              <div class="hr-sc-name">Tendai Muponda</div>
-              <div class="hr-sc-meta">Claims · Claims Manager · tendai@genfin.health · +263 77 100 0002</div>
-            </div>
-            <span class="s-chip s-chip-green">Active</span>
-            <div class="hr-sc-actions">
-              <button class="s-btn s-btn-ghost s-btn-sm">View</button>
-              <button class="s-btn s-btn-ghost s-btn-sm">Edit</button>
-            </div>
-          </div>
-          <div class="hr-staff-card">
-            <div class="s-avatar s-avatar-md" style="background:rgba(251,189,62,0.15);color:#946500">FN</div>
-            <div class="hr-sc-info">
-              <div class="hr-sc-name">Faith Ncube</div>
-              <div class="hr-sc-meta">Finance · Finance Officer · faith@genfin.health · +263 77 100 0003</div>
-            </div>
-            <span class="s-chip s-chip-green">Active</span>
-            <div class="hr-sc-actions">
-              <button class="s-btn s-btn-ghost s-btn-sm">View</button>
-              <button class="s-btn s-btn-ghost s-btn-sm">Edit</button>
-            </div>
-          </div>
-          <div class="hr-staff-card">
-            <div class="s-avatar s-avatar-md" style="background:rgba(20,20,26,0.07);color:var(--s-muted)">SM</div>
-            <div class="hr-sc-info">
-              <div class="hr-sc-name">Simba Murambwe</div>
-              <div class="hr-sc-meta">Claims · Claims Adjudicator · simba@genfin.health · +263 77 100 0004</div>
-            </div>
-            <span class="s-chip s-chip-green">Active</span>
-            <div class="hr-sc-actions">
-              <button class="s-btn s-btn-ghost s-btn-sm">View</button>
-              <button class="s-btn s-btn-ghost s-btn-sm">Edit</button>
-            </div>
-          </div>
-          <div class="hr-staff-card">
-            <div class="s-avatar s-avatar-md" style="background:rgba(20,20,26,0.07);color:var(--s-muted)">CD</div>
-            <div class="hr-sc-info">
-              <div class="hr-sc-name">Chido Dlamini</div>
-              <div class="hr-sc-meta">HR · HR Coordinator · chido@genfin.health · +263 77 100 0005</div>
-            </div>
-            <span class="s-chip s-chip-green">Active</span>
-            <div class="hr-sc-actions">
-              <button class="s-btn s-btn-ghost s-btn-sm">View</button>
-              <button class="s-btn s-btn-ghost s-btn-sm">Edit</button>
-            </div>
-          </div>
-          <div class="hr-staff-card" style="background:rgba(251,189,62,0.04)">
-            <div class="s-avatar s-avatar-md" style="background:rgba(255,140,0,0.1);color:var(--s-warn)">MZ</div>
-            <div class="hr-sc-info">
-              <div class="hr-sc-name">Munashe Zuze</div>
-              <div class="hr-sc-meta">Member Services · Member Services Officer · Joined 1 Jul 2026</div>
-            </div>
-            <span class="s-chip s-chip-gold">Onboarding</span>
-            <div class="hr-sc-actions">
-              <button class="s-btn s-btn-ghost s-btn-sm">View</button>
-            </div>
-          </div>
-        </div>
-        <div style="padding:0.75rem 1.25rem;font-size:0.8rem;color:var(--s-faint);border-top:1px solid var(--s-border)">
-          Showing 6 of 84 staff · <a href="#" style="color:var(--s-info);font-weight:700">Load all</a>
-        </div>
-      </div>
-
-      <!-- LEAVE MANAGEMENT -->
-      <div class="hr-view s-card" id="tab-leave" style="display:none">
-        <div class="s-card-head">
-          <h3>Leave requests (4 pending)</h3>
-          <button class="s-btn s-btn-ghost s-btn-sm">Leave calendar</button>
-        </div>
-        <div>
-          <div class="hr-leave-row">
-            <div class="s-avatar s-avatar-sm" style="background:rgba(20,20,26,0.07);color:var(--s-muted)">SM</div>
-            <div style="flex:1">
-              <div style="font-weight:700;font-size:0.875rem;color:var(--s-ink)">Simba Murambwe</div>
-              <div style="font-size:0.75rem;color:var(--s-muted)">Annual leave · 14–18 Jul 2026 (5 days) · Applied 2 Jul</div>
-            </div>
-            <span class="s-chip s-chip-gold">Pending</span>
-            <button class="s-btn s-btn-success s-btn-sm" onclick="approveLeave(this)">Approve</button>
-            <button class="s-btn s-btn-danger s-btn-sm">Decline</button>
-          </div>
-          <div class="hr-leave-row">
-            <div class="s-avatar s-avatar-sm" style="background:rgba(0,196,138,0.1);color:#00A872">TM</div>
-            <div style="flex:1">
-              <div style="font-weight:700;font-size:0.875rem;color:var(--s-ink)">Tendai Muponda</div>
-              <div style="font-size:0.75rem;color:var(--s-muted)">Sick leave · 3–4 Jul 2026 (2 days) · Applied 3 Jul</div>
-            </div>
-            <span class="s-chip s-chip-gold">Pending</span>
-            <button class="s-btn s-btn-success s-btn-sm" onclick="approveLeave(this)">Approve</button>
-            <button class="s-btn s-btn-danger s-btn-sm">Decline</button>
-          </div>
-          <div class="hr-leave-row">
-            <div class="s-avatar s-avatar-sm" style="background:rgba(251,189,62,0.15);color:#946500">FN</div>
-            <div style="flex:1">
-              <div style="font-weight:700;font-size:0.875rem;color:var(--s-ink)">Faith Ncube</div>
-              <div style="font-size:0.75rem;color:var(--s-muted)">Study leave · 21–25 Jul 2026 (5 days) · Applied 28 Jun</div>
-            </div>
-            <span class="s-chip s-chip-gold">Pending</span>
-            <button class="s-btn s-btn-success s-btn-sm" onclick="approveLeave(this)">Approve</button>
-            <button class="s-btn s-btn-danger s-btn-sm">Decline</button>
-          </div>
-          <div class="hr-leave-row">
-            <div class="s-avatar s-avatar-sm" style="background:rgba(20,20,26,0.07);color:var(--s-muted)">RK</div>
-            <div style="flex:1">
-              <div style="font-weight:700;font-size:0.875rem;color:var(--s-ink)">Rutendo Kanyowa</div>
-              <div style="font-size:0.75rem;color:var(--s-muted)">Annual leave · 28 Jul – 8 Aug 2026 (10 days) · Applied 1 Jul</div>
-            </div>
-            <span class="s-chip s-chip-gold">Pending</span>
-            <button class="s-btn s-btn-success s-btn-sm" onclick="approveLeave(this)">Approve</button>
-            <button class="s-btn s-btn-danger s-btn-sm">Decline</button>
+          <div class="s-table-wrap">
+            <table class="s-table">
+              <thead><tr><th>Employee</th><th>Employee #</th><th>Department</th><th>Grade</th><th>Contract</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="s-td-primary">Faith Ncube</td><td class="s-td-mono">EMP-0007</td><td>Finance</td><td>M3 · Chief Accountant</td><td>Permanent</td><td><span class="s-chip s-chip-green">Active</span></td></tr>
+                <tr><td class="s-td-primary">Tendai Mangwiro</td><td class="s-td-mono">EMP-0011</td><td>Human Resources</td><td>M3 · HR Manager</td><td>Permanent</td><td><span class="s-chip s-chip-green">Active</span></td></tr>
+                <tr><td class="s-td-primary">Rutendo Chikafu</td><td class="s-td-mono">EMP-0042</td><td>Claims</td><td>P2 · Claims Assessor</td><td>Permanent</td><td><span class="s-chip s-chip-green">Active</span></td></tr>
+                <tr><td class="s-td-primary">Blessing Sithole</td><td class="s-td-mono">EMP-0058</td><td>Pharmacy</td><td>P3 · Pharmacist</td><td>Permanent</td><td><span class="s-chip s-chip-green">Active</span></td></tr>
+                <tr><td class="s-td-primary">Simba Ndlovu</td><td class="s-td-mono">EMP-0071</td><td>Logistics</td><td>G2 · Driver</td><td>Fixed-term</td><td><span class="s-chip s-chip-green">Active</span></td></tr>
+                <tr><td class="s-td-primary">Nyasha Kadzviti</td><td class="s-td-mono">EMP-0079</td><td>IT</td><td>P2 · Support Engineer</td><td>Probation</td><td><span class="s-chip s-chip-gold">Probation</span></td></tr>
+                <tr><td class="s-td-primary">Chipo Marunya</td><td class="s-td-mono">EMP-0080</td><td>Claims</td><td>P1 · Claims Clerk</td><td>Permanent</td><td><span class="s-chip s-chip-gray">On leave</span></td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
 
       <!-- PAYROLL -->
-      <div class="hr-view s-card" id="tab-payroll" style="display:none">
-        <div class="s-card-head">
-          <h3>Payroll — July 2026</h3>
-          <div style="display:flex;gap:0.5rem">
-            <button class="s-btn s-btn-ghost s-btn-sm">Export payslips</button>
-            <button class="s-btn s-btn-primary s-btn-sm">Run payroll</button>
+      <div class="hr-view" id="htab-payroll">
+        <div class="s-alert s-alert-info" style="margin-bottom:1.25rem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div><strong>July 2026 run:</strong> Draft — 84 staff · Gross $196,420 · Deductions $48,180 · Net $148,240. Approve before 25 Jul to hit payment date. <button class="s-btn s-btn-primary s-btn-sm" style="margin-left:0.5rem" onclick="alert('Payroll run submitted for Finance approval.\nOn approval it posts journal JN-2026-0710 to the GL and generates 84 payslips + bank transfer file.')">Submit run</button></div>
+        </div>
+        <div class="s-grid-2">
+          <div class="s-card">
+            <div class="s-card-head"><h3>Payroll register — July 2026</h3></div>
+            <div class="s-table-wrap">
+              <table class="s-table">
+                <thead><tr><th>Employee</th><th>Gross</th><th>Deductions</th><th>Net pay</th></tr></thead>
+                <tbody>
+                  <tr onclick="loadPayslip('Faith Ncube','EMP-0007',4200,1092,3108)" style="cursor:pointer"><td class="s-td-primary">Faith Ncube</td><td class="s-td-mono">$4,200</td><td class="s-td-mono">$1,092</td><td class="s-td-mono s-td-primary">$3,108</td></tr>
+                  <tr onclick="loadPayslip('Tendai Mangwiro','EMP-0011',3900,1010,2890)" style="cursor:pointer"><td class="s-td-primary">Tendai Mangwiro</td><td class="s-td-mono">$3,900</td><td class="s-td-mono">$1,010</td><td class="s-td-mono s-td-primary">$2,890</td></tr>
+                  <tr onclick="loadPayslip('Blessing Sithole','EMP-0058',2600,650,1950)" style="cursor:pointer"><td class="s-td-primary">Blessing Sithole</td><td class="s-td-mono">$2,600</td><td class="s-td-mono">$650</td><td class="s-td-mono s-td-primary">$1,950</td></tr>
+                  <tr onclick="loadPayslip('Rutendo Chikafu','EMP-0042',1800,428,1372)" style="cursor:pointer"><td class="s-td-primary">Rutendo Chikafu</td><td class="s-td-mono">$1,800</td><td class="s-td-mono">$428</td><td class="s-td-mono s-td-primary">$1,372</td></tr>
+                  <tr onclick="loadPayslip('Simba Ndlovu','EMP-0071',900,196,704)" style="cursor:pointer"><td class="s-td-primary">Simba Ndlovu</td><td class="s-td-mono">$900</td><td class="s-td-mono">$196</td><td class="s-td-mono s-td-primary">$704</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="padding:0.6rem 1.25rem;font-size:0.75rem;color:var(--s-faint)">Click any employee to view their itemised payslip →</div>
+          </div>
+          <div class="s-card">
+            <div class="s-card-head"><h3>Payslip — <span id="psName">Faith Ncube</span></h3><span class="s-chip s-chip-blue" id="psId">EMP-0007</span></div>
+            <div class="s-card-body">
+              <div class="ps-sub">Earnings</div>
+              <div class="ps-row"><span class="ps-lbl">Basic salary</span><span class="ps-val" id="psBasic">$3,360.00</span></div>
+              <div class="ps-row"><span class="ps-lbl">Housing allowance</span><span class="ps-val" id="psHouse">$630.00</span></div>
+              <div class="ps-row"><span class="ps-lbl">Transport allowance</span><span class="ps-val" id="psTrans">$210.00</span></div>
+              <div class="ps-row"><span class="ps-lbl" style="font-weight:800;color:var(--s-ink)">Gross pay</span><span class="ps-val" id="psGross">$4,200.00</span></div>
+              <div class="ps-sub">Deductions</div>
+              <div class="ps-row"><span class="ps-lbl">PAYE (income tax)</span><span class="ps-val" id="psPaye">$756.00</span></div>
+              <div class="ps-row"><span class="ps-lbl">NSSA (4.5%)</span><span class="ps-val" id="psNssa">$189.00</span></div>
+              <div class="ps-row"><span class="ps-lbl">AIDS Levy (3% of PAYE)</span><span class="ps-val" id="psAids">$22.68</span></div>
+              <div class="ps-row"><span class="ps-lbl">Pension (employee)</span><span class="ps-val" id="psPen">$84.00</span></div>
+              <div class="ps-row"><span class="ps-lbl">Medical aid</span><span class="ps-val" id="psMed">$40.32</span></div>
+              <div class="ps-row"><span class="ps-lbl" style="font-weight:800;color:var(--s-ink)">Total deductions</span><span class="ps-val" style="color:var(--s-danger)" id="psDed">$1,092.00</span></div>
+              <div class="ps-row" style="margin-top:0.5rem;padding-top:0.75rem;border-top:2px solid var(--s-ink)"><span class="ps-lbl" style="font-weight:800;color:var(--s-ink);font-size:1rem">Net pay</span><span class="ps-val" style="font-size:1.15rem;color:var(--s-scan)" id="psNet">$3,108.00</span></div>
+              <button class="s-btn s-btn-ghost s-btn-sm" style="margin-top:1rem;width:100%;justify-content:center">Download payslip PDF</button>
+            </div>
           </div>
         </div>
-        <div class="s-table-wrap">
-          <table class="s-table">
-            <thead>
-              <tr>
-                <th>Employee</th>
-                <th>Department</th>
-                <th>Basic salary</th>
-                <th>Allowances</th>
-                <th>Deductions</th>
-                <th>Net pay</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td class="s-td-primary">Rutendo Kanyowa</td><td>IT</td><td class="s-td-mono">$3,200</td><td class="s-td-mono">$400</td><td class="s-td-mono">$712</td><td class="s-td-mono s-td-primary">$2,888</td><td><span class="s-chip s-chip-green">Paid</span></td></tr>
-              <tr><td class="s-td-primary">Tendai Muponda</td><td>Claims</td><td class="s-td-mono">$2,800</td><td class="s-td-mono">$300</td><td class="s-td-mono">$616</td><td class="s-td-mono s-td-primary">$2,484</td><td><span class="s-chip s-chip-gold">Pending</span></td></tr>
-              <tr><td class="s-td-primary">Faith Ncube</td><td>Finance</td><td class="s-td-mono">$2,400</td><td class="s-td-mono">$250</td><td class="s-td-mono">$528</td><td class="s-td-mono s-td-primary">$2,122</td><td><span class="s-chip s-chip-gold">Pending</span></td></tr>
-              <tr><td class="s-td-primary">Simba Murambwe</td><td>Claims</td><td class="s-td-mono">$1,800</td><td class="s-td-mono">$200</td><td class="s-td-mono">$400</td><td class="s-td-mono s-td-primary">$1,600</td><td><span class="s-chip s-chip-gold">Pending</span></td></tr>
-              <tr><td class="s-td-primary">Chido Dlamini</td><td>HR</td><td class="s-td-mono">$1,600</td><td class="s-td-mono">$180</td><td class="s-td-mono">$356</td><td class="s-td-mono s-td-primary">$1,424</td><td><span class="s-chip s-chip-gold">Pending</span></td></tr>
-            </tbody>
-          </table>
+      </div>
+
+      <!-- LEAVE -->
+      <div class="hr-view" id="htab-leave">
+        <div class="s-card">
+          <div class="s-card-head"><h3>Leave requests (4 pending)</h3><button class="s-btn s-btn-ghost s-btn-sm">Leave calendar</button></div>
+          <div class="s-table-wrap">
+            <table class="s-table">
+              <thead><tr><th>Employee</th><th>Type</th><th>Dates</th><th>Days</th><th>Balance after</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td class="s-td-primary">Rutendo Chikafu</td><td>Annual</td><td>14–18 Jul 2026</td><td>5</td><td>13 days</td><td><button class="s-btn s-btn-success s-btn-sm">Approve</button> <button class="s-btn s-btn-danger s-btn-sm">Decline</button></td></tr>
+                <tr><td class="s-td-primary">Chipo Marunya</td><td>Sick</td><td>4–6 Jul 2026</td><td>3</td><td>7 days</td><td><span class="s-chip s-chip-green">Auto-approved</span></td></tr>
+                <tr><td class="s-td-primary">Nyasha Kadzviti</td><td>Compassionate</td><td>9 Jul 2026</td><td>1</td><td>—</td><td><button class="s-btn s-btn-success s-btn-sm">Approve</button> <button class="s-btn s-btn-danger s-btn-sm">Decline</button></td></tr>
+                <tr><td class="s-td-primary">Simba Ndlovu</td><td>Annual</td><td>21–25 Jul 2026</td><td>5</td><td>8 days</td><td><button class="s-btn s-btn-success s-btn-sm">Approve</button> <button class="s-btn s-btn-danger s-btn-sm">Decline</button></td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div style="padding:1.25rem;border-top:1px solid var(--s-border);display:flex;justify-content:flex-end;gap:2rem;align-items:center">
-          <div style="text-align:right"><div style="font-size:0.75rem;color:var(--s-faint)">Total payroll (Jul)</div><div style="font-family:var(--s-font-disp);font-weight:800;font-size:1.375rem;color:var(--s-ink)">$148,240</div></div>
-          <div style="text-align:right"><div style="font-size:0.75rem;color:var(--s-faint)">Payrun date</div><div style="font-weight:700;color:var(--s-ink)">25 Jul 2026</div></div>
+      </div>
+
+      <!-- PERFORMANCE -->
+      <div class="hr-view" id="htab-perf">
+        <div class="s-grid-2" style="margin-bottom:1.25rem">
+          <div class="s-card">
+            <div class="s-card-head"><h3>Q2 2026 appraisal cycle</h3><span class="s-chip s-chip-gold">11 due</span></div>
+            <div class="s-table-wrap">
+              <table class="s-table">
+                <thead><tr><th>Employee</th><th>Reviewer</th><th>Score</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td class="s-td-primary">Rutendo Chikafu</td><td>F. Ncube</td><td><span class="stars">★★★★<span class="off">★</span></span></td><td><span class="s-chip s-chip-green">Complete</span></td></tr>
+                  <tr><td class="s-td-primary">Blessing Sithole</td><td>T. Mangwiro</td><td><span class="stars">★★★★★</span></td><td><span class="s-chip s-chip-green">Complete</span></td></tr>
+                  <tr><td class="s-td-primary">Nyasha Kadzviti</td><td>IT Lead</td><td><span class="stars">★★★<span class="off">★★</span></span></td><td><span class="s-chip s-chip-gold">In review</span></td></tr>
+                  <tr><td class="s-td-primary">Simba Ndlovu</td><td>Ops Lead</td><td>—</td><td><span class="s-chip s-chip-red">Not started</span></td></tr>
+                  <tr><td class="s-td-primary">Chipo Marunya</td><td>F. Ncube</td><td>—</td><td><span class="s-chip s-chip-red">Overdue</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="s-card">
+            <div class="s-card-head"><h3>Appraisal — Rutendo Chikafu</h3><button class="s-btn s-btn-primary s-btn-sm" onclick="alert('Opens the full appraisal form:\n• KPIs vs targets\n• 9-box talent grid placement\n• Competency ratings\n• Manager + self-assessment\n• Development plan &amp; sign-off')">Open form</button></div>
+            <div class="s-card-body">
+              <div style="margin-bottom:1rem">
+                <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:0.35rem"><span class="ps-lbl">Claims accuracy</span><strong>96%</strong></div>
+                <div class="rating-bar"><span style="width:96%"></span></div>
+              </div>
+              <div style="margin-bottom:1rem">
+                <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:0.35rem"><span class="ps-lbl">Turnaround time</span><strong>88%</strong></div>
+                <div class="rating-bar"><span style="width:88%"></span></div>
+              </div>
+              <div style="margin-bottom:1rem">
+                <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:0.35rem"><span class="ps-lbl">Member satisfaction</span><strong>92%</strong></div>
+                <div class="rating-bar"><span style="width:92%"></span></div>
+              </div>
+              <div style="margin-bottom:1rem">
+                <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:0.35rem"><span class="ps-lbl">Teamwork &amp; conduct</span><strong>90%</strong></div>
+                <div class="rating-bar"><span style="width:90%"></span></div>
+              </div>
+              <div class="s-alert s-alert-success" style="margin-top:0.5rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><div><strong>Overall: 4.2 / 5 — Exceeds expectations.</strong> Recommended for grade progression P2 → P3.</div></div>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- RECRUITMENT -->
-      <div class="hr-view s-card" id="tab-recruit" style="display:none">
-        <div class="s-card-head">
-          <h3>Open positions (6)</h3>
-          <button class="s-btn s-btn-primary s-btn-sm">+ Post new role</button>
+      <div class="hr-view" id="htab-recruit">
+        <div class="s-card">
+          <div class="s-card-head"><h3>Open positions (6) · 38 applicants</h3><button class="s-btn s-btn-primary s-btn-sm">Post vacancy</button></div>
+          <div class="s-table-wrap">
+            <table class="s-table">
+              <thead><tr><th>Role</th><th>Department</th><th>Applicants</th><th>Stage</th><th>Target start</th></tr></thead>
+              <tbody>
+                <tr><td class="s-td-primary">Senior Claims Assessor</td><td>Claims</td><td>12</td><td><span class="s-chip s-chip-blue">Interviewing</span></td><td>Aug 2026</td></tr>
+                <tr><td class="s-td-primary">Delivery Driver (×2)</td><td>Logistics</td><td>9</td><td><span class="s-chip s-chip-gold">Shortlist</span></td><td>Jul 2026</td></tr>
+                <tr><td class="s-td-primary">Pharmacist</td><td>Pharmacy</td><td>6</td><td><span class="s-chip s-chip-blue">Interviewing</span></td><td>Sep 2026</td></tr>
+                <tr><td class="s-td-primary">DevOps Engineer</td><td>IT</td><td>7</td><td><span class="s-chip s-chip-gray">Screening</span></td><td>Sep 2026</td></tr>
+                <tr><td class="s-td-primary">Contact Centre Agent</td><td>Member Services</td><td>4</td><td><span class="s-chip s-chip-green">Offer out</span></td><td>Jul 2026</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="s-table-wrap">
-          <table class="s-table">
-            <thead>
-              <tr><th>Role</th><th>Department</th><th>Applications</th><th>Stage</th><th>Posted</th><th></th></tr>
-            </thead>
-            <tbody>
-              <tr><td class="s-td-primary">Senior Claims Adjudicator</td><td>Claims</td><td>14</td><td><span class="s-chip s-chip-blue">Interviews</span></td><td>15 Jun 2026</td><td><button class="s-btn s-btn-ghost s-btn-sm">Review</button></td></tr>
-              <tr><td class="s-td-primary">Finance Analyst</td><td>Finance</td><td>8</td><td><span class="s-chip s-chip-blue">Interviews</span></td><td>20 Jun 2026</td><td><button class="s-btn s-btn-ghost s-btn-sm">Review</button></td></tr>
-              <tr><td class="s-td-primary">Member Services Officer</td><td>Member Svcs</td><td>22</td><td><span class="s-chip s-chip-gold">Shortlisting</span></td><td>25 Jun 2026</td><td><button class="s-btn s-btn-ghost s-btn-sm">Review</button></td></tr>
-              <tr><td class="s-td-primary">IT Support Technician</td><td>IT</td><td>6</td><td><span class="s-chip s-chip-gold">Shortlisting</span></td><td>1 Jul 2026</td><td><button class="s-btn s-btn-ghost s-btn-sm">Review</button></td></tr>
-              <tr><td class="s-td-primary">Pharmacy Liaison Officer</td><td>Operations</td><td>4</td><td><span class="s-chip s-chip-gray">Advertising</span></td><td>3 Jul 2026</td><td><button class="s-btn s-btn-ghost s-btn-sm">Review</button></td></tr>
-              <tr><td class="s-td-primary">Clinical Reviewer (Part-time)</td><td>Claims</td><td>2</td><td><span class="s-chip s-chip-gray">Advertising</span></td><td>4 Jul 2026</td><td><button class="s-btn s-btn-ghost s-btn-sm">Review</button></td></tr>
-            </tbody>
-          </table>
+      </div>
+
+      <!-- TRAINING -->
+      <div class="hr-view" id="htab-training">
+        <div class="s-card">
+          <div class="s-card-head"><h3>Training &amp; development</h3><button class="s-btn s-btn-ghost s-btn-sm">Assign course</button></div>
+          <div class="s-table-wrap">
+            <table class="s-table">
+              <thead><tr><th>Programme</th><th>Enrolled</th><th>Completion</th><th>Compliance</th></tr></thead>
+              <tbody>
+                <tr><td class="s-td-primary">POPIA / Data Protection</td><td>84</td><td>78 / 84</td><td><span class="s-chip s-chip-gold">93%</span></td></tr>
+                <tr><td class="s-td-primary">Anti-Fraud &amp; AML</td><td>60</td><td>60 / 60</td><td><span class="s-chip s-chip-green">100%</span></td></tr>
+                <tr><td class="s-td-primary">BioVerify terminal operation</td><td>32</td><td>29 / 32</td><td><span class="s-chip s-chip-gold">91%</span></td></tr>
+                <tr><td class="s-td-primary">Customer service excellence</td><td>21</td><td>14 / 21</td><td><span class="s-chip s-chip-red">67%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATUTORY -->
+      <div class="hr-view" id="htab-statutory">
+        <div class="s-grid-2">
+          <div class="s-card">
+            <div class="s-card-head"><h3>Statutory returns — July 2026</h3></div>
+            <div class="s-card-body">
+              <div class="ps-row"><span class="ps-lbl">PAYE (ZIMRA P2 return)</span><span class="ps-val">$31,480</span></div>
+              <div class="ps-row"><span class="ps-lbl">NSSA — POBS schedule</span><span class="ps-val">$9,240</span></div>
+              <div class="ps-row"><span class="ps-lbl">AIDS Levy</span><span class="ps-val">$944</span></div>
+              <div class="ps-row"><span class="ps-lbl">Manpower Development Levy (1%)</span><span class="ps-val">$1,482</span></div>
+              <div class="ps-row"><span class="ps-lbl">Pension fund remittance</span><span class="ps-val">$5,034</span></div>
+              <div class="ps-row"><span class="ps-lbl" style="font-weight:800;color:var(--s-ink)">Total statutory</span><span class="ps-val" style="color:var(--s-danger)">$48,180</span></div>
+            </div>
+          </div>
+          <div class="s-card">
+            <div class="s-card-head"><h3>Compliance calendar</h3></div>
+            <div class="s-card-body">
+              <div class="ps-row"><span class="ps-lbl">P2 &amp; NSSA schedules</span><span class="s-chip s-chip-gold">Due 10 Aug</span></div>
+              <div class="ps-row"><span class="ps-lbl">ITF16 annual return</span><span class="s-chip s-chip-gray">Due 30 Jan 2027</span></div>
+              <div class="ps-row"><span class="ps-lbl">NEC minimum wage review</span><span class="s-chip s-chip-blue">Q3 2026</span></div>
+              <div class="ps-row"><span class="ps-lbl">Contracts expiring (90 days)</span><span class="s-chip s-chip-gold">3 staff</span></div>
+              <div class="s-alert s-alert-info" style="margin-top:1rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><div>All statutory figures flow automatically from the approved payroll run into <strong>Accounts → Tax &amp; statutory</strong>.</div></div>
+            </div>
+          </div>
         </div>
       </div>
 
     </div>
   </main>
 </div>
-
 <script>
-function showHrTab(btn, tabId) {
-  document.querySelectorAll('.hr-tab').forEach(b => b.classList.remove('active'));
+function showHrTab(btn, id){
+  document.querySelectorAll('.hr-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  document.querySelectorAll('.hr-view').forEach(v => { v.classList.remove('active'); v.style.display = 'none'; });
-  const tab = document.getElementById(tabId);
-  tab.classList.add('active');
-  tab.style.display = 'block';
+  document.querySelectorAll('.hr-view').forEach(v=>{v.classList.remove('active');v.style.display='none';});
+  var t=document.getElementById(id); t.classList.add('active'); t.style.display='block';
 }
-function openAddStaff() { alert('Add employee form coming soon.'); }
-function approveLeave(btn) {
-  const row = btn.closest('.hr-leave-row');
-  row.querySelector('.s-chip').className = 's-chip s-chip-green';
-  row.querySelector('.s-chip').textContent = 'Approved';
-  btn.style.display = 'none';
-  row.querySelector('.s-btn-danger').style.display = 'none';
+function money(n){ return '$'+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function loadPayslip(name,id,gross,ded,net){
+  document.getElementById('psName').textContent=name;
+  document.getElementById('psId').textContent=id;
+  var basic=gross*0.8, house=gross*0.15, trans=gross*0.05;
+  var paye=ded*0.692, nssa=Math.min(gross*0.045,ded*0.18), aids=paye*0.03, pen=gross*0.02, med=ded-(paye+nssa+aids+pen);
+  document.getElementById('psBasic').textContent=money(basic);
+  document.getElementById('psHouse').textContent=money(house);
+  document.getElementById('psTrans').textContent=money(trans);
+  document.getElementById('psGross').textContent=money(gross);
+  document.getElementById('psPaye').textContent=money(paye);
+  document.getElementById('psNssa').textContent=money(nssa);
+  document.getElementById('psAids').textContent=money(aids);
+  document.getElementById('psPen').textContent=money(pen);
+  document.getElementById('psMed').textContent=money(Math.max(med,0));
+  document.getElementById('psDed').textContent=money(ded);
+  document.getElementById('psNet').textContent=money(net);
 }
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
 </body>
 </html>

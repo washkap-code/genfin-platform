@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioVerify Facial — GENFIN</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/staff.css">
+<style>
+/* ── Scan UI ── */
+.bv-stage { background:#080C12; border-radius:var(--s-r); overflow:hidden; display:grid; grid-template-columns:1fr 380px; height:calc(100vh - 72px - 3rem); }
+
+/* Camera side */
+.bv-cam-area { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#0A0F1A; }
+.bv-cam-feed { position:relative; width:320px; height:320px; }
+.bv-cam-inner { width:100%; height:100%; border-radius:12px; background:#10192A; overflow:hidden; position:relative; display:flex; align-items:center; justify-content:center; }
+/* Face placeholder */
+.bv-face-ph { width:160px; height:200px; border-radius:50%; background:linear-gradient(160deg,#1C2B40 60%,#253650); display:flex; align-items:center; justify-content:center; position:relative; }
+.bv-face-eye { width:12px; height:7px; background:#4A90D9; border-radius:50%; position:absolute; top:58px; }
+.bv-face-eye.l { left:52px; }
+.bv-face-eye.r { right:52px; }
+/* Corner brackets */
+.bv-bracket { position:absolute; width:28px; height:28px; }
+.bv-bracket.tl { top:0; left:0; border-top:3px solid var(--s-gold); border-left:3px solid var(--s-gold); }
+.bv-bracket.tr { top:0; right:0; border-top:3px solid var(--s-gold); border-right:3px solid var(--s-gold); }
+.bv-bracket.bl { bottom:0; left:0; border-bottom:3px solid var(--s-gold); border-left:3px solid var(--s-gold); }
+.bv-bracket.br { bottom:0; right:0; border-bottom:3px solid var(--s-gold); border-right:3px solid var(--s-gold); }
+/* Scan beam */
+.bv-scan-beam { position:absolute; left:0; right:0; height:3px; background:linear-gradient(90deg,transparent,rgba(0,196,138,0.9),transparent); top:0; animation:beamScan 2s linear infinite; box-shadow:0 0 12px rgba(0,196,138,0.6); }
+@keyframes beamScan { 0%{top:0%} 100%{top:100%} }
+/* Face oval overlay */
+.bv-oval { position:absolute; width:140px; height:175px; border:2px solid rgba(0,196,138,0.6); border-radius:50%; top:50%; left:50%; transform:translate(-50%,-50%); animation:pulseOval 1.5s ease-in-out infinite; }
+@keyframes pulseOval { 0%,100%{border-color:rgba(0,196,138,0.6)} 50%{border-color:rgba(0,196,138,1)} }
+/* Dot landmarks */
+.bv-dot { position:absolute; width:5px; height:5px; border-radius:50%; background:rgba(0,196,138,0.8); animation:blinkDot 1.2s ease-in-out infinite; }
+.bv-dot:nth-child(1){top:65px;left:85px;animation-delay:0s}
+.bv-dot:nth-child(2){top:65px;right:85px;animation-delay:.1s}
+.bv-dot:nth-child(3){top:100px;left:50%;margin-left:-3px;animation-delay:.2s}
+.bv-dot:nth-child(4){top:125px;left:78px;animation-delay:.3s}
+.bv-dot:nth-child(5){top:125px;right:78px;animation-delay:.35s}
+.bv-dot:nth-child(6){top:148px;left:50%;margin-left:-3px;animation-delay:.4s}
+.bv-dot:nth-child(7){top:45px;left:50%;margin-left:-3px;animation-delay:.15s}
+.bv-dot:nth-child(8){top:80px;left:65px;animation-delay:.25s}
+.bv-dot:nth-child(9){top:80px;right:65px;animation-delay:.28s}
+@keyframes blinkDot { 0%,100%{opacity:.3} 50%{opacity:1} }
+
+/* Status row */
+.bv-status-row { display:flex; align-items:center; gap:0.5rem; margin-top:1.25rem; }
+.bv-pulse { width:9px; height:9px; border-radius:50%; background:var(--s-scan); box-shadow:0 0 0 3px rgba(0,196,138,0.25); animation:pulseDot 1s ease-in-out infinite; }
+@keyframes pulseDot { 0%,100%{box-shadow:0 0 0 3px rgba(0,196,138,0.25)} 50%{box-shadow:0 0 0 7px rgba(0,196,138,0.08)} }
+.bv-status-text { color:#8BA8C4; font-size:0.78rem; font-weight:600; letter-spacing:0.04em; }
+.bv-progress-bar { width:320px; height:4px; background:#1A2540; border-radius:4px; margin-top:0.75rem; overflow:hidden; }
+.bv-progress-fill { height:100%; background:linear-gradient(90deg,var(--s-gold),var(--s-scan)); border-radius:4px; width:0%; animation:fillBar 3.5s ease-in-out infinite; }
+@keyframes fillBar { 0%{width:0%} 70%{width:100%} 100%{width:100%} }
+
+/* Controls */
+.bv-controls { display:flex; gap:0.75rem; margin-top:1.25rem; }
+.bv-btn { padding:0.5rem 1.25rem; border-radius:8px; font-size:0.8rem; font-weight:700; border:none; cursor:pointer; font-family:var(--s-font-sans); }
+.bv-btn-primary { background:var(--s-gold); color:var(--s-ink); }
+.bv-btn-ghost { background:transparent; border:1px solid #2A3D58; color:#8BA8C4; }
+.bv-btn-danger { background:#E53935; color:#fff; }
+
+/* Overlay result */
+.bv-result-overlay { position:absolute; inset:0; background:rgba(8,12,18,0.92); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; opacity:0; pointer-events:none; transition:opacity 0.4s; border-radius:var(--s-r); }
+.bv-result-overlay.show { opacity:1; pointer-events:all; }
+.bv-result-icon { width:72px; height:72px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; }
+.bv-result-title { color:#fff; font-size:1.1rem; font-weight:800; font-family:var(--s-font-disp); }
+.bv-result-sub { color:#8BA8C4; font-size:0.78rem; text-align:center; }
+
+/* Right panel */
+.bv-panel { background:#0D1421; display:flex; flex-direction:column; overflow-y:auto; }
+.bv-panel-head { padding:1.25rem 1.25rem 1rem; border-bottom:1px solid #1E2D45; }
+.bv-panel-title { color:#fff; font-weight:800; font-size:0.9rem; font-family:var(--s-font-disp); }
+.bv-panel-sub { color:#5A7A9A; font-size:0.72rem; margin-top:2px; }
+.bv-section { padding:1rem 1.25rem; border-bottom:1px solid #1E2D45; }
+.bv-label { font-size:0.64rem; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:#3D5A78; margin-bottom:0.5rem; }
+
+/* Member card */
+.bv-member-card { background:#141E2E; border-radius:8px; padding:0.875rem; }
+.bv-member-name { color:#fff; font-weight:800; font-size:0.9rem; }
+.bv-member-id { color:var(--s-gold); font-size:0.72rem; font-family:var(--s-font-mono); margin-top:1px; }
+.bv-member-plan { display:inline-flex; align-items:center; gap:0.25rem; background:rgba(251,189,62,0.12); color:var(--s-gold); font-size:0.65rem; font-weight:700; padding:2px 7px; border-radius:4px; margin-top:0.375rem; }
+.bv-member-row { display:flex; justify-content:space-between; font-size:0.75rem; margin-top:0.5rem; }
+.bv-member-row span:first-child { color:#4A6585; }
+.bv-member-row span:last-child { color:#8BA8C4; }
+
+/* Confidence meter */
+.bv-conf-bar { height:10px; background:#1A2540; border-radius:5px; overflow:hidden; }
+.bv-conf-fill { height:100%; border-radius:5px; transition:width 2s ease; }
+.bv-conf-val { color:#fff; font-size:1.1rem; font-weight:800; font-family:var(--s-font-mono); }
+
+/* Benefit usage */
+.bv-benefit { display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0; border-bottom:1px solid #1A2540; font-size:0.78rem; }
+.bv-benefit:last-child { border-bottom:none; }
+.bv-benefit-label { color:#5A7A9A; }
+.bv-benefit-val { color:#8BA8C4; font-family:var(--s-font-mono); }
+.bv-benefit-ok { color:var(--s-scan); font-size:0.7rem; font-weight:700; }
+
+/* Audit log */
+.bv-log { display:flex; gap:0.625rem; padding:0.5rem 0; border-bottom:1px solid #1A2540; font-size:0.72rem; }
+.bv-log:last-child { border-bottom:none; }
+.bv-log-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+.bv-log-time { color:#3D5A78; white-space:nowrap; }
+.bv-log-msg { color:#5A7A9A; }
+
+/* Camera controls on cam area */
+.bv-cam-controls { position:absolute; top:1rem; left:1rem; right:1rem; display:flex; justify-content:space-between; align-items:center; }
+.bv-cam-label { background:rgba(0,196,138,0.15); border:1px solid rgba(0,196,138,0.3); color:var(--s-scan); font-size:0.65rem; font-weight:700; padding:3px 8px; border-radius:4px; letter-spacing:0.05em; }
+.bv-cam-id { color:#3D5A78; font-size:0.65rem; font-family:var(--s-font-mono); }
+
+/* Member lookup */
+.bv-lookup { display:flex; gap:0.5rem; }
+.bv-lookup input { flex:1; background:#141E2E; border:1px solid #1E2D45; border-radius:8px; padding:0.5rem 0.75rem; color:#fff; font-size:0.8rem; font-family:var(--s-font-sans); outline:none; }
+.bv-lookup input::placeholder { color:#3D5A78; }
+.bv-lookup input:focus { border-color:var(--s-gold); }
+.bv-lookup button { background:var(--s-gold); border:none; border-radius:8px; padding:0 0.75rem; cursor:pointer; font-weight:700; font-size:0.78rem; font-family:var(--s-font-sans); white-space:nowrap; }
+
+/* Verification mode selector */
+.bv-mode-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+.bv-mode-card { background:#141E2E; border:2px solid #1E2D45; border-radius:8px; padding:0.625rem; cursor:pointer; text-align:center; transition:all 0.12s; }
+.bv-mode-card.active { border-color:var(--s-gold); background:rgba(251,189,62,0.07); }
+.bv-mode-icon { font-size:1.25rem; margin-bottom:0.25rem; }
+.bv-mode-lbl { color:#8BA8C4; font-size:0.7rem; font-weight:700; }
+.bv-mode-card.active .bv-mode-lbl { color:var(--s-gold); }
+</style>
+</head>
+<body>
+<div class="s-layout">
+<!-- Sidebar -->
+<aside class="s-sidebar">
+  <div class="s-sidebar-logo">
+    <div class="s-logo-mark" style="background:linear-gradient(135deg,var(--s-gold),#00C48A);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#14141A" stroke-width="2.5" style="width:16px;height:16px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    </div>
+    <div><div class="s-logo-text">GEN<span>FIN</span></div><div class="s-logo-sub">BioVerify Facial</div></div>
+  </div>
+  <div class="s-nav-section">Overview</div>
+  <a href="superadmin.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+  <a href="staff-members.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Members</a>
+  <a href="staff-claims.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Claims</a>
+  <div class="s-nav-section">Operations</div>
+  <a href="staff-tracking.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Order Tracking</a>
+  <a href="staff-whatsapp.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>WhatsApp</a>
+  <a href="bioverify-facial.html" class="s-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>BioVerify Facial</a>
+  <div class="s-nav-section">Bio</div>
+  <a href="portal-preauth.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Pre-Auth Portal</a>
+  <div class="s-sidebar-foot">
+    <div class="s-foot-av">PH</div>
+    <div><div class="s-foot-name">Pharmacy Terminal</div><div class="s-foot-role">Glen Forest Pharmacy</div></div>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="s-main" style="padding:1.5rem;">
+  <header class="s-topbar" style="margin-bottom:1rem;">
+    <div>
+      <div class="s-page-title">BioVerify Facial</div>
+      <div class="s-page-sub">Biometric member verification · Camera 01 · Online</div>
+    </div>
+    <div style="display:flex;gap:0.75rem;align-items:center;">
+      <div style="display:flex;align-items:center;gap:0.5rem;background:#0D1421;border:1px solid #1E2D45;border-radius:8px;padding:0.375rem 0.75rem;">
+        <div style="width:7px;height:7px;border-radius:50%;background:var(--s-scan);box-shadow:0 0 0 3px rgba(0,196,138,0.2);"></div>
+        <span style="font-size:0.72rem;color:#5A7A9A;font-weight:700;">CAMERA ACTIVE</span>
+      </div>
+      <button class="s-btn s-btn-ghost" onclick="alert('Opens audit log for this terminal')">Audit Log</button>
+    </div>
+  </header>
+
+  <!-- Stats bar -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;margin-bottom:1rem;">
+    <div style="background:#0D1421;border:1px solid #1E2D45;border-radius:var(--s-r);padding:0.75rem;">
+      <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#3D5A78;">Verified Today</div>
+      <div style="font-size:1.5rem;font-weight:800;color:#fff;font-family:var(--s-font-mono);margin-top:0.25rem;">31</div>
+    </div>
+    <div style="background:#0D1421;border:1px solid #1E2D45;border-radius:var(--s-r);padding:0.75rem;">
+      <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#3D5A78;">Match Rate</div>
+      <div style="font-size:1.5rem;font-weight:800;color:var(--s-scan);font-family:var(--s-font-mono);margin-top:0.25rem;">97.4%</div>
+    </div>
+    <div style="background:#0D1421;border:1px solid #1E2D45;border-radius:var(--s-r);padding:0.75rem;">
+      <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#3D5A78;">Failed / Flagged</div>
+      <div style="font-size:1.5rem;font-weight:800;color:#E53935;font-family:var(--s-font-mono);margin-top:0.25rem;">1</div>
+    </div>
+    <div style="background:#0D1421;border:1px solid #1E2D45;border-radius:var(--s-r);padding:0.75rem;">
+      <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#3D5A78;">Avg Match Time</div>
+      <div style="font-size:1.5rem;font-weight:800;color:var(--s-gold);font-family:var(--s-font-mono);margin-top:0.25rem;">1.4s</div>
+    </div>
+  </div>
+
+  <!-- Main scan UI -->
+  <div class="bv-stage">
+    <!-- Camera area -->
+    <div class="bv-cam-area">
+      <div class="bv-cam-controls">
+        <div class="bv-cam-label" id="statusChip">● SCANNING</div>
+        <div class="bv-cam-id">BVF-CAM-01 · GLEN FOREST</div>
+      </div>
+
+      <div style="text-align:center;">
+        <div style="color:#3D5A78;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;margin-bottom:0.875rem;text-transform:uppercase;">Position face within frame</div>
+        <div class="bv-cam-feed">
+          <div class="bv-cam-inner" id="camInner">
+            <!-- Simulated camera view -->
+            <div class="bv-face-ph">
+              <div class="bv-face-eye l"></div>
+              <div class="bv-face-eye r"></div>
+            </div>
+            <!-- Face landmark dots -->
+            <div class="bv-dot" style="position:absolute;top:78px;left:132px;"></div>
+            <div class="bv-dot" style="position:absolute;top:78px;right:128px;"></div>
+            <div class="bv-dot" style="position:absolute;top:110px;left:157px;"></div>
+            <div class="bv-dot" style="position:absolute;top:130px;left:140px;"></div>
+            <div class="bv-dot" style="position:absolute;top:130px;right:136px;"></div>
+            <div class="bv-dot" style="position:absolute;top:148px;left:157px;"></div>
+            <div class="bv-dot" style="position:absolute;top:60px;left:157px;"></div>
+            <!-- Scan beam -->
+            <div class="bv-scan-beam" id="scanBeam"></div>
+            <!-- Oval guide -->
+            <div class="bv-oval" id="faceOval"></div>
+          </div>
+          <!-- Corner brackets -->
+          <div class="bv-bracket tl"></div>
+          <div class="bv-bracket tr"></div>
+          <div class="bv-bracket bl"></div>
+          <div class="bv-bracket br"></div>
+
+          <!-- Result overlay -->
+          <div class="bv-result-overlay" id="resultOverlay">
+            <div class="bv-result-icon" id="resultIcon"></div>
+            <div class="bv-result-title" id="resultTitle"></div>
+            <div class="bv-result-sub" id="resultSub"></div>
+            <button class="bv-btn bv-btn-ghost" onclick="resetScan()" style="margin-top:0.5rem;">Scan Again</button>
+          </div>
+        </div>
+
+        <div class="bv-status-row">
+          <div class="bv-pulse" id="statusPulse"></div>
+          <div class="bv-status-text" id="statusLabel">Analysing biometric data…</div>
+        </div>
+        <div class="bv-progress-bar"><div class="bv-progress-fill" id="progressFill"></div></div>
+
+        <div class="bv-controls" style="justify-content:center;">
+          <button class="bv-btn bv-btn-primary" onclick="simulateMatch()">Simulate MATCH</button>
+          <button class="bv-btn bv-btn-danger" onclick="simulateFail()">Simulate FAIL</button>
+          <button class="bv-btn bv-btn-ghost" onclick="resetScan()">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right panel -->
+    <div class="bv-panel">
+      <div class="bv-panel-head">
+        <div class="bv-panel-title">Member Lookup</div>
+        <div class="bv-panel-sub">Search by name, ID, or mobile</div>
+      </div>
+
+      <div class="bv-section">
+        <div class="bv-label">Search Member</div>
+        <div class="bv-lookup">
+          <input type="text" placeholder="GF-024918 or +263 77…" id="memberSearch">
+          <button onclick="loadMember()">Find</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.375rem;margin-top:0.5rem;">
+          <button class="bv-btn bv-btn-ghost" style="font-size:0.7rem;padding:0.3rem;" onclick="document.getElementById('memberSearch').value='GF-024918';loadMember()">GF-024918</button>
+          <button class="bv-btn bv-btn-ghost" style="font-size:0.7rem;padding:0.3rem;" onclick="document.getElementById('memberSearch').value='GF-031204';loadMember()">GF-031204</button>
+        </div>
+      </div>
+
+      <div class="bv-section" id="memberSection">
+        <div class="bv-label">Loaded Member</div>
+        <div class="bv-member-card">
+          <div class="bv-member-name" id="mName">Chipo Mabika</div>
+          <div class="bv-member-id" id="mId">GF-024918</div>
+          <div class="bv-member-plan">Platinum Plan</div>
+          <div class="bv-member-row"><span>DoB</span><span>14 Mar 1988</span></div>
+          <div class="bv-member-row"><span>Dependants</span><span>3 covered</span></div>
+          <div class="bv-member-row"><span>Status</span><span style="color:var(--s-scan);">Active ●</span></div>
+          <div class="bv-member-row"><span>Last verified</span><span>2 Jul 2026</span></div>
+        </div>
+      </div>
+
+      <div class="bv-section">
+        <div class="bv-label">Biometric Match</div>
+        <div style="display:flex;align-items:baseline;gap:0.5rem;margin-bottom:0.5rem;">
+          <div class="bv-conf-val" id="confVal">—</div>
+          <div style="font-size:0.7rem;color:#3D5A78;">confidence score</div>
+        </div>
+        <div class="bv-conf-bar"><div class="bv-conf-fill" id="confFill" style="width:0%;background:var(--s-scan);"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:#3D5A78;margin-top:3px;"><span>Low</span><span>Threshold: 80%</span><span>High</span></div>
+      </div>
+
+      <div class="bv-section">
+        <div class="bv-label">Verification Mode</div>
+        <div class="bv-mode-grid">
+          <div class="bv-mode-card active" onclick="setMode(this)">
+            <div class="bv-mode-icon">👤</div>
+            <div class="bv-mode-lbl">Face ID</div>
+          </div>
+          <div class="bv-mode-card" onclick="setMode(this)">
+            <div class="bv-mode-icon">☝️</div>
+            <div class="bv-mode-lbl">Fingerprint</div>
+          </div>
+          <div class="bv-mode-card" onclick="setMode(this)">
+            <div class="bv-mode-icon">🪪</div>
+            <div class="bv-mode-lbl">ID Override</div>
+          </div>
+          <div class="bv-mode-card" onclick="setMode(this)">
+            <div class="bv-mode-icon">👨‍💼</div>
+            <div class="bv-mode-lbl">Staff Auth</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bv-section">
+        <div class="bv-label">Today's Benefits Available</div>
+        <div class="bv-benefit"><span class="bv-benefit-label">GP Consultation</span><span class="bv-benefit-val">$240</span><span class="bv-benefit-ok">✓ Available</span></div>
+        <div class="bv-benefit"><span class="bv-benefit-label">Pharmacy</span><span class="bv-benefit-val">$820</span><span class="bv-benefit-ok">✓ Available</span></div>
+        <div class="bv-benefit"><span class="bv-benefit-label">Specialist</span><span class="bv-benefit-val">$800</span><span class="bv-benefit-ok">✓ Available</span></div>
+        <div class="bv-benefit"><span class="bv-benefit-label">Hospital</span><span class="bv-benefit-val">$12,000</span><span class="bv-benefit-ok">✓ Available</span></div>
+      </div>
+
+      <div class="bv-section">
+        <div class="bv-label">Audit Trail</div>
+        <div class="bv-log">
+          <div class="bv-log-dot" style="background:var(--s-scan);"></div>
+          <div class="bv-log-time">12:31</div>
+          <div class="bv-log-msg">GF-024918 verified — Confidence 96.4%</div>
+        </div>
+        <div class="bv-log">
+          <div class="bv-log-dot" style="background:var(--s-scan);"></div>
+          <div class="bv-log-time">12:14</div>
+          <div class="bv-log-msg">GF-031204 verified — Confidence 94.1%</div>
+        </div>
+        <div class="bv-log">
+          <div class="bv-log-dot" style="background:#E53935;"></div>
+          <div class="bv-log-time">11:52</div>
+          <div class="bv-log-msg">GF-019843 — FAILED · Staff override applied</div>
+        </div>
+        <div class="bv-log">
+          <div class="bv-log-dot" style="background:var(--s-scan);"></div>
+          <div class="bv-log-time">11:38</div>
+          <div class="bv-log-msg">GF-027011 verified — Confidence 98.2%</div>
+        </div>
+        <div class="bv-log" id="auditNew" style="display:none;">
+          <div class="bv-log-dot" id="auditNewDot"></div>
+          <div class="bv-log-time" id="auditNewTime"></div>
+          <div class="bv-log-msg" id="auditNewMsg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+function setMode(el) {
+  document.querySelectorAll('.bv-mode-card').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+function loadMember() {
+  const v = document.getElementById('memberSearch').value.trim();
+  if (!v) return;
+  const members = {
+    'GF-024918':{ name:'Chipo Mabika', id:'GF-024918' },
+    'GF-031204':{ name:'Farai Mutasa', id:'GF-031204' },
+  };
+  const found = members[v] || { name:'Member Found', id:v };
+  document.getElementById('mName').textContent = found.name;
+  document.getElementById('mId').textContent = found.id;
+}
+function simulateMatch() {
+  const conf = (92 + Math.random()*7).toFixed(1);
+  document.getElementById('statusChip').textContent = '● MATCHED';
+  document.getElementById('statusChip').style.background = 'rgba(0,196,138,0.15)';
+  document.getElementById('statusChip').style.borderColor = 'rgba(0,196,138,0.4)';
+  document.getElementById('statusChip').style.color = 'var(--s-scan)';
+  document.getElementById('statusLabel').textContent = 'Identity confirmed';
+  document.getElementById('confVal').textContent = conf + '%';
+  document.getElementById('confFill').style.width = conf + '%';
+  document.getElementById('confFill').style.background = 'var(--s-scan)';
+  const ov = document.getElementById('resultOverlay');
+  document.getElementById('resultIcon').innerHTML = '<div style="width:72px;height:72px;border-radius:50%;background:#00C48A;display:flex;align-items:center;justify-content:center;font-size:2rem;">✓</div>';
+  document.getElementById('resultTitle').textContent = 'IDENTITY VERIFIED';
+  document.getElementById('resultTitle').style.color = 'var(--s-scan)';
+  document.getElementById('resultSub').innerHTML = document.getElementById('mName').textContent+' · '+document.getElementById('mId').textContent+'<br>Confidence: '+conf+'%';
+  ov.classList.add('show');
+  // Audit
+  const t = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('auditNew').style.display = 'flex';
+  document.getElementById('auditNewDot').style.background = 'var(--s-scan)';
+  document.getElementById('auditNewTime').textContent = t;
+  document.getElementById('auditNewMsg').textContent = document.getElementById('mId').textContent+' verified — Confidence '+conf+'%';
+}
+function simulateFail() {
+  document.getElementById('statusChip').textContent = '✕ FAILED';
+  document.getElementById('statusChip').style.background = 'rgba(229,57,53,0.15)';
+  document.getElementById('statusChip').style.borderColor = 'rgba(229,57,53,0.4)';
+  document.getElementById('statusChip').style.color = '#E53935';
+  document.getElementById('statusLabel').textContent = 'Verification failed — low confidence';
+  document.getElementById('confVal').textContent = '38.2%';
+  document.getElementById('confFill').style.width = '38%';
+  document.getElementById('confFill').style.background = '#E53935';
+  const ov = document.getElementById('resultOverlay');
+  document.getElementById('resultIcon').innerHTML = '<div style="width:72px;height:72px;border-radius:50%;background:#E53935;display:flex;align-items:center;justify-content:center;font-size:2rem;">✕</div>';
+  document.getElementById('resultTitle').textContent = 'VERIFICATION FAILED';
+  document.getElementById('resultTitle').style.color = '#E53935';
+  document.getElementById('resultSub').innerHTML = 'Confidence 38.2% — below threshold of 80%<br>Try again or use staff override';
+  ov.classList.add('show');
+  // Audit
+  const t = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('auditNew').style.display = 'flex';
+  document.getElementById('auditNewDot').style.background = '#E53935';
+  document.getElementById('auditNewTime').textContent = t;
+  document.getElementById('auditNewMsg').textContent = document.getElementById('mId').textContent+' — FAILED · Confidence 38.2%';
+}
+function resetScan() {
+  document.getElementById('resultOverlay').classList.remove('show');
+  document.getElementById('statusChip').textContent = '● SCANNING';
+  document.getElementById('statusChip').style.background = 'rgba(0,196,138,0.15)';
+  document.getElementById('statusChip').style.borderColor = 'rgba(0,196,138,0.3)';
+  document.getElementById('statusChip').style.color = 'var(--s-scan)';
+  document.getElementById('statusLabel').textContent = 'Analysing biometric data…';
+  document.getElementById('confVal').textContent = '—';
+  document.getElementById('confFill').style.width = '0%';
+}
+</script>
+</body>
+</html>
