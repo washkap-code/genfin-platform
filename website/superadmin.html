@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Admin — GENFIN Operations</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/staff.css">
+<style>
+.sa-system-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.sa-system-card {
+  background: var(--s-card); border: 1px solid var(--s-border);
+  border-radius: var(--s-r); padding: 1.125rem; box-shadow: var(--s-shadow);
+  display: flex; align-items: center; gap: 0.875rem;
+}
+.sa-sys-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.sa-sys-dot.green { background: var(--s-scan); box-shadow: 0 0 0 3px rgba(0,196,138,0.15); }
+.sa-sys-dot.gold  { background: var(--s-gold); box-shadow: 0 0 0 3px rgba(251,189,62,0.2); }
+.sa-sys-dot.red   { background: var(--s-danger); box-shadow: 0 0 0 3px rgba(229,57,53,0.15); }
+.sa-sys-name { font-weight: 700; font-size: 0.8125rem; color: var(--s-ink); }
+.sa-sys-status { font-size: 0.7rem; color: var(--s-muted); }
+.sa-sys-uptime { margin-left: auto; font-family: var(--s-font-mono); font-size: 0.7rem; color: var(--s-faint); }
+
+.sa-user-row {
+  display: flex; align-items: center; gap: 0.875rem;
+  padding: 0.875rem 1.25rem; border-bottom: 1px solid var(--s-border);
+}
+.sa-user-row:last-child { border-bottom: none; }
+.sa-user-info { flex: 1; }
+.sa-user-name { font-weight: 700; font-size: 0.8125rem; color: var(--s-ink); }
+.sa-user-meta { font-size: 0.7rem; color: var(--s-muted); margin-top: 0.125rem; }
+.sa-user-actions { display: flex; gap: 0.375rem; }
+
+.sa-activity-item {
+  display: flex; gap: 0.75rem; padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--s-border); align-items: flex-start;
+}
+.sa-activity-item:last-child { border-bottom: none; }
+.sa-activity-dot {
+  width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0;
+}
+.sa-activity-text { font-size: 0.8125rem; color: var(--s-ink); line-height: 1.5; }
+.sa-activity-time { font-size: 0.7rem; color: var(--s-faint); white-space: nowrap; margin-left: auto; padding-top: 1px; }
+</style>
+</head>
+<body>
+<div class="s-layout">
+
+  <!-- Sidebar -->
+  <aside class="s-sidebar">
+    <div class="s-sidebar-logo">
+      <div class="s-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#14141A" stroke-width="2.5" style="width:16px;height:16px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div>
+        <div class="s-logo-text">GEN<span>FIN</span></div>
+        <div class="s-logo-sub">Super Admin</div>
+      </div>
+    </div>
+
+    <div class="s-nav-section">Overview</div>
+    <a href="superadmin.html" class="s-nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <a href="staff-members.html" class="s-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Members
+      <span class="s-nav-badge">60,821</span>
+    </a>
+    <a href="staff-claims.html" class="s-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Claims
+      <span class="s-nav-badge warn">47</span>
+    </a>
+
+    <div class="s-nav-section">Business ops</div>
+    <a href="staff-hr.html" class="s-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      HR &amp; People
+    </a>
+    <a href="staff-finance.html" class="s-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Finance
+    </a>
+    <a href="staff-inventory.html" class="s-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      Inventory
+    </a>
+
+    <div class="s-nav-section">Admin</div>
+    <a href="#" class="s-nav-item" onclick="openAddUser()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+      Add staff user
+    </a>
+    <a href="#" class="s-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Audit log
+    </a>
+    <a href="#" class="s-nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 0-14.14 0"/><path d="M4.93 19.07a10 10 0 0 0 14.14 0"/></svg>
+      System config
+    </a>
+
+    <div class="s-sidebar-foot">
+      <div class="s-foot-av">RK</div>
+      <div>
+        <div class="s-foot-name">Rutendo Kanyowa</div>
+        <div class="s-foot-role">System Administrator</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="s-main">
+    <div class="s-topbar">
+      <div class="s-topbar-title">Platform overview</div>
+      <div class="s-topbar-actions">
+        <input class="s-topbar-search" placeholder="Search members, staff, claims…">
+        <button class="s-btn s-btn-primary" onclick="openAddUser()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add user
+        </button>
+        <a href="login-select.html" class="s-btn s-btn-ghost">Sign out</a>
+      </div>
+    </div>
+
+    <div class="s-body">
+
+      <!-- KPI cards -->
+      <div class="s-kpi-grid">
+        <div class="s-kpi">
+          <div class="s-kpi-label">Total members</div>
+          <div class="s-kpi-val">60,821</div>
+          <div class="s-kpi-delta up">↑ 4.2% this quarter</div>
+        </div>
+        <div class="s-kpi">
+          <div class="s-kpi-label">Claims this month</div>
+          <div class="s-kpi-val">3,204</div>
+          <div class="s-kpi-delta neutral">↑ 1.8% vs last month</div>
+        </div>
+        <div class="s-kpi">
+          <div class="s-kpi-label">Premiums collected (Jul)</div>
+          <div class="s-kpi-val">$2.41M</div>
+          <div class="s-kpi-delta up">98.4% collection rate</div>
+        </div>
+        <div class="s-kpi">
+          <div class="s-kpi-label">Staff headcount</div>
+          <div class="s-kpi-val">84</div>
+          <div class="s-kpi-delta neutral">6 positions open</div>
+        </div>
+      </div>
+
+      <!-- System health + activity -->
+      <div class="s-grid-2" style="margin-bottom:1.5rem">
+
+        <!-- System health -->
+        <div class="s-card">
+          <div class="s-card-head">
+            <h3>System health</h3>
+            <div style="display:flex;align-items:center;gap:0.4rem">
+              <div class="s-online-dot"></div>
+              <span style="font-size:0.75rem;font-weight:700;color:var(--s-scan)">All systems operational</span>
+            </div>
+          </div>
+          <div class="s-card-body" style="padding:0">
+            <div class="sa-system-grid" style="padding:1.25rem;gap:0.75rem">
+              <div class="sa-system-card">
+                <div class="sa-sys-dot green"></div>
+                <div><div class="sa-sys-name">Member portal</div><div class="sa-sys-status">Operational</div></div>
+                <div class="sa-sys-uptime">99.99%</div>
+              </div>
+              <div class="sa-system-card">
+                <div class="sa-sys-dot green"></div>
+                <div><div class="sa-sys-name">BioVerify API</div><div class="sa-sys-status">Operational</div></div>
+                <div class="sa-sys-uptime">100%</div>
+              </div>
+              <div class="sa-system-card">
+                <div class="sa-sys-dot green"></div>
+                <div><div class="sa-sys-name">Claims engine</div><div class="sa-sys-status">Operational</div></div>
+                <div class="sa-sys-uptime">99.97%</div>
+              </div>
+              <div class="sa-system-card">
+                <div class="sa-sys-dot green"></div>
+                <div><div class="sa-sys-name">SMS gateway</div><div class="sa-sys-status">Operational</div></div>
+                <div class="sa-sys-uptime">99.95%</div>
+              </div>
+              <div class="sa-system-card">
+                <div class="sa-sys-dot gold"></div>
+                <div><div class="sa-sys-name">Backup storage</div><div class="sa-sys-status">Maintenance</div></div>
+                <div class="sa-sys-uptime">—</div>
+              </div>
+              <div class="sa-system-card">
+                <div class="sa-sys-dot green"></div>
+                <div><div class="sa-sys-name">Payment rails</div><div class="sa-sys-status">Operational</div></div>
+                <div class="sa-sys-uptime">100%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audit / activity -->
+        <div class="s-card">
+          <div class="s-card-head">
+            <h3>Recent activity</h3>
+            <button class="s-btn s-btn-ghost s-btn-sm">View all</button>
+          </div>
+          <div style="padding: 0">
+            <div class="sa-activity-item">
+              <div class="sa-activity-dot" style="background:var(--s-scan)"></div>
+              <div class="sa-activity-text"><strong>Claim #CLM-0041981</strong> approved — $340 specialist consultation</div>
+              <div class="sa-activity-time">2 min ago</div>
+            </div>
+            <div class="sa-activity-item">
+              <div class="sa-activity-dot" style="background:var(--s-info)"></div>
+              <div class="sa-activity-text"><strong>Nokuthula Dube</strong> (GF-294401) enrolled via employer group plan</div>
+              <div class="sa-activity-time">14 min ago</div>
+            </div>
+            <div class="sa-activity-item">
+              <div class="sa-activity-dot" style="background:var(--s-gold)"></div>
+              <div class="sa-activity-text">Pre-auth <strong>PA-2026-00741</strong> flagged for clinical review</div>
+              <div class="sa-activity-time">28 min ago</div>
+            </div>
+            <div class="sa-activity-item">
+              <div class="sa-activity-dot" style="background:var(--s-danger)"></div>
+              <div class="sa-activity-text"><strong>Claim #CLM-0041970</strong> declined — benefit limit exceeded for dental</div>
+              <div class="sa-activity-time">41 min ago</div>
+            </div>
+            <div class="sa-activity-item">
+              <div class="sa-activity-dot" style="background:var(--s-info)"></div>
+              <div class="sa-activity-text">Staff user <strong>Simba Murambwe</strong> logged in from Harare CBD office</div>
+              <div class="sa-activity-time">1 hr ago</div>
+            </div>
+            <div class="sa-activity-item">
+              <div class="sa-activity-dot" style="background:var(--s-scan)"></div>
+              <div class="sa-activity-text">Premium batch <strong>JUL-0041</strong> — 3,201 members billed, $2.41M collected</div>
+              <div class="sa-activity-time">3 hrs ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Staff users -->
+      <div class="s-card" style="margin-bottom:1.5rem">
+        <div class="s-card-head">
+          <h3>Staff users</h3>
+          <div style="display:flex;gap:0.5rem">
+            <button class="s-btn s-btn-ghost s-btn-sm">Roles &amp; permissions</button>
+            <button class="s-btn s-btn-primary s-btn-sm" onclick="openAddUser()">+ Add user</button>
+          </div>
+        </div>
+        <div>
+          <div class="sa-user-row">
+            <div class="s-avatar s-avatar-sm" style="background:rgba(59,91,219,0.1);color:var(--s-info)">RK</div>
+            <div class="s-user-info">
+              <div class="sa-user-name">Rutendo Kanyowa</div>
+              <div class="sa-user-meta">System Administrator · rutendo@genfin.health · Last login: today, 08:32</div>
+            </div>
+            <span class="s-chip s-chip-blue">Super Admin</span>
+            <div class="sa-user-actions">
+              <button class="s-btn s-btn-ghost s-btn-sm">Edit</button>
+            </div>
+          </div>
+          <div class="sa-user-row">
+            <div class="s-avatar s-avatar-sm" style="background:rgba(0,196,138,0.1);color:#00A872">TM</div>
+            <div class="s-user-info">
+              <div class="sa-user-name">Tendai Muponda</div>
+              <div class="sa-user-meta">Claims Manager · tendai@genfin.health · Last login: today, 09:14</div>
+            </div>
+            <span class="s-chip s-chip-green">Claims Manager</span>
+            <div class="sa-user-actions">
+              <button class="s-btn s-btn-ghost s-btn-sm">Edit</button>
+            </div>
+          </div>
+          <div class="sa-user-row">
+            <div class="s-avatar s-avatar-sm" style="background:rgba(251,189,62,0.15);color:#946500">FN</div>
+            <div class="s-user-info">
+              <div class="sa-user-name">Faith Ncube</div>
+              <div class="sa-user-meta">Finance Officer · faith@genfin.health · Last login: yesterday</div>
+            </div>
+            <span class="s-chip s-chip-gold">Finance</span>
+            <div class="sa-user-actions">
+              <button class="s-btn s-btn-ghost s-btn-sm">Edit</button>
+            </div>
+          </div>
+          <div class="sa-user-row">
+            <div class="s-avatar s-avatar-sm" style="background:rgba(20,20,26,0.07);color:var(--s-muted)">SM</div>
+            <div class="s-user-info">
+              <div class="sa-user-name">Simba Murambwe</div>
+              <div class="sa-user-meta">Claims Adjudicator · simba@genfin.health · Last login: today, 10:01</div>
+            </div>
+            <span class="s-chip s-chip-gray">Claims Officer</span>
+            <div class="sa-user-actions">
+              <button class="s-btn s-btn-ghost s-btn-sm">Edit</button>
+              <button class="s-btn s-btn-danger s-btn-sm">Suspend</button>
+            </div>
+          </div>
+          <div class="sa-user-row">
+            <div class="s-avatar s-avatar-sm" style="background:rgba(20,20,26,0.07);color:var(--s-muted)">CD</div>
+            <div class="s-user-info">
+              <div class="sa-user-name">Chido Dlamini</div>
+              <div class="sa-user-meta">HR Coordinator · chido@genfin.health · Last login: 3 days ago</div>
+            </div>
+            <span class="s-chip s-chip-gray">HR Officer</span>
+            <div class="sa-user-actions">
+              <button class="s-btn s-btn-ghost s-btn-sm">Edit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module navigation cards -->
+      <h2 class="s-section-title">Business modules</h2>
+      <div class="s-grid-3" style="margin-bottom:1.5rem">
+        <a href="staff-claims.html" class="s-card" style="text-decoration:none;padding:1.5rem;display:block;transition:transform 0.15s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+          <div style="font-size:1.625rem;margin-bottom:0.5rem">📋</div>
+          <div style="font-family:var(--s-font-disp);font-weight:700;font-size:0.9375rem;color:var(--s-ink);margin-bottom:0.25rem">Claims processing</div>
+          <div style="font-size:0.8rem;color:var(--s-muted)">Adjudicate, approve, or decline claims. Manage appeals and EOBs.</div>
+          <div style="margin-top:0.875rem"><span class="s-chip s-chip-red">47 pending</span></div>
+        </a>
+        <a href="staff-hr.html" class="s-card" style="text-decoration:none;padding:1.5rem;display:block;transition:transform 0.15s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+          <div style="font-size:1.625rem;margin-bottom:0.5rem">👥</div>
+          <div style="font-family:var(--s-font-disp);font-weight:700;font-size:0.9375rem;color:var(--s-ink);margin-bottom:0.25rem">HR &amp; People</div>
+          <div style="font-size:0.8rem;color:var(--s-muted)">Staff directory, leave management, payroll, and onboarding.</div>
+          <div style="margin-top:0.875rem"><span class="s-chip s-chip-gold">6 open roles</span></div>
+        </a>
+        <a href="staff-finance.html" class="s-card" style="text-decoration:none;padding:1.5rem;display:block;transition:transform 0.15s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+          <div style="font-size:1.625rem;margin-bottom:0.5rem">💰</div>
+          <div style="font-family:var(--s-font-disp);font-weight:700;font-size:0.9375rem;color:var(--s-ink);margin-bottom:0.25rem">Finance</div>
+          <div style="font-size:0.8rem;color:var(--s-muted)">Premium collections, claims payments, GL, and financial reporting.</div>
+          <div style="margin-top:0.875rem"><span class="s-chip s-chip-green">$2.41M collected</span></div>
+        </a>
+        <a href="staff-inventory.html" class="s-card" style="text-decoration:none;padding:1.5rem;display:block;transition:transform 0.15s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+          <div style="font-size:1.625rem;margin-bottom:0.5rem">📦</div>
+          <div style="font-family:var(--s-font-disp);font-weight:700;font-size:0.9375rem;color:var(--s-ink);margin-bottom:0.25rem">Inventory</div>
+          <div style="font-size:0.8rem;color:var(--s-muted)">Chronic medication stock, pharmacy partner network, and reorder alerts.</div>
+          <div style="margin-top:0.875rem"><span class="s-chip s-chip-gold">3 items low stock</span></div>
+        </a>
+        <a href="staff-members.html" class="s-card" style="text-decoration:none;padding:1.5rem;display:block;transition:transform 0.15s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+          <div style="font-size:1.625rem;margin-bottom:0.5rem">🪪</div>
+          <div style="font-family:var(--s-font-disp);font-weight:700;font-size:0.9375rem;color:var(--s-ink);margin-bottom:0.25rem">Member management</div>
+          <div style="font-size:0.8rem;color:var(--s-muted)">Search and manage members, enrollment, plan changes, and biometric status.</div>
+          <div style="margin-top:0.875rem"><span class="s-chip s-chip-blue">60,821 active</span></div>
+        </a>
+        <div class="s-card" style="padding:1.5rem;opacity:0.6">
+          <div style="font-size:1.625rem;margin-bottom:0.5rem">🏥</div>
+          <div style="font-family:var(--s-font-disp);font-weight:700;font-size:0.9375rem;color:var(--s-ink);margin-bottom:0.25rem">Provider management</div>
+          <div style="font-size:0.8rem;color:var(--s-muted)">Accreditation, provider network, tariff schedules, and payment management.</div>
+          <div style="margin-top:0.875rem"><span class="s-chip s-chip-gray">Coming soon</span></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Add user modal -->
+<div class="s-modal-overlay" id="addUserModal" style="display:none">
+  <div class="s-modal" onclick="event.stopPropagation()">
+    <div class="s-modal-head">
+      <div class="s-modal-title">Add staff user</div>
+      <button class="s-modal-close" onclick="closeAddUser()">×</button>
+    </div>
+    <div class="s-form-row">
+      <div class="s-form-group">
+        <label class="s-label">First name</label>
+        <input class="s-input" type="text" placeholder="Tendai">
+      </div>
+      <div class="s-form-group">
+        <label class="s-label">Last name</label>
+        <input class="s-input" type="text" placeholder="Muponda">
+      </div>
+    </div>
+    <div class="s-form-group">
+      <label class="s-label">Email address</label>
+      <input class="s-input" type="email" placeholder="staff@genfin.health">
+    </div>
+    <div class="s-form-row">
+      <div class="s-form-group">
+        <label class="s-label">Role</label>
+        <select class="s-select">
+          <option>Claims Adjudicator</option>
+          <option>Claims Manager</option>
+          <option>Finance Officer</option>
+          <option>HR Coordinator</option>
+          <option>Inventory Manager</option>
+          <option>Member Services</option>
+          <option>System Administrator</option>
+        </select>
+      </div>
+      <div class="s-form-group">
+        <label class="s-label">Department</label>
+        <select class="s-select">
+          <option>Claims</option>
+          <option>Finance</option>
+          <option>Human Resources</option>
+          <option>IT</option>
+          <option>Member Services</option>
+          <option>Operations</option>
+        </select>
+      </div>
+    </div>
+    <div class="s-alert s-alert-info" style="margin-bottom:0">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      A temporary password will be emailed to the staff member. They will be required to change it on first login.
+    </div>
+    <div class="s-modal-foot">
+      <button class="s-btn s-btn-ghost" onclick="closeAddUser()">Cancel</button>
+      <button class="s-btn s-btn-primary" onclick="confirmAddUser()">Create user account</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openAddUser() { document.getElementById('addUserModal').style.display = 'flex'; }
+function closeAddUser() { document.getElementById('addUserModal').style.display = 'none'; }
+function confirmAddUser() {
+  closeAddUser();
+  alert('Staff user created. Temporary credentials sent by email.');
+}
+</script>
+</body>
+</html>

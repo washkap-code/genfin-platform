@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance — GENFIN Staff</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/staff.css">
+<style>
+.fin-tabs { display:flex; gap:0; border-bottom:2px solid var(--s-border); margin-bottom:1.5rem; }
+.fin-tab { font-family:var(--s-font-sans); font-weight:700; font-size:0.8375rem; padding:0.75rem 1.25rem; border:none; background:none; cursor:pointer; color:var(--s-muted); border-bottom:2px solid transparent; margin-bottom:-2px; transition:all 0.15s; }
+.fin-tab.active { color:var(--s-ink); border-bottom-color:var(--s-ink); }
+.fin-tab:hover:not(.active) { color:var(--s-ink); }
+.fin-view { display:none; }
+.fin-view.active { display:block; }
+
+.fin-summary-row { display:flex; justify-content:space-between; align-items:center; padding:0.75rem 0; border-bottom:1px solid var(--s-border); font-size:0.875rem; }
+.fin-summary-row:last-child { border-bottom:none; }
+.fin-summary-label { color:var(--s-muted); }
+.fin-summary-val { font-family:var(--s-font-mono); font-weight:700; color:var(--s-ink); }
+.fin-summary-total { font-size:1rem; }
+.fin-summary-total .fin-summary-val { font-size:1.125rem; color:var(--s-scan); }
+</style>
+</head>
+<body>
+<div class="s-layout">
+
+  <!-- Sidebar -->
+  <aside class="s-sidebar">
+    <div class="s-sidebar-logo">
+      <div class="s-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#14141A" stroke-width="2.5" style="width:16px;height:16px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <div>
+        <div class="s-logo-text">GEN<span>FIN</span></div>
+        <div class="s-logo-sub">Finance</div>
+      </div>
+    </div>
+    <div class="s-nav-section">Navigation</div>
+    <a href="superadmin.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="staff-claims.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Claims<span class="s-nav-badge">47</span></a>
+    <a href="staff-hr.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>HR &amp; People</a>
+    <a href="staff-finance.html" class="s-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Finance</a>
+    <a href="staff-inventory.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Inventory</a>
+    <a href="staff-members.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Members</a>
+    <div class="s-sidebar-foot">
+      <div class="s-foot-av">FN</div>
+      <div><div class="s-foot-name">Faith Ncube</div><div class="s-foot-role">Finance Officer</div></div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="s-main">
+    <div class="s-topbar">
+      <div class="s-topbar-title">Finance</div>
+      <div class="s-topbar-actions">
+        <select class="s-select" style="padding:7px 12px;font-size:0.8rem;width:auto">
+          <option>July 2026</option><option>June 2026</option><option>May 2026</option>
+          <option>Q2 2026 (Apr–Jun)</option><option>Q1 2026 (Jan–Mar)</option>
+        </select>
+        <button class="s-btn s-btn-ghost">Export</button>
+        <button class="s-btn s-btn-primary">Generate report</button>
+      </div>
+    </div>
+
+    <div class="s-body">
+
+      <div class="s-kpi-grid">
+        <div class="s-kpi">
+          <div class="s-kpi-label">Premiums collected (Jul)</div>
+          <div class="s-kpi-val">$2.41M</div>
+          <div class="s-kpi-delta up">98.4% collection rate</div>
+        </div>
+        <div class="s-kpi">
+          <div class="s-kpi-label">Claims paid (Jul)</div>
+          <div class="s-kpi-val">$481K</div>
+          <div class="s-kpi-sub">3,204 claims</div>
+        </div>
+        <div class="s-kpi">
+          <div class="s-kpi-label">Operating surplus (Jul)</div>
+          <div class="s-kpi-val">$1.93M</div>
+          <div class="s-kpi-delta up">Loss ratio: 19.9%</div>
+        </div>
+        <div class="s-kpi">
+          <div class="s-kpi-label">Outstanding premiums</div>
+          <div class="s-kpi-val">$39K</div>
+          <div class="s-kpi-delta dn">↑ from $28K prior month</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="fin-tabs">
+        <button class="fin-tab active" onclick="showFinTab(this,'ftab-pl')">P&amp;L summary</button>
+        <button class="fin-tab" onclick="showFinTab(this,'ftab-collections')">Premium collections</button>
+        <button class="fin-tab" onclick="showFinTab(this,'ftab-payments')">Claims payments</button>
+        <button class="fin-tab" onclick="showFinTab(this,'ftab-ar')">Accounts receivable</button>
+      </div>
+
+      <!-- P&L SUMMARY -->
+      <div class="fin-view active s-grid-2" id="ftab-pl">
+        <div class="s-card">
+          <div class="s-card-head"><h3>Income — July 2026</h3></div>
+          <div class="s-card-body">
+            <div class="fin-summary-row"><div class="fin-summary-label">Premium income</div><div class="fin-summary-val">$2,412,440</div></div>
+            <div class="fin-summary-row"><div class="fin-summary-label">Investment income</div><div class="fin-summary-val">$28,200</div></div>
+            <div class="fin-summary-row"><div class="fin-summary-label">Late payment fees</div><div class="fin-summary-val">$4,100</div></div>
+            <div class="fin-summary-row"><div class="fin-summary-label">Other income</div><div class="fin-summary-val">$1,800</div></div>
+            <div class="fin-summary-row fin-summary-total"><div class="fin-summary-label" style="font-weight:800;color:var(--s-ink)">Total income</div><div class="fin-summary-val">$2,446,540</div></div>
+          </div>
+        </div>
+        <div class="s-card">
+          <div class="s-card-head"><h3>Expenses — July 2026</h3></div>
+          <div class="s-card-body">
+            <div class="fin-summary-row"><div class="fin-summary-label">Claims paid</div><div class="fin-summary-val">$481,200</div></div>
+            <div class="fin-summary-row"><div class="fin-summary-label">Staff salaries</div><div class="fin-summary-val">$148,240</div></div>
+            <div class="fin-summary-row"><div class="fin-summary-label">Admin &amp; ops</div><div class="fin-summary-val">$44,800</div></div>
+            <div class="fin-summary-row"><div class="fin-summary-label">IT &amp; systems</div><div class="fin-summary-val">$18,400</div></div>
+            <div class="fin-summary-row"><div class="fin-summary-label">Pharmacy logistics</div><div class="fin-summary-val">$22,100</div></div>
+            <div class="fin-summary-row fin-summary-total"><div class="fin-summary-label" style="font-weight:800;color:var(--s-ink)">Total expenses</div><div class="fin-summary-val" style="color:var(--s-danger)">$714,740</div></div>
+          </div>
+        </div>
+        <div class="s-card" style="grid-column:1/-1">
+          <div class="s-card-head"><h3>Net surplus — July 2026</h3></div>
+          <div class="s-card-body" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+            <div>
+              <div style="font-size:0.75rem;color:var(--s-faint);margin-bottom:0.375rem">Net surplus this month</div>
+              <div style="font-family:var(--s-font-disp);font-weight:800;font-size:2.5rem;color:var(--s-scan)">$1,731,800</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;min-width:360px">
+              <div style="text-align:center">
+                <div style="font-size:0.7rem;color:var(--s-faint);margin-bottom:0.25rem">Loss ratio</div>
+                <div style="font-weight:800;font-size:1.125rem;color:var(--s-ink)">19.7%</div>
+              </div>
+              <div style="text-align:center">
+                <div style="font-size:0.7rem;color:var(--s-faint);margin-bottom:0.25rem">Expense ratio</div>
+                <div style="font-weight:800;font-size:1.125rem;color:var(--s-ink)">9.6%</div>
+              </div>
+              <div style="text-align:center">
+                <div style="font-size:0.7rem;color:var(--s-faint);margin-bottom:0.25rem">Combined ratio</div>
+                <div style="font-weight:800;font-size:1.125rem;color:var(--s-scan)">29.3%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREMIUM COLLECTIONS -->
+      <div class="fin-view s-card" id="ftab-collections" style="display:none">
+        <div class="s-card-head"><h3>Premium collections — July 2026</h3><button class="s-btn s-btn-ghost s-btn-sm">Send reminders</button></div>
+        <div class="s-table-wrap">
+          <table class="s-table">
+            <thead><tr><th>Employer group / Member</th><th>Members covered</th><th>Expected</th><th>Collected</th><th>Outstanding</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td class="s-td-primary">Delta Beverages (Group)</td><td>1,840</td><td class="s-td-mono">$184,000</td><td class="s-td-mono">$184,000</td><td class="s-td-mono">$0</td><td><span class="s-chip s-chip-green">Paid</span></td></tr>
+              <tr><td class="s-td-primary">Econet Wireless (Group)</td><td>2,210</td><td class="s-td-mono">$221,000</td><td class="s-td-mono">$221,000</td><td class="s-td-mono">$0</td><td><span class="s-chip s-chip-green">Paid</span></td></tr>
+              <tr><td class="s-td-primary">CBZ Bank (Group)</td><td>980</td><td class="s-td-mono">$98,000</td><td class="s-td-mono">$98,000</td><td class="s-td-mono">$0</td><td><span class="s-chip s-chip-green">Paid</span></td></tr>
+              <tr><td class="s-td-primary">Individual members (retail)</td><td>4,201</td><td class="s-td-mono">$420,100</td><td class="s-td-mono">$381,800</td><td class="s-td-mono s-td-primary" style="color:var(--s-danger)">$38,300</td><td><span class="s-chip s-chip-gold">Partial</span></td></tr>
+              <tr><td class="s-td-primary">Zimbabwe Power Company</td><td>620</td><td class="s-td-mono">$62,000</td><td class="s-td-mono">$61,400</td><td class="s-td-mono" style="color:var(--s-danger)">$600</td><td><span class="s-chip s-chip-gold">Partial</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CLAIMS PAYMENTS -->
+      <div class="fin-view s-card" id="ftab-payments" style="display:none">
+        <div class="s-card-head"><h3>Claims payments — July 2026</h3><button class="s-btn s-btn-primary s-btn-sm">Process batch</button></div>
+        <div class="s-table-wrap">
+          <table class="s-table">
+            <thead><tr><th>Claim #</th><th>Member</th><th>Provider</th><th>Approved amount</th><th>Payment date</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td class="s-td-mono s-td-primary">CLM-0041880</td><td>Tadiwa Moyo</td><td>Avenues Clinic</td><td class="s-td-mono">$45.00</td><td>4 Jul 2026</td><td><span class="s-chip s-chip-green">Paid</span></td></tr>
+              <tr><td class="s-td-mono s-td-primary">CLM-0041821</td><td>Nokuthula Dube</td><td>OK Pharmacy</td><td class="s-td-mono">$132.40</td><td>4 Jul 2026</td><td><span class="s-chip s-chip-green">Paid</span></td></tr>
+              <tr><td class="s-td-mono s-td-primary">CLM-0041798</td><td>Peter Chando</td><td>Parirenyatwa</td><td class="s-td-mono">$2,800.00</td><td>3 Jul 2026</td><td><span class="s-chip s-chip-gold">Processing</span></td></tr>
+              <tr><td class="s-td-mono s-td-primary">CLM-0041740</td><td>Rutendo Maposa</td><td>Dental Care Ctr</td><td class="s-td-mono">$280.00</td><td>3 Jul 2026</td><td><span class="s-chip s-chip-green">Paid</span></td></tr>
+              <tr><td class="s-td-mono s-td-primary">CLM-0041701</td><td>Farai Chikwanda</td><td>Specsavers</td><td class="s-td-mono">$210.00</td><td>2 Jul 2026</td><td><span class="s-chip s-chip-green">Paid</span></td></tr>
+              <tr><td class="s-td-mono s-td-primary">CLM-0041655</td><td>Grace Sibanda</td><td>Clicks Pharmacy</td><td class="s-td-mono">$88.20</td><td>2 Jul 2026</td><td><span class="s-chip s-chip-gold">Processing</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- AR -->
+      <div class="fin-view s-card" id="ftab-ar" style="display:none">
+        <div class="s-card-head"><h3>Accounts receivable — outstanding</h3><button class="s-btn s-btn-ghost s-btn-sm">Send statements</button></div>
+        <div class="s-table-wrap">
+          <table class="s-table">
+            <thead><tr><th>Member / Group</th><th>Invoice #</th><th>Due date</th><th>Amount due</th><th>Days overdue</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td class="s-td-primary">Thomas Mukoko (Individual)</td><td class="s-td-mono">INV-20260601</td><td>1 Jul 2026</td><td class="s-td-mono s-td-primary">$140</td><td style="color:var(--s-danger);font-weight:700">4 days</td><td><button class="s-btn s-btn-ghost s-btn-sm">Send reminder</button></td></tr>
+              <tr><td class="s-td-primary">Blessing Chihuri (Individual)</td><td class="s-td-mono">INV-20260602</td><td>1 Jul 2026</td><td class="s-td-mono s-td-primary">$100</td><td style="color:var(--s-danger);font-weight:700">4 days</td><td><button class="s-btn s-btn-ghost s-btn-sm">Send reminder</button></td></tr>
+              <tr><td class="s-td-primary">Marondera Co-op (Group)</td><td class="s-td-mono">INV-20260503</td><td>1 Jun 2026</td><td class="s-td-mono s-td-primary">$3,200</td><td style="color:var(--s-danger);font-weight:700">34 days</td><td><button class="s-btn s-btn-danger s-btn-sm">Escalate</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:0.75rem 1.25rem;border-top:1px solid var(--s-border);display:flex;gap:1rem;align-items:center;justify-content:flex-end">
+          <span style="font-size:0.8rem;color:var(--s-muted)">Total outstanding:</span>
+          <span style="font-family:var(--s-font-mono);font-weight:800;color:var(--s-danger)">$38,942</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script>
+function showFinTab(btn, tabId) {
+  document.querySelectorAll('.fin-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.fin-view').forEach(v => { v.classList.remove('active'); v.style.display='none'; });
+  const tab = document.getElementById(tabId);
+  tab.classList.add('active');
+  tab.style.display = tabId==='ftab-pl' ? 'grid' : 'block';
+}
+</script>
+</body>
+</html>

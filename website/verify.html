@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Policy Verification — GENFIN</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html { -webkit-text-size-adjust:100%; }
+body {
+  font-family: 'Manrope','Inter',sans-serif;
+  background: #14141A; min-height: 100vh;
+  display: flex; flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ── */
+.v-header {
+  padding: 1.125rem 1.5rem;
+  display: flex; align-items: center; gap: 0.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.v-logo { font-family: 'Sora','Inter',sans-serif; font-weight: 800; font-size: 1.125rem; color: #fff; }
+.v-logo span { color: #FBBD3E; }
+.v-header-sub { font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-left: 0.25rem; }
+
+/* ── Content ── */
+.v-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 2.5rem 1.5rem; }
+
+/* ── Verifying animation ── */
+.v-loading { text-align: center; padding: 3rem 0; }
+.v-spinner {
+  width: 60px; height: 60px; border-radius: 50%;
+  border: 3px solid rgba(251,189,62,0.15);
+  border-top-color: #FBBD3E;
+  animation: v-spin 0.8s linear infinite;
+  margin: 0 auto 1.25rem;
+}
+@keyframes v-spin { to { transform: rotate(360deg); } }
+.v-loading-text { color: rgba(255,255,255,0.5); font-size: 0.9rem; }
+
+/* ── Status banner ── */
+.v-status-banner {
+  width: 100%; max-width: 640px; border-radius: 16px;
+  padding: 2rem; margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 1.5rem;
+  position: relative; overflow: hidden;
+}
+.v-status-banner::before {
+  content: ''; position: absolute; top: -40px; right: -40px;
+  width: 160px; height: 160px; border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.v-status-banner.valid { background: rgba(0,196,138,0.12); border: 1.5px solid rgba(0,196,138,0.3); }
+.v-status-banner.expired { background: rgba(229,57,53,0.12); border: 1.5px solid rgba(229,57,53,0.3); }
+.v-status-banner.suspended { background: rgba(255,140,0,0.12); border: 1.5px solid rgba(255,140,0,0.3); }
+
+.v-status-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.valid .v-status-icon { background: rgba(0,196,138,0.2); }
+.expired .v-status-icon { background: rgba(229,57,53,0.2); }
+.suspended .v-status-icon { background: rgba(255,140,0,0.2); }
+.v-status-icon svg { width: 32px; height: 32px; }
+.valid .v-status-icon svg { color: #00C48A; }
+.expired .v-status-icon svg { color: #E53935; }
+.suspended .v-status-icon svg { color: #FF8C00; }
+
+.v-status-text {}
+.v-status-label {
+  font-family: 'Sora','Inter',sans-serif; font-weight: 900;
+  font-size: 1.5rem; letter-spacing: -0.01em;
+}
+.valid .v-status-label { color: #00C48A; }
+.expired .v-status-label { color: #E53935; }
+.suspended .v-status-label { color: #FF8C00; }
+.v-status-desc { font-size: 0.875rem; margin-top: 0.25rem; }
+.valid .v-status-desc { color: rgba(0,196,138,0.7); }
+.expired .v-status-desc { color: rgba(229,57,53,0.7); }
+.v-verified-by {
+  margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 0.375rem;
+}
+.v-verified-badge {
+  display: flex; align-items: center; gap: 0.5rem;
+  background: rgba(255,255,255,0.06); border-radius: 20px; padding: 6px 14px;
+}
+.v-verified-badge svg { width: 14px; height: 14px; color: #FBBD3E; }
+.v-verified-badge span { font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.7); }
+.v-timestamp { font-size: 0.68rem; color: rgba(255,255,255,0.3); }
+
+/* ── Info card ── */
+.v-card {
+  width: 100%; max-width: 640px; border-radius: 16px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09);
+  margin-bottom: 1rem; overflow: hidden;
+}
+.v-card-head {
+  padding: 0.875rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.07);
+  font-family: 'Sora','Inter',sans-serif; font-weight: 700;
+  font-size: 0.8125rem; color: rgba(255,255,255,0.5);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.v-card-body { padding: 1.25rem; }
+
+.v-row { display: flex; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.v-row:last-child { border-bottom: none; }
+.v-row-label { font-size: 0.75rem; color: rgba(255,255,255,0.4); min-width: 160px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+.v-row-val { font-size: 0.875rem; color: rgba(255,255,255,0.85); font-weight: 600; }
+.v-row-mono { font-family: 'IBM Plex Mono',monospace; font-size: 0.875rem; color: rgba(255,255,255,0.85); font-weight: 700; }
+
+/* ── Member avatar ── */
+.v-member-head {
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.v-member-av {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, #FBBD3E22, #FBBD3E44);
+  border: 2px solid rgba(251,189,62,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Sora','Inter',sans-serif; font-weight: 800; font-size: 1.25rem;
+  color: #FBBD3E; flex-shrink: 0;
+}
+.v-member-name { font-family: 'Sora','Inter',sans-serif; font-weight: 800; font-size: 1.125rem; color: #fff; }
+.v-member-sub { font-size: 0.8125rem; color: rgba(255,255,255,0.4); margin-top: 0.125rem; }
+
+/* ── Dependants ── */
+.v-dep { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.v-dep:last-child { border-bottom: none; }
+.v-dep-av { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 800; color: rgba(255,255,255,0.5); }
+.v-dep-name { font-weight: 600; font-size: 0.8125rem; color: rgba(255,255,255,0.7); flex: 1; }
+.v-dep-rel { font-size: 0.72rem; color: rgba(255,255,255,0.3); }
+
+/* ── Benefits bar ── */
+.v-bene-row { margin-bottom: 0.75rem; }
+.v-bene-row:last-child { margin-bottom: 0; }
+.v-bene-label { display: flex; justify-content: space-between; font-size: 0.775rem; margin-bottom: 0.3rem; }
+.v-bene-name { color: rgba(255,255,255,0.6); }
+.v-bene-amount { font-family: 'IBM Plex Mono',monospace; color: rgba(255,255,255,0.5); font-size: 0.7rem; }
+.v-bene-track { height: 4px; background: rgba(255,255,255,0.07); border-radius: 2px; }
+.v-bene-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
+
+/* ── Plan badge ── */
+.v-plan-badge {
+  display: inline-block; background: #FBBD3E; color: #14141A;
+  font-weight: 800; font-size: 0.7rem; padding: 3px 10px; border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+/* ── Footer ── */
+.v-footer {
+  padding: 1.5rem; text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.06); margin-top: auto;
+}
+.v-footer-logo { font-family: 'Sora','Inter',sans-serif; font-weight: 800; color: rgba(255,255,255,0.3); font-size: 0.875rem; margin-bottom: 0.375rem; }
+.v-footer-logo span { color: rgba(251,189,62,0.5); }
+.v-footer-text { font-size: 0.7rem; color: rgba(255,255,255,0.2); line-height: 1.6; max-width: 480px; margin: 0 auto; }
+.v-footer-tel { font-size: 0.75rem; color: rgba(255,255,255,0.35); margin-top: 0.5rem; font-weight: 700; }
+
+/* ── Invalid state ── */
+.v-not-found { text-align: center; padding: 3rem 1.5rem; max-width: 440px; }
+.v-not-found-icon { font-size: 3rem; margin-bottom: 1rem; }
+.v-not-found-title { font-family: 'Sora','Inter',sans-serif; font-weight: 800; font-size: 1.375rem; color: #fff; margin-bottom: 0.5rem; }
+.v-not-found-desc { font-size: 0.875rem; color: rgba(255,255,255,0.4); line-height: 1.65; }
+</style>
+</head>
+<body>
+
+<header class="v-header">
+  <div class="v-logo">GEN<span>FIN</span></div>
+  <div class="v-header-sub">Policy Verification Portal</div>
+</header>
+
+<!-- Loading state (shown briefly) -->
+<div class="v-body" id="vLoading">
+  <div class="v-loading">
+    <div class="v-spinner"></div>
+    <div class="v-loading-text">Verifying policy document…</div>
+  </div>
+</div>
+
+<!-- Valid result (hidden, shown after load) -->
+<div class="v-body" id="vResult" style="display:none">
+
+  <!-- Status banner: VALID -->
+  <div class="v-status-banner valid" id="vBanner">
+    <div class="v-status-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="v-status-text">
+      <div class="v-status-label" id="vStatusLabel">VALID</div>
+      <div class="v-status-desc" id="vStatusDesc">This membership certificate is authentic and active.</div>
+    </div>
+    <div class="v-verified-by">
+      <div class="v-verified-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Verified by GENFIN</span>
+      </div>
+      <div class="v-timestamp" id="vTimestamp">Checked: 5 Jul 2026, 11:02:44</div>
+    </div>
+  </div>
+
+  <!-- Member info -->
+  <div class="v-card">
+    <div class="v-card-head">Principal member</div>
+    <div class="v-card-body">
+      <div class="v-member-head">
+        <div class="v-member-av">TM</div>
+        <div>
+          <div class="v-member-name">Tadiwa Moyo</div>
+          <div class="v-member-sub">Principal Member · <span class="v-plan-badge">Gold Plan</span></div>
+        </div>
+      </div>
+      <div class="v-row">
+        <div class="v-row-label">Member ID</div>
+        <div class="v-row-mono">GF-104928</div>
+      </div>
+      <div class="v-row">
+        <div class="v-row-label">National ID (partial)</div>
+        <div class="v-row-mono">63-28*****87</div>
+      </div>
+      <div class="v-row">
+        <div class="v-row-label">Coverage period</div>
+        <div class="v-row-val">1 Jan 2026 — 31 Dec 2026</div>
+      </div>
+      <div class="v-row">
+        <div class="v-row-label">Employer / scheme</div>
+        <div class="v-row-val">Econet Wireless (Group Scheme)</div>
+      </div>
+      <div class="v-row">
+        <div class="v-row-label">Annual benefit limit</div>
+        <div class="v-row-mono">$6,000.00</div>
+      </div>
+      <div class="v-row">
+        <div class="v-row-label">Biometric status</div>
+        <div class="v-row-val" style="color:#00C48A">✓ BioVerify enrolled</div>
+      </div>
+      <div class="v-row">
+        <div class="v-row-label">Certificate serial</div>
+        <div class="v-row-mono">CERT-2026-GF-104928</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dependants -->
+  <div class="v-card">
+    <div class="v-card-head">Registered dependants (3)</div>
+    <div class="v-card-body">
+      <div class="v-dep">
+        <div class="v-dep-av">AM</div>
+        <div class="v-dep-name">Amai Moyo</div>
+        <div class="v-dep-rel">Spouse · GF-104929</div>
+      </div>
+      <div class="v-dep">
+        <div class="v-dep-av">TM</div>
+        <div class="v-dep-name">Tinashe Moyo</div>
+        <div class="v-dep-rel">Child · GF-104930</div>
+      </div>
+      <div class="v-dep">
+        <div class="v-dep-av">KM</div>
+        <div class="v-dep-name">Kudzai Moyo</div>
+        <div class="v-dep-rel">Child · GF-104931</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Benefit snapshot -->
+  <div class="v-card">
+    <div class="v-card-head">Benefit snapshot (Gold plan)</div>
+    <div class="v-card-body">
+      <div style="font-size:0.75rem;color:rgba(255,255,255,0.3);margin-bottom:1rem">Note: exact utilisation details are not displayed here for privacy. Contact GENFIN to confirm remaining benefit.</div>
+      <div class="v-bene-row">
+        <div class="v-bene-label"><span class="v-bene-name">GP consultations</span><span class="v-bene-amount">Unlimited</span></div>
+        <div class="v-bene-track"><div class="v-bene-fill" style="width:100%;background:rgba(0,196,138,0.6)"></div></div>
+      </div>
+      <div class="v-bene-row">
+        <div class="v-bene-label"><span class="v-bene-name">Specialist &amp; hospital</span><span class="v-bene-amount">$4,700 annual</span></div>
+        <div class="v-bene-track"><div class="v-bene-fill" style="width:85%;background:rgba(0,196,138,0.6)"></div></div>
+      </div>
+      <div class="v-bene-row">
+        <div class="v-bene-label"><span class="v-bene-name">Chronic medication</span><span class="v-bene-amount">$2,400 annual</span></div>
+        <div class="v-bene-track"><div class="v-bene-fill" style="width:80%;background:rgba(0,196,138,0.6)"></div></div>
+      </div>
+      <div class="v-bene-row">
+        <div class="v-bene-label"><span class="v-bene-name">Dental</span><span class="v-bene-amount">$400 annual</span></div>
+        <div class="v-bene-track"><div class="v-bene-fill" style="width:70%;background:rgba(251,189,62,0.7)"></div></div>
+      </div>
+      <div class="v-bene-row">
+        <div class="v-bene-label"><span class="v-bene-name">Optical</span><span class="v-bene-amount">$320 annual</span></div>
+        <div class="v-bene-track"><div class="v-bene-fill" style="width:60%;background:rgba(251,189,62,0.7)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Important note -->
+  <div style="width:100%;max-width:640px;background:rgba(251,189,62,0.07);border:1px solid rgba(251,189,62,0.2);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:0.825rem;color:rgba(255,255,255,0.5);line-height:1.65">
+    <strong style="color:rgba(251,189,62,0.8)">For service providers:</strong> Verify that the person presenting this document matches the photo on the physical certificate. This screen confirms authenticity of the policy document only. Pre-authorisation may be required for specialist visits, hospital admissions, and procedures — check with GENFIN before rendering services. Call <strong style="color:#fff">+263 867 700 4400</strong> for real-time confirmation.
+  </div>
+
+</div>
+
+<footer class="v-footer">
+  <div class="v-footer-logo">GEN<span>FIN</span> Medical Aid Fund</div>
+  <div class="v-footer-text">
+    This verification service is operated by GENFIN Medical Aid Fund (Reg. No. MAF/0041/08).
+    Verification is point-in-time only. Membership status may change. For urgent verification, call our 24/7 line.
+  </div>
+  <div class="v-footer-tel">Emergency line: +263 867 700 4422 · Admin: +263 867 700 4400</div>
+</footer>
+
+<script>
+(function() {
+  // Parse query params
+  const params = new URLSearchParams(window.location.search);
+  const memberId = params.get('id') || 'GF-104928';
+  const year = params.get('year') || '2026';
+  const token = params.get('token');
+
+  // Simulate verification with a short delay
+  setTimeout(function() {
+    document.getElementById('vLoading').style.display = 'none';
+    document.getElementById('vResult').style.display = 'flex';
+
+    // Set timestamp
+    const now = new Date();
+    const ts = now.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })
+      + ', ' + now.toLocaleTimeString('en-GB');
+    document.getElementById('vTimestamp').textContent = 'Checked: ' + ts;
+
+    // Determine status based on year
+    const currentYear = now.getFullYear();
+    if (parseInt(year) < currentYear) {
+      // Expired
+      const banner = document.getElementById('vBanner');
+      banner.className = 'v-status-banner expired';
+      document.getElementById('vStatusLabel').textContent = 'EXPIRED';
+      document.getElementById('vStatusDesc').textContent = 'This policy document has expired. Coverage ended 31 December ' + year + '.';
+      banner.querySelector('.v-status-icon svg').outerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:32px;height:32px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    }
+  }, 1800); // 1.8s verification simulation
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventory — GENFIN Staff</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/staff.css">
+<style>
+.inv-tabs { display:flex; gap:0; border-bottom:2px solid var(--s-border); margin-bottom:1.5rem; }
+.inv-tab { font-family:var(--s-font-sans); font-weight:700; font-size:0.8375rem; padding:0.75rem 1.25rem; border:none; background:none; cursor:pointer; color:var(--s-muted); border-bottom:2px solid transparent; margin-bottom:-2px; transition:all 0.15s; }
+.inv-tab.active { color:var(--s-ink); border-bottom-color:var(--s-ink); }
+.inv-tab:hover:not(.active) { color:var(--s-ink); }
+.inv-view { display:none; }
+.inv-view.active { display:block; }
+
+.inv-stock-bar { height:6px; background:var(--s-border); border-radius:3px; margin-top:0.25rem; }
+.inv-stock-fill { height:100%; border-radius:3px; }
+</style>
+</head>
+<body>
+<div class="s-layout">
+  <aside class="s-sidebar">
+    <div class="s-sidebar-logo">
+      <div class="s-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#14141A" stroke-width="2.5" style="width:16px;height:16px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      </div>
+      <div><div class="s-logo-text">GEN<span>FIN</span></div><div class="s-logo-sub">Inventory</div></div>
+    </div>
+    <div class="s-nav-section">Navigation</div>
+    <a href="superadmin.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="staff-claims.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Claims<span class="s-nav-badge">47</span></a>
+    <a href="staff-hr.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>HR &amp; People</a>
+    <a href="staff-finance.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Finance</a>
+    <a href="staff-inventory.html" class="s-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Inventory</a>
+    <a href="staff-members.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Members</a>
+    <div class="s-sidebar-foot">
+      <div class="s-foot-av">MN</div>
+      <div><div class="s-foot-name">Mavis Nyathi</div><div class="s-foot-role">Inventory Manager</div></div>
+    </div>
+  </aside>
+
+  <main class="s-main">
+    <div class="s-topbar">
+      <div class="s-topbar-title">Inventory management</div>
+      <div class="s-topbar-actions">
+        <input class="s-topbar-search" placeholder="Search medications, suppliers…">
+        <button class="s-btn s-btn-ghost">Export</button>
+        <button class="s-btn s-btn-primary">+ Create order</button>
+      </div>
+    </div>
+
+    <div class="s-body">
+
+      <div class="s-kpi-grid">
+        <div class="s-kpi">
+          <div class="s-kpi-label">Total SKUs</div>
+          <div class="s-kpi-val">218</div>
+          <div class="s-kpi-sub">Chronic medications</div>
+        </div>
+        <div class="s-kpi">
+          <div class="s-kpi-label">Low stock alerts</div>
+          <div class="s-kpi-val" style="color:var(--s-warn)">3</div>
+          <div class="s-kpi-delta dn">Requires reorder</div>
+        </div>
+        <div class="s-kpi">
+          <div class="s-kpi-label">Orders in transit</div>
+          <div class="s-kpi-val">7</div>
+          <div class="s-kpi-sub">Expected by 10 Jul</div>
+        </div>
+        <div class="s-kpi">
+          <div class="s-kpi-label">Pharmacy partners</div>
+          <div class="s-kpi-val">340</div>
+          <div class="s-kpi-delta up">↑ 12 this quarter</div>
+        </div>
+      </div>
+
+      <!-- Alert: Low stock -->
+      <div class="s-alert s-alert-warn" style="margin-bottom:1.25rem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div><strong>3 items are below reorder level.</strong> Metformin 850mg, Enalapril 10mg, and Amlodipine 5mg need to be reordered. Current stock will last approximately 8–12 days at current dispensing rates.</div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="inv-tabs">
+        <button class="inv-tab active" onclick="showInvTab(this,'itab-stock')">Stock levels</button>
+        <button class="inv-tab" onclick="showInvTab(this,'itab-orders')">Purchase orders</button>
+        <button class="inv-tab" onclick="showInvTab(this,'itab-pharma')">Pharmacy partners</button>
+        <button class="inv-tab" onclick="showInvTab(this,'itab-usage')">Dispensing log</button>
+      </div>
+
+      <!-- STOCK LEVELS -->
+      <div class="inv-view active s-card" id="itab-stock">
+        <div class="s-card-head">
+          <h3>Medication stock</h3>
+          <div style="display:flex;gap:0.5rem">
+            <select class="s-select" style="padding:6px 12px;font-size:0.8rem;width:auto"><option>All categories</option><option>Diabetes</option><option>Hypertension</option><option>Cardiovascular</option><option>Respiratory</option></select>
+            <button class="s-btn s-btn-ghost s-btn-sm">Reorder low items</button>
+          </div>
+        </div>
+        <div class="s-table-wrap">
+          <table class="s-table">
+            <thead>
+              <tr><th>Medication</th><th>Category</th><th>Current stock</th><th>Reorder level</th><th>Monthly usage</th><th>Stock level</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="s-td-primary">Metformin 850mg tabs</td><td>Diabetes</td>
+                <td class="s-td-mono">1,200 units</td><td class="s-td-mono">5,000</td><td class="s-td-mono">8,400</td>
+                <td>
+                  <div style="font-size:0.75rem;color:var(--s-danger);font-weight:700;margin-bottom:2px">14% — LOW</div>
+                  <div class="inv-stock-bar"><div class="inv-stock-fill" style="width:14%;background:var(--s-danger)"></div></div>
+                </td>
+                <td><button class="s-btn s-btn-danger s-btn-sm">Reorder now</button></td>
+              </tr>
+              <tr>
+                <td class="s-td-primary">Enalapril 10mg tabs</td><td>Hypertension</td>
+                <td class="s-td-mono">1,800 units</td><td class="s-td-mono">4,000</td><td class="s-td-mono">6,200</td>
+                <td>
+                  <div style="font-size:0.75rem;color:var(--s-danger);font-weight:700;margin-bottom:2px">29% — LOW</div>
+                  <div class="inv-stock-bar"><div class="inv-stock-fill" style="width:29%;background:var(--s-warn)"></div></div>
+                </td>
+                <td><button class="s-btn s-btn-danger s-btn-sm">Reorder now</button></td>
+              </tr>
+              <tr>
+                <td class="s-td-primary">Amlodipine 5mg tabs</td><td>Cardiovascular</td>
+                <td class="s-td-mono">2,100 units</td><td class="s-td-mono">3,500</td><td class="s-td-mono">4,800</td>
+                <td>
+                  <div style="font-size:0.75rem;color:var(--s-warn);font-weight:700;margin-bottom:2px">44% — LOW</div>
+                  <div class="inv-stock-bar"><div class="inv-stock-fill" style="width:44%;background:var(--s-warn)"></div></div>
+                </td>
+                <td><button class="s-btn s-btn-danger s-btn-sm">Reorder now</button></td>
+              </tr>
+              <tr>
+                <td class="s-td-primary">Hydrochlorothiazide 25mg</td><td>Hypertension</td>
+                <td class="s-td-mono">12,400 units</td><td class="s-td-mono">3,000</td><td class="s-td-mono">4,100</td>
+                <td>
+                  <div style="font-size:0.75rem;color:var(--s-scan);margin-bottom:2px">78% — Good</div>
+                  <div class="inv-stock-bar"><div class="inv-stock-fill" style="width:78%;background:var(--s-scan)"></div></div>
+                </td>
+                <td><button class="s-btn s-btn-ghost s-btn-sm">View</button></td>
+              </tr>
+              <tr>
+                <td class="s-td-primary">Salbutamol inhaler 100mcg</td><td>Respiratory</td>
+                <td class="s-td-mono">4,200 units</td><td class="s-td-mono">2,000</td><td class="s-td-mono">2,800</td>
+                <td>
+                  <div style="font-size:0.75rem;color:var(--s-scan);margin-bottom:2px">67% — Good</div>
+                  <div class="inv-stock-bar"><div class="inv-stock-fill" style="width:67%;background:var(--s-scan)"></div></div>
+                </td>
+                <td><button class="s-btn s-btn-ghost s-btn-sm">View</button></td>
+              </tr>
+              <tr>
+                <td class="s-td-primary">Vitamin B12 1000mcg</td><td>Vitamins</td>
+                <td class="s-td-mono">9,800 units</td><td class="s-td-mono">2,000</td><td class="s-td-mono">3,200</td>
+                <td>
+                  <div style="font-size:0.75rem;color:var(--s-scan);margin-bottom:2px">85% — Good</div>
+                  <div class="inv-stock-bar"><div class="inv-stock-fill" style="width:85%;background:var(--s-scan)"></div></div>
+                </td>
+                <td><button class="s-btn s-btn-ghost s-btn-sm">View</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:0.75rem 1.25rem;font-size:0.8rem;color:var(--s-faint);border-top:1px solid var(--s-border)">
+          Showing 6 of 218 medications · <a href="#" style="color:var(--s-info);font-weight:700">View all</a>
+        </div>
+      </div>
+
+      <!-- PURCHASE ORDERS -->
+      <div class="inv-view s-card" id="itab-orders" style="display:none">
+        <div class="s-card-head"><h3>Purchase orders</h3><button class="s-btn s-btn-primary s-btn-sm">+ New order</button></div>
+        <div class="s-table-wrap">
+          <table class="s-table">
+            <thead><tr><th>Order #</th><th>Supplier</th><th>Items</th><th>Total value</th><th>Order date</th><th>ETA</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td class="s-td-mono s-td-primary">PO-20260704</td><td>CAPS Holdings</td><td>12 SKUs</td><td class="s-td-mono">$18,400</td><td>4 Jul 2026</td><td>10 Jul 2026</td><td><span class="s-chip s-chip-blue">In transit</span></td></tr>
+              <tr><td class="s-td-mono s-td-primary">PO-20260701</td><td>Medpharm Holdings</td><td>8 SKUs</td><td class="s-td-mono">$12,200</td><td>1 Jul 2026</td><td>8 Jul 2026</td><td><span class="s-chip s-chip-blue">In transit</span></td></tr>
+              <tr><td class="s-td-mono s-td-primary">PO-20260628</td><td>Zimbabwe Pharmaceuticals</td><td>22 SKUs</td><td class="s-td-mono">$44,800</td><td>28 Jun 2026</td><td>5 Jul 2026</td><td><span class="s-chip s-chip-gold">Awaiting delivery</span></td></tr>
+              <tr><td class="s-td-mono s-td-primary">PO-20260615</td><td>CAPS Holdings</td><td>18 SKUs</td><td class="s-td-mono">$28,100</td><td>15 Jun 2026</td><td>24 Jun 2026</td><td><span class="s-chip s-chip-green">Delivered</span></td></tr>
+              <tr><td class="s-td-mono s-td-primary">PO-20260601</td><td>Datlabs (Pvt) Ltd</td><td>9 SKUs</td><td class="s-td-mono">$8,900</td><td>1 Jun 2026</td><td>10 Jun 2026</td><td><span class="s-chip s-chip-green">Delivered</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PHARMACY PARTNERS -->
+      <div class="inv-view s-card" id="itab-pharma" style="display:none">
+        <div class="s-card-head"><h3>Pharmacy partner network (340)</h3><button class="s-btn s-btn-primary s-btn-sm">+ Onboard pharmacy</button></div>
+        <div class="s-table-wrap">
+          <table class="s-table">
+            <thead><tr><th>Pharmacy</th><th>City</th><th>Terminal</th><th>Dispensed (Jul)</th><th>BioVerify</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td class="s-td-primary">OK Pharmacy — Harare CBD</td><td>Harare</td><td class="s-td-mono">TERM-0001</td><td class="s-td-mono">284 scripts</td><td><span class="s-chip s-chip-green">Online</span></td><td><span class="s-chip s-chip-green">Active</span></td></tr>
+              <tr><td class="s-td-primary">Clicks Pharmacy — Bulawayo</td><td>Bulawayo</td><td class="s-td-mono">TERM-0012</td><td class="s-td-mono">198 scripts</td><td><span class="s-chip s-chip-green">Online</span></td><td><span class="s-chip s-chip-green">Active</span></td></tr>
+              <tr><td class="s-td-primary">Pick n Pay Pharmacy — Gweru</td><td>Gweru</td><td class="s-td-mono">TERM-0034</td><td class="s-td-mono">112 scripts</td><td><span class="s-chip s-chip-green">Online</span></td><td><span class="s-chip s-chip-green">Active</span></td></tr>
+              <tr><td class="s-td-primary">Life Pharmacy — Mutare</td><td>Mutare</td><td class="s-td-mono">TERM-0041</td><td class="s-td-mono">88 scripts</td><td><span class="s-chip s-chip-gold">Offline</span></td><td><span class="s-chip s-chip-green">Active</span></td></tr>
+              <tr><td class="s-td-primary">Marondera Pharmacy</td><td>Marondera</td><td class="s-td-mono">Pending</td><td class="s-td-mono">—</td><td><span class="s-chip s-chip-gray">Not enrolled</span></td><td><span class="s-chip s-chip-gold">Onboarding</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:0.75rem 1.25rem;font-size:0.8rem;color:var(--s-faint);border-top:1px solid var(--s-border)">Showing 5 of 340 partners</div>
+      </div>
+
+      <!-- DISPENSING LOG -->
+      <div class="inv-view s-card" id="itab-usage" style="display:none">
+        <div class="s-card-head"><h3>Dispensing log — today</h3><button class="s-btn s-btn-ghost s-btn-sm">Export CSV</button></div>
+        <div class="s-table-wrap">
+          <table class="s-table">
+            <thead><tr><th>Time</th><th>Member</th><th>Medication</th><th>Pharmacy</th><th>Biometric</th><th>Claim #</th></tr></thead>
+            <tbody>
+              <tr><td class="s-td-mono">10:44</td><td class="s-td-primary">Tadiwa Moyo</td><td>Metformin 850mg × 30</td><td>OK Harare CBD</td><td><span class="s-chip s-chip-green">Verified</span></td><td class="s-td-mono">CLM-0041981</td></tr>
+              <tr><td class="s-td-mono">10:22</td><td class="s-td-primary">Nokuthula Dube</td><td>Enalapril 10mg × 28</td><td>OK Harare CBD</td><td><span class="s-chip s-chip-green">Verified</span></td><td class="s-td-mono">CLM-0041975</td></tr>
+              <tr><td class="s-td-mono">09:58</td><td class="s-td-primary">Peter Chando</td><td>Salbutamol inhaler × 2</td><td>Clicks Bulawayo</td><td><span class="s-chip s-chip-green">Verified</span></td><td class="s-td-mono">CLM-0041968</td></tr>
+              <tr><td class="s-td-mono">09:41</td><td class="s-td-primary">Amai Moyo</td><td>Amlodipine 5mg × 30</td><td>OK Harare CBD</td><td><span class="s-chip s-chip-red">Manual override</span></td><td class="s-td-mono">CLM-0041952</td></tr>
+              <tr><td class="s-td-mono">09:12</td><td class="s-td-primary">Grace Sibanda</td><td>Vitamin B12 × 30</td><td>Clicks Gweru</td><td><span class="s-chip s-chip-green">Verified</span></td><td class="s-td-mono">CLM-0041900</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:0.75rem 1.25rem;font-size:0.8rem;color:var(--s-faint);border-top:1px solid var(--s-border)">34 scripts dispensed today · 33 biometrically verified (97.1%)</div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script>
+function showInvTab(btn, tabId) {
+  document.querySelectorAll('.inv-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.inv-view').forEach(v => { v.classList.remove('active'); v.style.display='none'; });
+  const tab = document.getElementById(tabId);
+  tab.classList.add('active');
+  tab.style.display='block';
+}
+</script>
+</body>
+</html>

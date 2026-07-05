@@ -1,39 +1,34 @@
-#!/bin/zsh
-cd /Users/drwashington/Claude/Projects/GENFIN\ -\ Chiware\ Platform\ Development/genfin-platform
-
+#!/bin/bash
+cd "$(dirname "$0")"
+echo "============================================"
+echo " GENFIN Platform — Full Deploy"
+echo "============================================"
 rm -f .git/HEAD.lock .git/index.lock
-
 git add -A
+git commit -m "feat: pre-auth portal, staff ops suite, QR policy certificates
 
-git commit -m "feat: complete GENFIN platform build
+Member portal:
+- portal-preauth.html: 4-step pre-auth wizard
+- portal.html: quick-action pre-auth link added
 
-Public site:
-- claims.html, benefits.html, pharmacy.html, support.html
-- shared/site.css — full shared component system
+Staff operations portal (all new):
+- shared/staff.css: staff portal design system
+- login-select.html: multi-portal login hub
+- superadmin.html: super admin dashboard + staff user management
+- staff-claims.html: claims adjudication queue
+- staff-hr.html: HR, leave, payroll, recruitment
+- staff-finance.html: P&L, collections, payments, AR
+- staff-inventory.html: medication stock, orders, pharmacies
+- staff-members.html: member search + management
 
-BioVerify module (website/biometric/):
-- index.html — product landing page (standalone, sellable)
-- verify.html — pharmacy terminal interactive UI
-- admin.html — enrollment & verification dashboard
-- docs.html — full SDK + REST API documentation
-- biometric.css — self-contained BV design system
+Policy documents with QR verification:
+- policy-certificate.html: professional certificate with QR code + SVG art
+- verify.html: QR scan landing page — VALID/EXPIRED status
+- portal-documents.html: View/Print cert link"
 
-Member portal extensions:
-- portal-claims.html — 4-step claim wizard with OCR simulation
-- portal-pharmacy.html — chronic medication & dispense history
-- portal-benefits.html — benefit utilisation by category
-- portal-family.html — dependant management
-- portal-documents.html — certificates, statements, tax docs
-
-Pharmacy staff portal:
-- pharmacy-portal.html — staff dashboard with biometric dispense flow
-
-Shared:
-- shared/portal.css updated with portal-page layout tokens
-- 404.html
-
-Total: 24 HTML pages + BioVerify module fully extractable"
-
-git push origin main && echo "✅ GENFIN full platform deployed!" || echo "❌ Push failed — check git output above"
-
+git push origin main
+echo ""
+echo "Deployed to GitHub → Vercel auto-deploys"
+echo "Live: https://genfin-platform.vercel.app"
+echo ""
 rm -- "$0"

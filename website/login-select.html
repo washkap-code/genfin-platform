@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — GENFIN</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/tokens.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  background: #14141A; min-height: 100vh;
+  display: flex; flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ── */
+.ls-header {
+  padding: 1.5rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.ls-logo {
+  font-family: 'Sora', 'Inter', sans-serif; font-weight: 800;
+  font-size: 1.25rem; color: #fff; text-decoration: none;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.ls-logo-mark {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: #FBBD3E;
+  display: flex; align-items: center; justify-content: center;
+}
+.ls-logo-mark svg { width: 18px; height: 18px; }
+.ls-logo-text span { color: #FBBD3E; }
+.ls-header-link { color: rgba(255,255,255,0.5); font-size: 0.8125rem; text-decoration: none; }
+.ls-header-link:hover { color: #fff; }
+
+/* ── Hero ── */
+.ls-hero {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; padding: 3rem 1.5rem 4rem;
+}
+.ls-eyebrow {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: #FBBD3E; margin-bottom: 1rem;
+}
+.ls-title {
+  font-family: 'Sora', 'Inter', sans-serif; font-weight: 800;
+  font-size: clamp(1.875rem, 5vw, 2.75rem); color: #fff;
+  text-align: center; line-height: 1.15; margin-bottom: 0.875rem;
+  max-width: 640px;
+}
+.ls-sub {
+  color: rgba(255,255,255,0.5); font-size: 1rem; text-align: center;
+  max-width: 480px; line-height: 1.65; margin-bottom: 3.5rem;
+}
+
+/* ── Portal cards ── */
+.ls-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.125rem; max-width: 1000px; width: 100%;
+}
+.ls-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 18px; padding: 1.875rem 1.5rem;
+  text-decoration: none; transition: all 0.2s;
+  cursor: pointer; display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+}
+.ls-card:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.18);
+  transform: translateY(-2px);
+}
+.ls-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  border-radius: 18px 18px 0 0; opacity: 0; transition: opacity 0.2s;
+}
+.ls-card:hover::before { opacity: 1; }
+.ls-card-member::before { background: linear-gradient(90deg, #FBBD3E, #FFD980); }
+.ls-card-pharmacy::before { background: linear-gradient(90deg, #00C48A, #00F0AC); }
+.ls-card-staff::before { background: linear-gradient(90deg, #3B5BDB, #748FFC); }
+.ls-card-admin::before { background: linear-gradient(90deg, #E53935, #FF7043); }
+
+.ls-card-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1.125rem;
+}
+.ls-card-icon svg { width: 24px; height: 24px; }
+.ls-card-member .ls-card-icon { background: rgba(251,189,62,0.15); color: #FBBD3E; }
+.ls-card-pharmacy .ls-card-icon { background: rgba(0,196,138,0.15); color: #00C48A; }
+.ls-card-staff .ls-card-icon { background: rgba(59,91,219,0.15); color: #748FFC; }
+.ls-card-admin .ls-card-icon { background: rgba(229,57,53,0.15); color: #FF7043; }
+
+.ls-card-who {
+  font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.1em; margin-bottom: 0.375rem;
+}
+.ls-card-member .ls-card-who { color: rgba(251,189,62,0.7); }
+.ls-card-pharmacy .ls-card-who { color: rgba(0,196,138,0.7); }
+.ls-card-staff .ls-card-who { color: rgba(116,143,252,0.7); }
+.ls-card-admin .ls-card-who { color: rgba(255,112,67,0.7); }
+
+.ls-card-name {
+  font-family: 'Sora', 'Inter', sans-serif; font-weight: 700;
+  font-size: 1.0625rem; color: #fff; margin-bottom: 0.5rem;
+}
+.ls-card-desc {
+  font-size: 0.8125rem; color: rgba(255,255,255,0.45);
+  line-height: 1.6; flex: 1;
+}
+.ls-card-cta {
+  display: flex; align-items: center; gap: 0.375rem;
+  margin-top: 1.5rem; font-size: 0.8125rem; font-weight: 700;
+  color: rgba(255,255,255,0.4); transition: color 0.2s;
+}
+.ls-card:hover .ls-card-cta { color: #fff; }
+.ls-card-cta svg { width: 14px; height: 14px; }
+
+/* ── Login form panel (slides in) ── */
+.ls-panel-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  z-index: 100; display: none; align-items: center; justify-content: center;
+  padding: 1.5rem;
+}
+.ls-panel-overlay.open { display: flex; }
+.ls-panel {
+  background: #fff; border-radius: 18px; padding: 2.5rem;
+  width: 100%; max-width: 420px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+  position: relative; animation: ls-slide-up 0.2s ease;
+}
+@keyframes ls-slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ls-panel-close {
+  position: absolute; top: 1.25rem; right: 1.25rem;
+  font-size: 1.375rem; color: #9A98A0; cursor: pointer;
+  background: none; border: none; line-height: 1;
+}
+.ls-panel-badge {
+  display: inline-flex; align-items: center; gap: 0.375rem;
+  font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.08em; padding: 4px 10px; border-radius: 20px;
+  margin-bottom: 1.25rem;
+}
+.ls-panel-title {
+  font-family: 'Sora', 'Inter', sans-serif; font-weight: 800;
+  font-size: 1.5rem; color: #14141A; margin-bottom: 0.375rem;
+}
+.ls-panel-sub { font-size: 0.875rem; color: #6A6870; margin-bottom: 1.75rem; line-height: 1.5; }
+.ls-label { font-size: 0.8rem; font-weight: 700; color: #14141A; display: block; margin-bottom: 0.35rem; }
+.ls-input {
+  width: 100%; font-family: 'Manrope', sans-serif; font-size: 0.9375rem;
+  border: 1.5px solid rgba(20,20,26,0.12); border-radius: 10px;
+  padding: 11px 14px; color: #14141A; margin-bottom: 1rem;
+  transition: border-color 0.15s;
+}
+.ls-input:focus { outline: none; border-color: #14141A; }
+.ls-btn-primary {
+  width: 100%; padding: 13px; border-radius: 10px; border: none;
+  font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 0.9375rem;
+  cursor: pointer; margin-top: 0.5rem; transition: filter 0.15s;
+}
+.ls-btn-primary:hover { filter: brightness(1.08); }
+.ls-panel-foot {
+  text-align: center; margin-top: 1.25rem;
+  font-size: 0.8rem; color: #9A98A0;
+}
+.ls-panel-foot a { color: #14141A; font-weight: 700; text-decoration: none; }
+
+/* ── Footer ── */
+.ls-footer {
+  text-align: center; padding: 1.5rem;
+  font-size: 0.75rem; color: rgba(255,255,255,0.25);
+}
+.ls-footer a { color: rgba(255,255,255,0.35); text-decoration: none; }
+.ls-footer a:hover { color: rgba(255,255,255,0.6); }
+</style>
+</head>
+<body>
+
+<header class="ls-header">
+  <a href="index.html" class="ls-logo">
+    <div class="ls-logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#14141A" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    <span class="ls-logo-text">GEN<span>FIN</span></span>
+  </a>
+  <a href="index.html" class="ls-header-link">← Back to website</a>
+</header>
+
+<div class="ls-hero">
+  <div class="ls-eyebrow">Secure access</div>
+  <h1 class="ls-title">Which portal do you need?</h1>
+  <p class="ls-sub">GENFIN has separate portals for members, pharmacy staff, office staff, and administrators. Select yours below.</p>
+
+  <div class="ls-cards">
+
+    <!-- Member portal -->
+    <div class="ls-card ls-card-member" onclick="openLogin('member')">
+      <div class="ls-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <div class="ls-card-who">For members</div>
+      <div class="ls-card-name">Member Portal</div>
+      <div class="ls-card-desc">View your benefits, submit claims, manage dependants, request pre-authorisation, and track chronic medication deliveries.</div>
+      <div class="ls-card-cta">
+        Sign in
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+
+    <!-- Pharmacy portal -->
+    <div class="ls-card ls-card-pharmacy" onclick="openLogin('pharmacy')">
+      <div class="ls-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      </div>
+      <div class="ls-card-who">For pharmacy staff</div>
+      <div class="ls-card-name">Pharmacy Terminal</div>
+      <div class="ls-card-desc">Verify member identity via BioVerify fingerprint scan, dispense chronic medication, and submit pharmacy claims.</div>
+      <div class="ls-card-cta">
+        Sign in
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+
+    <!-- Staff portal -->
+    <div class="ls-card ls-card-staff" onclick="openLogin('staff')">
+      <div class="ls-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      </div>
+      <div class="ls-card-who">For GENFIN office staff</div>
+      <div class="ls-card-name">Staff Operations Portal</div>
+      <div class="ls-card-desc">Claims adjudication, member management, HR, finance, inventory, and all daily business operations for GENFIN staff.</div>
+      <div class="ls-card-cta">
+        Sign in
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+
+    <!-- Super admin -->
+    <div class="ls-card ls-card-admin" onclick="openLogin('admin')">
+      <div class="ls-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="ls-card-who">System administrator</div>
+      <div class="ls-card-name">Super Admin</div>
+      <div class="ls-card-desc">Full platform administration, user provisioning, audit logs, system health, and configuration. Restricted access.</div>
+      <div class="ls-card-cta">
+        Sign in
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="ls-footer">
+  <a href="support.html">Need help?</a> · <a href="index.html">genfin.health</a> · © 2026 GENFIN Medical Aid Fund. All rights reserved.
+</footer>
+
+<!-- Login panel overlay -->
+<div class="ls-panel-overlay" id="loginOverlay" onclick="closeLoginOutside(event)">
+  <div class="ls-panel" id="loginPanel">
+    <button class="ls-panel-close" onclick="closeLogin()">×</button>
+    <div class="ls-panel-badge" id="panelBadge"></div>
+    <div class="ls-panel-title" id="panelTitle">Sign in</div>
+    <p class="ls-panel-sub" id="panelSub">Enter your credentials to continue.</p>
+
+    <label class="ls-label" for="loginUser">Email address</label>
+    <input class="ls-input" type="email" id="loginUser" placeholder="you@example.com" autocomplete="email">
+
+    <label class="ls-label" for="loginPass">Password</label>
+    <input class="ls-input" type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+
+    <button class="ls-btn-primary" id="panelSigninBtn" onclick="doLogin()">Sign in</button>
+
+    <div class="ls-panel-foot">
+      <a href="support.html">Forgot password?</a> &nbsp;·&nbsp; Need help? Call <strong>+263 867 700 4400</strong>
+    </div>
+  </div>
+</div>
+
+<script>
+const portals = {
+  member: {
+    badge: { text: 'Member portal', bg: 'rgba(251,189,62,0.15)', color: '#946500' },
+    title: 'Member sign in',
+    sub: 'Use your GENFIN member ID (GF-XXXXXX) and password, or the email address registered on your account.',
+    btnBg: '#FBBD3E', btnColor: '#14141A',
+    dest: 'portal.html'
+  },
+  pharmacy: {
+    badge: { text: 'Pharmacy terminal', bg: 'rgba(0,196,138,0.12)', color: '#00A872' },
+    title: 'Pharmacy staff sign in',
+    sub: 'Enter your staff ID and PIN assigned by your pharmacy manager. Terminals must also be registered with GENFIN.',
+    btnBg: '#00C48A', btnColor: '#fff',
+    dest: 'pharmacy-portal.html'
+  },
+  staff: {
+    badge: { text: 'Staff operations', bg: 'rgba(59,91,219,0.1)', color: '#3B5BDB' },
+    title: 'Staff sign in',
+    sub: 'Sign in with your GENFIN staff credentials. Access is restricted to authorised staff. Contact HR if you need an account.',
+    btnBg: '#3B5BDB', btnColor: '#fff',
+    dest: 'superadmin.html'
+  },
+  admin: {
+    badge: { text: 'System administrator', bg: 'rgba(229,57,53,0.1)', color: '#E53935' },
+    title: 'Super admin sign in',
+    sub: 'Restricted to GENFIN system administrators only. All access is logged and audited.',
+    btnBg: '#E53935', btnColor: '#fff',
+    dest: 'superadmin.html'
+  }
+};
+
+function openLogin(type) {
+  const p = portals[type];
+  const badge = document.getElementById('panelBadge');
+  badge.textContent = p.badge.text;
+  badge.style.background = p.badge.bg;
+  badge.style.color = p.badge.color;
+  document.getElementById('panelTitle').textContent = p.title;
+  document.getElementById('panelSub').textContent = p.sub;
+  const btn = document.getElementById('panelSigninBtn');
+  btn.style.background = p.btnBg;
+  btn.style.color = p.btnColor;
+  btn.dataset.dest = p.dest;
+  document.getElementById('loginOverlay').classList.add('open');
+  document.getElementById('loginUser').focus();
+}
+
+function closeLogin() {
+  document.getElementById('loginOverlay').classList.remove('open');
+}
+
+function closeLoginOutside(e) {
+  if (e.target === document.getElementById('loginOverlay')) closeLogin();
+}
+
+function doLogin() {
+  const dest = document.getElementById('panelSigninBtn').dataset.dest;
+  window.location.href = dest;
+}
+
+document.getElementById('loginPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+</script>
+</body>
+</html>

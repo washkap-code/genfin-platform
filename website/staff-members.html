@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Member Management — GENFIN Staff</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/staff.css">
+<style>
+.mem-detail-overlay { position:fixed; inset:0; background:rgba(20,20,26,0.4); z-index:100; display:none; justify-content:flex-end; }
+.mem-detail-overlay.open { display:flex; }
+.mem-detail-panel { width:520px; background:var(--s-card); height:100%; overflow-y:auto; padding:2rem; animation:mem-slide 0.2s ease; }
+@keyframes mem-slide { from{transform:translateX(20px);opacity:0} to{transform:translateX(0);opacity:1} }
+</style>
+</head>
+<body>
+<div class="s-layout">
+  <aside class="s-sidebar">
+    <div class="s-sidebar-logo">
+      <div class="s-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#14141A" stroke-width="2.5" style="width:16px;height:16px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div><div class="s-logo-text">GEN<span>FIN</span></div><div class="s-logo-sub">Members</div></div>
+    </div>
+    <div class="s-nav-section">Navigation</div>
+    <a href="superadmin.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="staff-claims.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Claims<span class="s-nav-badge">47</span></a>
+    <a href="staff-hr.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>HR &amp; People</a>
+    <a href="staff-finance.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Finance</a>
+    <a href="staff-inventory.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Inventory</a>
+    <a href="staff-members.html" class="s-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Members</a>
+    <div class="s-sidebar-foot">
+      <div class="s-foot-av">TM</div>
+      <div><div class="s-foot-name">Tendai Muponda</div><div class="s-foot-role">Claims Manager</div></div>
+    </div>
+  </aside>
+
+  <main class="s-main">
+    <div class="s-topbar">
+      <div class="s-topbar-title">Member management</div>
+      <div class="s-topbar-actions">
+        <input class="s-topbar-search" placeholder="Search by name, member #, or ID…" id="memSearch" onkeyup="filterMembers()">
+        <button class="s-btn s-btn-ghost">Export</button>
+        <button class="s-btn s-btn-primary">+ Enroll member</button>
+      </div>
+    </div>
+
+    <div class="s-body">
+
+      <div class="s-kpi-grid">
+        <div class="s-kpi"><div class="s-kpi-label">Active members</div><div class="s-kpi-val">60,821</div><div class="s-kpi-delta up">↑ 4.2% this quarter</div></div>
+        <div class="s-kpi"><div class="s-kpi-label">New this month</div><div class="s-kpi-val">412</div><div class="s-kpi-sub">July 2026</div></div>
+        <div class="s-kpi"><div class="s-kpi-label">Biometric enrolled</div><div class="s-kpi-val">81%</div><div class="s-kpi-sub">49,265 of 60,821</div></div>
+        <div class="s-kpi"><div class="s-kpi-label">Pending plan changes</div><div class="s-kpi-val">8</div><div class="s-kpi-sub">Awaiting approval</div></div>
+      </div>
+
+      <!-- Filters -->
+      <div style="display:flex;gap:0.5rem;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center">
+        <select class="s-select" style="padding:6px 12px;font-size:0.8rem;width:auto"><option>All plans</option><option>Essential</option><option>Gold</option><option>Platinum</option></select>
+        <select class="s-select" style="padding:6px 12px;font-size:0.8rem;width:auto"><option>All statuses</option><option>Active</option><option>Suspended</option><option>Lapsed</option></select>
+        <select class="s-select" style="padding:6px 12px;font-size:0.8rem;width:auto"><option>All sources</option><option>Individual</option><option>Employer group</option></select>
+      </div>
+
+      <!-- Members table -->
+      <div class="s-card" id="memTable">
+        <div class="s-table-wrap">
+          <table class="s-table">
+            <thead>
+              <tr>
+                <th>Member #</th>
+                <th>Name</th>
+                <th>Plan</th>
+                <th>Dependants</th>
+                <th>Employer</th>
+                <th>Biometric</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="memTbody">
+              <tr onclick="openMember('GF-104928')" style="cursor:pointer" class="mem-row">
+                <td class="s-td-mono s-td-primary">GF-104928</td>
+                <td class="s-td-primary">Tadiwa Moyo</td>
+                <td><span class="s-chip s-chip-gold">Gold</span></td>
+                <td>3 dependants</td>
+                <td>Econet Wireless</td>
+                <td><span class="s-chip s-chip-green">Enrolled</span></td>
+                <td><span class="s-chip s-chip-green">Active</span></td>
+                <td><button class="s-btn s-btn-ghost s-btn-sm" onclick="event.stopPropagation();openMember('GF-104928')">View</button></td>
+              </tr>
+              <tr onclick="openMember('GF-294401')" style="cursor:pointer" class="mem-row">
+                <td class="s-td-mono s-td-primary">GF-294401</td>
+                <td class="s-td-primary">Nokuthula Dube</td>
+                <td><span class="s-chip s-chip-blue">Platinum</span></td>
+                <td>1 dependant</td>
+                <td>Delta Beverages</td>
+                <td><span class="s-chip s-chip-green">Enrolled</span></td>
+                <td><span class="s-chip s-chip-green">Active</span></td>
+                <td><button class="s-btn s-btn-ghost s-btn-sm" onclick="event.stopPropagation();">View</button></td>
+              </tr>
+              <tr style="cursor:pointer" class="mem-row">
+                <td class="s-td-mono s-td-primary">GF-038821</td>
+                <td class="s-td-primary">Peter Chando</td>
+                <td><span class="s-chip s-chip-gray">Essential</span></td>
+                <td>2 dependants</td>
+                <td>Individual</td>
+                <td><span class="s-chip s-chip-red">Not enrolled</span></td>
+                <td><span class="s-chip s-chip-green">Active</span></td>
+                <td><button class="s-btn s-btn-ghost s-btn-sm">View</button></td>
+              </tr>
+              <tr style="cursor:pointer" class="mem-row">
+                <td class="s-td-mono s-td-primary">GF-192240</td>
+                <td class="s-td-primary">Rutendo Maposa</td>
+                <td><span class="s-chip s-chip-gold">Gold</span></td>
+                <td>0</td>
+                <td>CBZ Bank</td>
+                <td><span class="s-chip s-chip-green">Enrolled</span></td>
+                <td><span class="s-chip s-chip-green">Active</span></td>
+                <td><button class="s-btn s-btn-ghost s-btn-sm">View</button></td>
+              </tr>
+              <tr style="cursor:pointer" class="mem-row">
+                <td class="s-td-mono s-td-primary">GF-501122</td>
+                <td class="s-td-primary">Farai Chikwanda</td>
+                <td><span class="s-chip s-chip-gold">Gold</span></td>
+                <td>4 dependants</td>
+                <td>ZPC</td>
+                <td><span class="s-chip s-chip-green">Enrolled</span></td>
+                <td><span class="s-chip s-chip-gold">Suspended</span></td>
+                <td><button class="s-btn s-btn-ghost s-btn-sm">View</button></td>
+              </tr>
+              <tr style="cursor:pointer" class="mem-row">
+                <td class="s-td-mono s-td-primary">GF-441892</td>
+                <td class="s-td-primary">Grace Sibanda</td>
+                <td><span class="s-chip s-chip-gray">Essential</span></td>
+                <td>2 dependants</td>
+                <td>Individual</td>
+                <td><span class="s-chip s-chip-red">Not enrolled</span></td>
+                <td><span class="s-chip s-chip-green">Active</span></td>
+                <td><button class="s-btn s-btn-ghost s-btn-sm">View</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:0.75rem 1.25rem;font-size:0.8rem;color:var(--s-faint);border-top:1px solid var(--s-border)">
+          Showing 6 of 60,821 members · <a href="#" style="color:var(--s-info);font-weight:700">Load more</a>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Member detail slide-over -->
+<div class="mem-detail-overlay" id="memOverlay" onclick="closeMember()">
+  <div class="mem-detail-panel" onclick="event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+      <div>
+        <div style="font-family:var(--s-font-mono);font-size:0.75rem;color:var(--s-faint);margin-bottom:0.25rem">GF-104928</div>
+        <div style="font-family:var(--s-font-disp);font-weight:800;font-size:1.25rem;color:var(--s-ink)">Tadiwa Moyo</div>
+      </div>
+      <button onclick="closeMember()" style="font-size:1.375rem;color:var(--s-faint);background:none;border:none;cursor:pointer">×</button>
+    </div>
+
+    <!-- Photo placeholder + status -->
+    <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1.5rem;background:var(--s-page);border-radius:12px;padding:1rem">
+      <div style="width:64px;height:64px;border-radius:50%;background:rgba(251,189,62,0.15);display:flex;align-items:center;justify-content:center;font-family:var(--s-font-disp);font-weight:800;font-size:1.375rem;color:#946500;flex-shrink:0">TM</div>
+      <div>
+        <span class="s-chip s-chip-green" style="font-size:0.8rem;padding:4px 10px">Active · Gold plan</span>
+        <div style="font-size:0.8rem;color:var(--s-muted);margin-top:0.5rem">Member since 1 Jan 2022 · Policy expires 31 Dec 2026</div>
+        <div style="font-size:0.8rem;color:var(--s-muted)">Econet Wireless (Group) · 4 members covered</div>
+      </div>
+    </div>
+
+    <!-- Quick KPIs -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.625rem;margin-bottom:1.25rem">
+      <div style="background:var(--s-page);border-radius:8px;padding:0.75rem;text-align:center">
+        <div style="font-size:0.65rem;color:var(--s-faint);text-transform:uppercase;font-weight:700">Benefit used</div>
+        <div style="font-family:var(--s-font-disp);font-weight:800;font-size:1rem;color:var(--s-ink);margin-top:0.25rem">$1,880</div>
+        <div style="font-size:0.65rem;color:var(--s-muted)">of $6,000</div>
+      </div>
+      <div style="background:var(--s-page);border-radius:8px;padding:0.75rem;text-align:center">
+        <div style="font-size:0.65rem;color:var(--s-faint);text-transform:uppercase;font-weight:700">Claims (2026)</div>
+        <div style="font-family:var(--s-font-disp);font-weight:800;font-size:1rem;color:var(--s-ink);margin-top:0.25rem">14</div>
+        <div style="font-size:0.65rem;color:var(--s-muted)">$1,880 total</div>
+      </div>
+      <div style="background:var(--s-page);border-radius:8px;padding:0.75rem;text-align:center">
+        <div style="font-size:0.65rem;color:var(--s-faint);text-transform:uppercase;font-weight:700">Pre-auths</div>
+        <div style="font-family:var(--s-font-disp);font-weight:800;font-size:1rem;color:var(--s-ink);margin-top:0.25rem">3</div>
+        <div style="font-size:0.65rem;color:var(--s-muted)">1 active</div>
+      </div>
+    </div>
+
+    <!-- Member info -->
+    <div style="margin-bottom:1.25rem">
+      <div style="font-weight:700;font-size:0.8rem;margin-bottom:0.625rem;color:var(--s-ink)">Contact &amp; personal</div>
+      <table style="width:100%;font-size:0.8125rem;border-collapse:collapse">
+        <tr style="border-bottom:1px solid var(--s-border)"><td style="padding:0.5rem 0;color:var(--s-muted);width:130px">Email</td><td style="padding:0.5rem 0;color:var(--s-ink)">tadiwa.moyo@gmail.com</td></tr>
+        <tr style="border-bottom:1px solid var(--s-border)"><td style="padding:0.5rem 0;color:var(--s-muted)">Phone</td><td style="padding:0.5rem 0">+263 77 200 1001</td></tr>
+        <tr style="border-bottom:1px solid var(--s-border)"><td style="padding:0.5rem 0;color:var(--s-muted)">ID number</td><td style="padding:0.5rem 0;font-family:var(--s-font-mono)">63-2841029 Z87</td></tr>
+        <tr style="border-bottom:1px solid var(--s-border)"><td style="padding:0.5rem 0;color:var(--s-muted)">Date of birth</td><td style="padding:0.5rem 0">14 March 1981 (45 yrs)</td></tr>
+        <tr><td style="padding:0.5rem 0;color:var(--s-muted)">Biometric</td><td style="padding:0.5rem 0"><span class="s-chip s-chip-green">Enrolled 14 Jan 2022</span></td></tr>
+      </table>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1rem">
+      <button class="s-btn s-btn-ghost" onclick="alert('Opening policy certificate...')">View certificate</button>
+      <button class="s-btn s-btn-ghost">Change plan</button>
+      <button class="s-btn s-btn-ghost">Add dependant</button>
+      <button class="s-btn s-btn-ghost">Reset biometric</button>
+    </div>
+    <button class="s-btn s-btn-danger" style="width:100%;justify-content:center">Suspend membership</button>
+  </div>
+</div>
+
+<script>
+function openMember(id) { document.getElementById('memOverlay').classList.add('open'); }
+function closeMember() { document.getElementById('memOverlay').classList.remove('open'); }
+function filterMembers() {
+  const q = document.getElementById('memSearch').value.toLowerCase();
+  document.querySelectorAll('.mem-row').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
