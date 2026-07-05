@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Member Profile — GENFIN Staff</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/staff.css">
+<style>
+.mp-tabs { display:flex; gap:0; border-bottom:2px solid var(--s-border); margin-bottom:1.5rem; overflow-x:auto; }
+.mp-tab { font-family:var(--s-font-sans); font-weight:700; font-size:0.8125rem; padding:0.75rem 1.05rem; border:none; background:none; cursor:pointer; color:var(--s-muted); border-bottom:2px solid transparent; margin-bottom:-2px; white-space:nowrap; }
+.mp-tab.active { color:var(--s-ink); border-bottom-color:var(--s-gold); }
+.mp-view { display:none; } .mp-view.active { display:block; }
+
+.mp-hero { display:flex; gap:1.25rem; align-items:center; background:var(--s-ink); color:#fff; border-radius:14px; padding:1.5rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+.mp-hero-av { width:72px; height:72px; border-radius:16px; background:var(--s-gold); color:var(--s-ink); display:flex; align-items:center; justify-content:center; font-family:var(--s-font-disp); font-weight:800; font-size:1.6rem; flex-shrink:0; }
+.mp-hero-name { font-family:var(--s-font-disp); font-weight:800; font-size:1.5rem; }
+.mp-hero-meta { color:rgba(255,255,255,0.6); font-size:0.85rem; margin-top:0.2rem; }
+.mp-bio-badges { display:flex; gap:0.5rem; margin-top:0.6rem; flex-wrap:wrap; }
+.mp-bio-badge { font-size:0.68rem; font-weight:800; padding:4px 10px; border-radius:20px; display:inline-flex; align-items:center; gap:5px; }
+.mp-bio-ok { background:rgba(0,196,138,0.16); color:#63f0c4; }
+.mp-bio-no { background:rgba(229,57,53,0.16); color:#ff8a86; }
+.mp-def { display:flex; justify-content:space-between; padding:0.55rem 0; border-bottom:1px solid var(--s-border); font-size:0.85rem; }
+.mp-def:last-child { border-bottom:none; }
+.mp-def .k { color:var(--s-muted); } .mp-def .v { font-weight:700; text-align:right; }
+.tag { display:inline-block; font-size:0.72rem; font-weight:700; padding:3px 9px; border-radius:6px; margin:2px; }
+.tag-red { background:rgba(229,57,53,0.1); color:var(--s-danger); }
+.tag-blue { background:rgba(59,91,219,0.1); color:var(--s-info); }
+.tag-gray { background:rgba(20,20,26,0.06); color:var(--s-muted); }
+.dep-card { border:1px solid var(--s-border); border-radius:12px; padding:1rem; cursor:pointer; transition:all 0.14s; }
+.dep-card:hover { border-color:rgba(20,20,26,0.2); box-shadow:var(--s-shadow); }
+.timeline2 { position:relative; padding-left:1.4rem; }
+.timeline2::before { content:''; position:absolute; left:5px; top:4px; bottom:4px; width:2px; background:var(--s-border); }
+.tl2 { position:relative; padding-bottom:1rem; }
+.tl2:last-child { padding-bottom:0; }
+.tl2 .dot { position:absolute; left:-1.4rem; top:3px; width:12px; height:12px; border-radius:50%; border:2px solid #fff; }
+.tl2 .tt { font-weight:700; font-size:0.83rem; color:var(--s-ink); }
+.tl2 .td { font-size:0.76rem; color:var(--s-muted); }
+.tl2 .tm { font-size:0.7rem; color:var(--s-faint); font-family:var(--s-font-mono); }
+@media (max-width:900px){ .s-grid-2,.s-grid-3{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="s-layout">
+
+  <aside class="s-sidebar">
+    <div class="s-sidebar-logo">
+      <div class="s-logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#14141A" stroke-width="2.2" style="width:16px;height:16px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+      <div><div class="s-logo-text">GEN<span>FIN</span></div><div class="s-logo-sub">Members</div></div>
+    </div>
+    <div class="s-nav-section">Navigation</div>
+    <a href="superadmin.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="staff-members.html" class="s-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Members</a>
+    <a href="staff-claims.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Claims<span class="s-nav-badge">47</span></a>
+    <a href="staff-hr.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>HR &amp; Payroll</a>
+    <a href="staff-finance.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Accounts</a>
+    <a href="staff-inventory.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Inventory</a>
+    <a href="staff-tracking.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Order Tracking<span class="s-nav-badge warn">8</span></a>
+    <a href="staff-whatsapp.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>WhatsApp<span class="s-nav-badge">6</span></a>
+    <a href="bioverify-facial.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>BioVerify</a>
+    <a href="staff-audit.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Audit log</a>
+    <div class="s-sidebar-foot"><div class="s-foot-av">RK</div><div><div class="s-foot-name">Rutendo Kanyowa</div><div class="s-foot-role">Member Services</div></div></div>
+  </aside>
+
+  <main class="s-main">
+    <div class="s-topbar">
+      <div class="s-topbar-title"><a href="staff-members.html" style="color:var(--s-muted)">Members</a> › Profile</div>
+      <div class="s-topbar-actions">
+        <a class="s-btn s-btn-ghost" href="bioverify-enrol.html">Enrol biometrics</a>
+        <button class="s-btn s-btn-ghost">Print card</button>
+        <button class="s-btn s-btn-primary">Edit profile</button>
+      </div>
+    </div>
+
+    <div class="s-body">
+
+      <!-- Hero -->
+      <div class="mp-hero">
+        <div class="mp-hero-av">CN</div>
+        <div style="flex:1;min-width:220px">
+          <div class="mp-hero-name">Chiedza Nyamuzihwa</div>
+          <div class="mp-hero-meta">Member #GF-0041882 · Plan: Gold · Principal member · Joined 14 Mar 2021</div>
+          <div class="mp-bio-badges">
+            <span class="mp-bio-badge mp-bio-ok"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Face enrolled</span>
+            <span class="mp-bio-badge mp-bio-ok"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Fingerprint enrolled</span>
+            <span class="mp-bio-badge" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7)">4 dependents</span>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.06em">Status</div>
+          <div style="font-family:var(--s-font-disp);font-weight:800;font-size:1.3rem;color:var(--s-scan)">Active</div>
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.5)">Premiums up to date</div>
+        </div>
+      </div>
+
+      <div class="mp-tabs">
+        <button class="mp-tab active" onclick="mpTab(this,'mv-overview')">Overview</button>
+        <button class="mp-tab" onclick="mpTab(this,'mv-dependents')">Dependents</button>
+        <button class="mp-tab" onclick="mpTab(this,'mv-medical')">Medical records</button>
+        <button class="mp-tab" onclick="mpTab(this,'mv-history')">History &amp; usage</button>
+        <button class="mp-tab" onclick="mpTab(this,'mv-benefits')">Benefits</button>
+        <button class="mp-tab" onclick="mpTab(this,'mv-bio')">Biometrics</button>
+      </div>
+
+      <!-- OVERVIEW -->
+      <div class="mp-view active" id="mv-overview">
+        <div class="s-grid-2">
+          <div class="s-card">
+            <div class="s-card-head"><h3>Personal details</h3></div>
+            <div class="s-card-body">
+              <div class="mp-def"><span class="k">Full name</span><span class="v">Chiedza Nyamuzihwa</span></div>
+              <div class="mp-def"><span class="k">Date of birth</span><span class="v">12 Mar 1984 (42)</span></div>
+              <div class="mp-def"><span class="k">Gender</span><span class="v">Female</span></div>
+              <div class="mp-def"><span class="k">National ID</span><span class="v">63-1122334 A 07</span></div>
+              <div class="mp-def"><span class="k">Phone</span><span class="v">+263 77 123 4567</span></div>
+              <div class="mp-def"><span class="k">Email</span><span class="v">chiedza.n@email.co.zw</span></div>
+              <div class="mp-def"><span class="k">Address</span><span class="v">14 Fife Ave, Harare</span></div>
+              <div class="mp-def"><span class="k">Next of kin</span><span class="v">Tapiwa Nyamuzihwa (spouse)</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="s-card" style="margin-bottom:1.25rem">
+              <div class="s-card-head"><h3>Primary doctor / GP</h3><button class="s-btn s-btn-ghost s-btn-sm" onclick="alert('Register / change primary doctor:\n• Search provider directory or add new\n• Name, practice, phone, HPA number\n• Consent to share records with this doctor')">Register / change</button></div>
+              <div class="s-card-body">
+                <div style="display:flex;gap:0.75rem;align-items:center;margin-bottom:0.75rem">
+                  <div class="s-avatar s-avatar-md" style="background:rgba(59,91,219,0.12);color:var(--s-info)">SM</div>
+                  <div><div style="font-weight:700">Dr. S. Mupamha</div><div style="font-size:0.78rem;color:var(--s-muted)">General Practitioner</div></div>
+                </div>
+                <div class="mp-def"><span class="k">Practice</span><span class="v">Avenues Medical Centre</span></div>
+                <div class="mp-def"><span class="k">Phone</span><span class="v">+263 24 279 1140</span></div>
+                <div class="mp-def"><span class="k">HPA reg. no.</span><span class="v">GP-4471</span></div>
+                <div class="mp-def"><span class="k">Referring specialist</span><span class="v">Dr. L. Chirwa (Endocrinology)</span></div>
+              </div>
+            </div>
+            <div class="s-card">
+              <div class="s-card-head"><h3>Medical summary</h3></div>
+              <div class="s-card-body">
+                <div class="mp-def"><span class="k">Blood type</span><span class="v">O+</span></div>
+                <div style="padding:0.55rem 0;border-bottom:1px solid var(--s-border)"><div class="k" style="color:var(--s-muted);font-size:0.85rem;margin-bottom:4px">Chronic conditions</div><span class="tag tag-blue">Type 2 Diabetes</span><span class="tag tag-blue">Hypertension</span></div>
+                <div style="padding:0.55rem 0"><div class="k" style="color:var(--s-muted);font-size:0.85rem;margin-bottom:4px">Allergies</div><span class="tag tag-red">Penicillin</span><span class="tag tag-red">Sulfa drugs</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEPENDENTS -->
+      <div class="mp-view" id="mv-dependents">
+        <div class="s-card">
+          <div class="s-card-head"><h3>Dependents (4)</h3><button class="s-btn s-btn-primary s-btn-sm" onclick="alert('Add dependent:\n• Relationship, name, DOB, national ID/birth cert\n• Own medical record created\n• Prompt to enrol biometrics')">+ Add dependent</button></div>
+          <div class="s-card-body s-grid-2">
+            <div class="dep-card" onclick="alert('Opens dependent medical record for Tapiwa Nyamuzihwa.')">
+              <div style="display:flex;justify-content:space-between;align-items:start"><div><div style="font-weight:700">Tapiwa Nyamuzihwa</div><div style="font-size:0.78rem;color:var(--s-muted)">Spouse · M · 08 Jun 1982 (44)</div></div><span class="mp-bio-badge mp-bio-ok" style="background:rgba(0,196,138,0.12);color:#00A872">Bio ✓</span></div>
+              <div style="margin-top:0.6rem;font-size:0.78rem"><span class="tag tag-blue">Asthma</span><span class="tag tag-gray">No allergies</span></div>
+            </div>
+            <div class="dep-card" onclick="alert('Opens dependent medical record for Ruvarashe Nyamuzihwa.')">
+              <div style="display:flex;justify-content:space-between;align-items:start"><div><div style="font-weight:700">Ruvarashe Nyamuzihwa</div><div style="font-size:0.78rem;color:var(--s-muted)">Child · F · 11 Sep 2012 (13)</div></div><span class="mp-bio-badge mp-bio-ok" style="background:rgba(0,196,138,0.12);color:#00A872">Bio ✓</span></div>
+              <div style="margin-top:0.6rem;font-size:0.78rem"><span class="tag tag-gray">Immunisations up to date</span></div>
+            </div>
+            <div class="dep-card" onclick="alert('Opens dependent medical record for Anesu Nyamuzihwa.')">
+              <div style="display:flex;justify-content:space-between;align-items:start"><div><div style="font-weight:700">Anesu Nyamuzihwa</div><div style="font-size:0.78rem;color:var(--s-muted)">Child · M · 03 Jan 2016 (10)</div></div><span class="mp-bio-badge mp-bio-no" style="background:rgba(229,57,53,0.1);color:var(--s-danger)">Bio pending</span></div>
+              <div style="margin-top:0.6rem;font-size:0.78rem"><span class="tag tag-red">Peanut allergy</span></div>
+            </div>
+            <div class="dep-card" onclick="alert('Opens dependent medical record for Mai Nyamuzihwa.')">
+              <div style="display:flex;justify-content:space-between;align-items:start"><div><div style="font-weight:700">Mai Nyamuzihwa</div><div style="font-size:0.78rem;color:var(--s-muted)">Parent · F · 22 Feb 1958 (68)</div></div><span class="mp-bio-badge mp-bio-no" style="background:rgba(229,57,53,0.1);color:var(--s-danger)">Bio pending</span></div>
+              <div style="margin-top:0.6rem;font-size:0.78rem"><span class="tag tag-blue">Arthritis</span><span class="tag tag-blue">Hypertension</span></div>
+            </div>
+          </div>
+          <div style="padding:0.75rem 1.25rem;border-top:1px solid var(--s-border)">
+            <div class="s-alert s-alert-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div>2 dependents are not yet biometrically enrolled. <a href="bioverify-enrol.html" style="font-weight:700;color:inherit;text-decoration:underline">Enrol them now →</a></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MEDICAL RECORDS -->
+      <div class="mp-view" id="mv-medical">
+        <div class="s-alert s-alert-info" style="margin-bottom:1.25rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><div><strong>Protected health information.</strong> Access is role-restricted, logged to the audit trail, and shared only with the member's consent and their registered doctor. Encrypted at rest, Zimbabwe data residency.</div></div>
+        <div class="s-grid-2">
+          <div class="s-card">
+            <div class="s-card-head"><h3>Conditions &amp; allergies</h3></div>
+            <div class="s-card-body">
+              <div class="ps-sub" style="font-family:var(--s-font-disp);font-weight:800;font-size:0.7rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--s-faint);padding:0 0 0.4rem">Chronic conditions</div>
+              <div class="mp-def"><span class="k">Type 2 Diabetes Mellitus</span><span class="v">Dx 2019 · controlled</span></div>
+              <div class="mp-def"><span class="k">Essential hypertension</span><span class="v">Dx 2020 · controlled</span></div>
+              <div class="ps-sub" style="font-family:var(--s-font-disp);font-weight:800;font-size:0.7rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--s-faint);padding:0.9rem 0 0.4rem">Allergies</div>
+              <div class="mp-def"><span class="k">Penicillin</span><span class="v" style="color:var(--s-danger)">Severe — anaphylaxis</span></div>
+              <div class="mp-def"><span class="k">Sulfa drugs</span><span class="v">Moderate — rash</span></div>
+            </div>
+          </div>
+          <div class="s-card">
+            <div class="s-card-head"><h3>Current medications</h3></div>
+            <div class="s-card-body">
+              <div class="mp-def"><span class="k">Metformin 500mg</span><span class="v">BD · chronic</span></div>
+              <div class="mp-def"><span class="k">Enalapril 10mg</span><span class="v">OD · chronic</span></div>
+              <div class="mp-def"><span class="k">Atorvastatin 20mg</span><span class="v">Nocte</span></div>
+              <div class="mp-def"><span class="k">Vitamin B12 (inj.)</span><span class="v">Monthly</span></div>
+            </div>
+          </div>
+          <div class="s-card">
+            <div class="s-card-head"><h3>Vitals &amp; recent labs</h3></div>
+            <div class="s-card-body">
+              <div class="mp-def"><span class="k">Blood pressure</span><span class="v">128/82 · 04 Jul 2026</span></div>
+              <div class="mp-def"><span class="k">HbA1c</span><span class="v">6.8% · Jun 2026</span></div>
+              <div class="mp-def"><span class="k">BMI</span><span class="v">27.4</span></div>
+              <div class="mp-def"><span class="k">Cholesterol (LDL)</span><span class="v">2.9 mmol/L</span></div>
+            </div>
+          </div>
+          <div class="s-card">
+            <div class="s-card-head"><h3>Immunisations &amp; documents</h3><button class="s-btn s-btn-ghost s-btn-sm" onclick="alert('Upload a medical document (lab report, discharge summary, scan). Stored encrypted and linked to this record.')">Upload</button></div>
+            <div class="s-card-body">
+              <div class="mp-def"><span class="k">COVID-19</span><span class="v">Fully vaccinated + booster</span></div>
+              <div class="mp-def"><span class="k">Tetanus</span><span class="v">2022 · due 2032</span></div>
+              <div class="mp-def"><span class="k">Discharge summary</span><span class="v" style="color:var(--s-info)">Parirenyatwa · Mar 2024 (PDF)</span></div>
+              <div class="mp-def"><span class="k">Blood panel</span><span class="v" style="color:var(--s-info)">Lancet · Jun 2026 (PDF)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTORY & USAGE -->
+      <div class="mp-view" id="mv-history">
+        <div class="s-card">
+          <div class="s-card-head"><h3>Platform &amp; medical history — since 14 Mar 2021</h3>
+            <select class="s-select" style="width:auto;padding:6px 10px;font-size:0.8rem"><option>All activity</option><option>Claims</option><option>Prescriptions</option><option>Deliveries</option><option>Verifications</option><option>Logins</option></select>
+          </div>
+          <div class="s-card-body">
+            <div class="timeline2">
+              <div class="tl2"><span class="dot" style="background:var(--s-scan)"></span><div class="tt">Prescription dispensed — verified by facial recognition</div><div class="td">RX-889244 Metformin + Enalapril · Ambuya Stella Pharmacy · co-pay $3.00</div><div class="tm">04 Jul 2026 · 14:23</div></div>
+              <div class="tl2"><span class="dot" style="background:var(--s-gold)"></span><div class="tt">Home delivery received — PIN verified</div><div class="td">GEN-DLV-4821 · driver S. Ndlovu · 14 Fife Ave</div><div class="tm">04 Jul 2026 · 15:02</div></div>
+              <div class="tl2"><span class="dot" style="background:var(--s-info)"></span><div class="tt">Claim approved &amp; paid</div><div class="td">CLM-0041880 · Avenues Clinic consultation · $45.00</div><div class="tm">02 Jul 2026</div></div>
+              <div class="tl2"><span class="dot" style="background:var(--s-info)"></span><div class="tt">Pre-authorisation granted</div><div class="td">PA-20260628 · HbA1c blood panel · Lancet Labs</div><div class="tm">28 Jun 2026</div></div>
+              <div class="tl2"><span class="dot" style="background:var(--s-scan)"></span><div class="tt">WhatsApp interaction</div><div class="td">Requested benefit balance via keyword BALANCE</div><div class="tm">12 Jun 2026</div></div>
+              <div class="tl2"><span class="dot" style="background:var(--s-muted)"></span><div class="tt">Annual medical review</div><div class="td">Dr. S. Mupamha · diabetes + BP stable · meds continued</div><div class="tm">15 May 2026</div></div>
+              <div class="tl2"><span class="dot" style="background:var(--s-gold)"></span><div class="tt">Biometrics enrolled — face + fingerprint</div><div class="td">Enrolled at Harare CBD branch · terminal TERM-0041</div><div class="tm">03 Feb 2024</div></div>
+              <div class="tl2"><span class="dot" style="background:var(--s-muted)"></span><div class="tt">Upgraded plan Silver → Gold</div><div class="td">Added chronic medication benefit</div><div class="tm">01 Jan 2023</div></div>
+              <div class="tl2"><span class="dot" style="background:var(--s-ink)"></span><div class="tt">Joined GENFIN</div><div class="td">Principal member · Gold scheme · 4 dependents added</div><div class="tm">14 Mar 2021</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BENEFITS -->
+      <div class="mp-view" id="mv-benefits">
+        <div class="s-grid-3">
+          <div class="s-card"><div class="s-card-body"><div class="s-kpi-label">Medicines</div><div class="s-kpi-val" style="color:var(--s-scan)">$41.20</div><div class="s-kpi-sub">of $80.00 remaining</div><div class="s-progress" style="margin-top:0.6rem"><div class="s-progress-fill" style="width:52%;background:var(--s-scan)"></div></div></div></div>
+          <div class="s-card"><div class="s-card-body"><div class="s-kpi-label">Acute benefit</div><div class="s-kpi-val">$280</div><div class="s-kpi-sub">of $500 remaining</div><div class="s-progress" style="margin-top:0.6rem"><div class="s-progress-fill" style="width:56%;background:var(--s-info)"></div></div></div></div>
+          <div class="s-card"><div class="s-card-body"><div class="s-kpi-label">Dental</div><div class="s-kpi-val">$120</div><div class="s-kpi-sub">of $200 remaining</div><div class="s-progress" style="margin-top:0.6rem"><div class="s-progress-fill" style="width:60%;background:var(--s-gold)"></div></div></div></div>
+        </div>
+      </div>
+
+      <!-- BIOMETRICS -->
+      <div class="mp-view" id="mv-bio">
+        <div class="s-grid-2">
+          <div class="s-card">
+            <div class="s-card-head"><h3>Biometric enrolment</h3><span class="s-chip s-chip-green">Fully enrolled</span></div>
+            <div class="s-card-body">
+              <div style="display:flex;gap:1rem;margin-bottom:1rem">
+                <div style="flex:1;border:1px solid var(--s-border);border-radius:10px;padding:1rem;text-align:center">
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--s-scan)" stroke-width="1.8" style="margin:0 auto 0.5rem"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                  <div style="font-weight:700;font-size:0.85rem">Facial</div>
+                  <div style="font-size:0.72rem;color:var(--s-scan);font-weight:700">Enrolled</div>
+                </div>
+                <div style="flex:1;border:1px solid var(--s-border);border-radius:10px;padding:1rem;text-align:center">
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--s-scan)" stroke-width="1.8" style="margin:0 auto 0.5rem"><path d="M12 11c0-1.1.9-2 2-2s2 .9 2 2v1a2 2 0 0 1-4 0v-1z"/><path d="M6 9a6 6 0 0 1 12 0"/><path d="M6 9c0 5 2 8 6 10"/></svg>
+                  <div style="font-weight:700;font-size:0.85rem">Fingerprint</div>
+                  <div style="font-size:0.72rem;color:var(--s-scan);font-weight:700">Enrolled (2 fingers)</div>
+                </div>
+              </div>
+              <div class="mp-def"><span class="k">Enrolled on</span><span class="v">03 Feb 2024</span></div>
+              <div class="mp-def"><span class="k">Last verification</span><span class="v">04 Jul 2026 · Facial · 99.4%</span></div>
+              <div class="mp-def"><span class="k">Templates stored</span><span class="v">Encrypted · no raw images</span></div>
+              <div style="display:flex;gap:0.5rem;margin-top:1rem"><a class="s-btn s-btn-primary s-btn-sm" href="bioverify-enrol.html" style="flex:1;justify-content:center">Re-enrol / update</a><button class="s-btn s-btn-ghost s-btn-sm" style="flex:1;justify-content:center" onclick="alert('Revoke biometric templates?\nThis removes stored face + fingerprint templates. The member would need to re-enrol to use biometric verification.')">Revoke</button></div>
+            </div>
+          </div>
+          <div class="s-card">
+            <div class="s-card-head"><h3>Household enrolment</h3></div>
+            <div class="s-card-body">
+              <div class="mp-def"><span class="k">Chiedza (principal)</span><span class="v" style="color:var(--s-scan)">Face + Fingerprint</span></div>
+              <div class="mp-def"><span class="k">Tapiwa (spouse)</span><span class="v" style="color:var(--s-scan)">Face + Fingerprint</span></div>
+              <div class="mp-def"><span class="k">Ruvarashe (child)</span><span class="v" style="color:var(--s-scan)">Face + Fingerprint</span></div>
+              <div class="mp-def"><span class="k">Anesu (child)</span><span class="v" style="color:var(--s-danger)">Not enrolled</span></div>
+              <div class="mp-def"><span class="k">Mai (parent)</span><span class="v" style="color:var(--s-danger)">Not enrolled</span></div>
+              <div class="s-alert s-alert-warn" style="margin-top:1rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div>Policy: every member and dependent must be biometrically enrolled. 2 remaining. <a href="bioverify-enrol.html" style="font-weight:700;color:inherit;text-decoration:underline">Start enrolment →</a></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script>
+function mpTab(btn,id){ document.querySelectorAll('.mp-tab').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); document.querySelectorAll('.mp-view').forEach(function(v){v.classList.remove('active');}); document.getElementById(id).classList.add('active'); }
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(function(){}); }
+</script>
+</body>
+</html>

@@ -3,354 +3,288 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Order Tracking — GENFIN Operations</title>
+<title>Logistics &amp; Order Tracking — GENFIN Staff</title>
 <link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="stylesheet" href="shared/fonts.css">
 <link rel="stylesheet" href="shared/staff.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 <style>
-/* ── Map ── */
-.map-container { position:relative; background:#E8E8E0; border-radius:var(--s-r); overflow:hidden; height:340px; border:1px solid var(--s-border); }
-.map-bg { position:absolute; inset:0; background:linear-gradient(135deg,#EEF0E8 0%,#E4E8DC 50%,#DCE4D4 100%); }
-.map-road-h { position:absolute; background:#CCC; height:6px; }
-.map-road-v { position:absolute; background:#CCC; width:6px; }
-.map-road-main { background:#B8B8B0; height:10px; }
-.map-label { position:absolute; font-size:0.62rem; font-weight:700; color:#666; background:rgba(255,255,255,0.85); padding:1px 5px; border-radius:3px; }
-.map-poi { position:absolute; width:10px; height:10px; border-radius:50%; border:2px solid #fff; }
-.driver-marker { position:absolute; width:28px; height:28px; transform:translate(-50%,-50%); transition:left 1.2s ease, top 1.2s ease; z-index:10; cursor:pointer; }
-.driver-bubble { width:28px; height:28px; border-radius:50%; background:var(--s-scan); border:3px solid #fff; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,196,138,0.5); }
-.driver-pulse { position:absolute; top:50%; left:50%; width:28px; height:28px; border-radius:50%; background:rgba(0,196,138,0.25); transform:translate(-50%,-50%); animation:pulse 2s infinite; }
-@keyframes pulse { 0%{width:28px;height:28px;opacity:0.7;} 100%{width:60px;height:60px;opacity:0;} }
-.delivery-marker { position:absolute; transform:translate(-50%,-100%); }
-.del-pin { width:24px; height:24px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); display:flex; align-items:center; justify-content:center; border:2px solid #fff; }
-.del-pin svg { transform:rotate(45deg); }
-
-/* ── Tracking code ── */
-.trk-code { font-family:var(--s-font-mono); font-size:1.125rem; font-weight:800; color:var(--s-ink); letter-spacing:0.08em; background:var(--s-bg); border:1.5px dashed var(--s-border); border-radius:8px; padding:0.625rem 1rem; display:inline-flex; align-items:center; gap:0.75rem; }
-.trk-code-label { font-size:0.68rem; color:var(--s-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:0.375rem; }
-
-/* ── Timeline ── */
-.timeline { position:relative; padding:0; }
-.timeline-item { display:flex; gap:1rem; padding:0.625rem 0; position:relative; }
-.timeline-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; margin-top:4px; position:relative; z-index:2; }
-.timeline-line { position:absolute; left:5px; top:20px; bottom:-8px; width:2px; background:var(--s-border); }
-.timeline-item:last-child .timeline-line { display:none; }
-.timeline-content { flex:1; }
-.timeline-step { font-weight:700; font-size:0.8375rem; color:var(--s-ink); }
-.timeline-time { font-size:0.7rem; color:var(--s-muted); }
-.timeline-dot.done { background:var(--s-scan); }
-.timeline-dot.active { background:var(--s-gold); box-shadow:0 0 0 4px rgba(251,189,62,0.2); }
-.timeline-dot.pending { background:var(--s-border); }
-.timeline-line.done { background:var(--s-scan); }
-
-/* ── Delivery list ── */
-.del-row { display:grid; grid-template-columns:110px 1fr 130px 90px 80px 90px; gap:0.5rem; align-items:center; padding:0.75rem 1rem; border-bottom:1px solid var(--s-border); font-size:0.8125rem; cursor:pointer; transition:background 0.12s; }
-.del-row:hover { background:var(--s-bg); }
-.del-head { background:var(--s-bg); font-weight:700; font-size:0.72rem; color:var(--s-muted); border-bottom:2px solid var(--s-border); cursor:default; }
-.del-head:hover { background:var(--s-bg); }
-.eta-badge { display:inline-flex; align-items:center; gap:0.25rem; padding:0.125rem 0.5rem; border-radius:99px; font-size:0.72rem; font-weight:700; }
-.eta-badge.green { background:#E8FBF5; color:#00845E; }
-.eta-badge.gold  { background:#FFF8E7; color:#B7831A; }
-.eta-badge.red   { background:#FDECEA; color:#C62828; }
-
-/* ── Slide panel ── */
-.del-panel { position:fixed; right:0; top:0; bottom:0; width:400px; background:var(--s-card); box-shadow:-4px 0 24px rgba(0,0,0,0.12); z-index:100; transform:translateX(100%); transition:transform 0.28s cubic-bezier(0.4,0,0.2,1); overflow-y:auto; }
-.del-panel.open { transform:translateX(0); }
-.del-panel-head { padding:1.25rem; border-bottom:1px solid var(--s-border); display:flex; align-items:center; gap:0.75rem; position:sticky; top:0; background:var(--s-card); z-index:2; }
-
-/* ── New delivery modal ── */
-.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; display:none; align-items:center; justify-content:center; }
-.modal-overlay.open { display:flex; }
+.lg-grid { display:grid; grid-template-columns: 380px 1fr; gap:1.25rem; align-items:start; }
+@media (max-width:1000px){ .lg-grid{ grid-template-columns:1fr; } }
+#map { height:440px; border-radius:12px; z-index:1; }
+.lg-order { padding:0.9rem 1rem; border:1px solid var(--s-border); border-radius:10px; margin-bottom:0.7rem; cursor:pointer; transition:all 0.14s; background:#fff; }
+.lg-order:hover { border-color:rgba(20,20,26,0.2); }
+.lg-order.active { border-color:var(--s-gold); box-shadow:0 0 0 2px rgba(251,189,62,0.25); }
+.lg-order-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem; }
+.lg-code { font-family:var(--s-font-mono); font-weight:700; font-size:0.8rem; }
+.lg-order-name { font-weight:700; font-size:0.85rem; color:var(--s-ink); }
+.lg-order-meta { font-size:0.74rem; color:var(--s-muted); margin-top:0.15rem; }
+.timeline { position:relative; padding-left:1.5rem; }
+.timeline::before { content:''; position:absolute; left:6px; top:6px; bottom:6px; width:2px; background:var(--s-border); }
+.tl-step { position:relative; padding-bottom:1.1rem; }
+.tl-step:last-child { padding-bottom:0; }
+.tl-dot { position:absolute; left:-1.5rem; top:2px; width:14px; height:14px; border-radius:50%; background:#fff; border:2px solid var(--s-border); }
+.tl-step.done .tl-dot { background:var(--s-scan); border-color:var(--s-scan); }
+.tl-step.current .tl-dot { background:var(--s-gold); border-color:var(--s-gold); box-shadow:0 0 0 4px rgba(251,189,62,0.2); }
+.tl-title { font-weight:700; font-size:0.82rem; color:var(--s-ink); }
+.tl-time { font-size:0.72rem; color:var(--s-faint); font-family:var(--s-font-mono); }
+.eta-big { font-family:var(--s-font-disp); font-weight:800; font-size:2.1rem; color:var(--s-scan); line-height:1; }
+.pin-box { font-family:var(--s-font-mono); font-weight:800; letter-spacing:0.35em; font-size:1.5rem; color:var(--s-ink); background:var(--s-page); border:2px dashed var(--s-gold); border-radius:10px; padding:0.6rem 1rem; text-align:center; }
+.drv-av { width:38px; height:38px; border-radius:50%; background:var(--s-ink); color:var(--s-gold); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem; }
 </style>
 </head>
 <body>
 <div class="s-layout">
 
-<!-- Sidebar -->
-<aside class="s-sidebar">
-  <div class="s-sidebar-logo">
-    <div class="s-logo-mark">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#14141A" stroke-width="2.5" style="width:16px;height:16px"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+  <!-- Sidebar -->
+  <aside class="s-sidebar">
+    <div class="s-sidebar-logo">
+      <div class="s-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#14141A" stroke-width="2.2" style="width:16px;height:16px"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      </div>
+      <div><div class="s-logo-text">GEN<span>FIN</span></div><div class="s-logo-sub">Logistics</div></div>
     </div>
-    <div>
-      <div class="s-logo-text">GEN<span>FIN</span></div>
-      <div class="s-logo-sub">Order Tracking</div>
+    <div class="s-nav-section">Navigation</div>
+    <a href="superadmin.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="staff-members.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Members</a>
+    <a href="staff-claims.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Claims<span class="s-nav-badge">47</span></a>
+    <a href="staff-hr.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>HR &amp; Payroll</a>
+    <a href="staff-finance.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Accounts</a>
+    <a href="staff-inventory.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Inventory</a>
+    <a href="staff-tracking.html" class="s-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Order Tracking<span class="s-nav-badge warn">8</span></a>
+    <a href="staff-whatsapp.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>WhatsApp<span class="s-nav-badge">6</span></a>
+    <a href="bioverify-facial.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>BioVerify</a>
+    <a href="staff-audit.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Audit log</a>
+    <div class="s-sidebar-foot">
+      <div class="s-foot-av">OM</div>
+      <div><div class="s-foot-name">Ops Control</div><div class="s-foot-role">Dispatch desk</div></div>
     </div>
-  </div>
-  <div class="s-nav-section">Overview</div>
-  <a href="superadmin.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
-  <a href="staff-members.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Members</a>
-  <a href="staff-claims.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Claims</a>
-  <div class="s-nav-section">Business Ops</div>
-  <a href="staff-hr.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>HR &amp; People</a>
-  <a href="staff-finance.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Finance</a>
-  <a href="staff-inventory.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Inventory</a>
-  <div class="s-nav-section">Operations</div>
-  <a href="staff-tracking.html" class="s-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Order Tracking<span class="s-nav-badge warn">8</span></a>
-  <a href="staff-whatsapp.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>WhatsApp</a>
-  <a href="bioverify-facial.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>BioVerify Facial</a>
-  <div class="s-sidebar-foot">
-    <div class="s-foot-av">GM</div>
-    <div><div class="s-foot-name">Grace Moyo</div><div class="s-foot-role">Operations Manager</div></div>
-  </div>
-</aside>
+  </aside>
 
-<!-- Main -->
-<main class="s-main">
-  <header class="s-topbar">
-    <div>
-      <div class="s-page-title">Order &amp; Delivery Tracking</div>
-      <div class="s-page-sub">8 active deliveries · 3 drivers on the road</div>
-    </div>
-    <div style="display:flex;gap:0.75rem;">
-      <button class="s-btn s-btn-ghost" onclick="alert('Export delivery report')">Export</button>
-      <button class="s-btn s-btn-primary" onclick="document.getElementById('newDelivModal').classList.add('open')">+ Book Courier</button>
-    </div>
-  </header>
-
-  <!-- KPIs -->
-  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:1.5rem;">
-    <div class="s-card" style="padding:1rem;"><div style="font-size:0.68rem;color:var(--s-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Active Deliveries</div><div style="font-size:1.5rem;font-weight:800;font-family:var(--s-font-mono);color:var(--s-gold);margin-top:0.25rem;">8</div></div>
-    <div class="s-card" style="padding:1rem;"><div style="font-size:0.68rem;color:var(--s-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Drivers On Road</div><div style="font-size:1.5rem;font-weight:800;font-family:var(--s-font-mono);color:var(--s-scan);margin-top:0.25rem;">3</div></div>
-    <div class="s-card" style="padding:1rem;"><div style="font-size:0.68rem;color:var(--s-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Delivered Today</div><div style="font-size:1.5rem;font-weight:800;font-family:var(--s-font-mono);margin-top:0.25rem;">14</div></div>
-    <div class="s-card" style="padding:1rem;"><div style="font-size:0.68rem;color:var(--s-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">On-Time Rate</div><div style="font-size:1.5rem;font-weight:800;font-family:var(--s-font-mono);color:var(--s-scan);margin-top:0.25rem;">96.4%</div></div>
-    <div class="s-card" style="padding:1rem;"><div style="font-size:0.68rem;color:var(--s-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Avg Delivery Time</div><div style="font-size:1.5rem;font-weight:800;font-family:var(--s-font-mono);margin-top:0.25rem;">42 min</div></div>
-  </div>
-
-  <!-- Live Map -->
-  <div class="s-card" style="margin-bottom:1.25rem;overflow:hidden;">
-    <div class="s-card-head">
-      <span class="s-card-title">Live Driver Map — Harare</span>
-      <div style="display:flex;gap:0.5rem;align-items:center;">
-        <div style="display:flex;align-items:center;gap:0.375rem;font-size:0.72rem;color:var(--s-muted);"><div style="width:8px;height:8px;border-radius:50%;background:var(--s-scan);box-shadow:0 0 0 3px rgba(0,196,138,0.2);"></div>Driver active</div>
-        <div style="display:flex;align-items:center;gap:0.375rem;font-size:0.72rem;color:var(--s-muted);"><div style="width:8px;height:8px;border-radius:50%;background:var(--s-danger);"></div>Delivery point</div>
+  <!-- Main -->
+  <main class="s-main">
+    <div class="s-topbar">
+      <div class="s-topbar-title">Logistics &amp; Order Tracking</div>
+      <div class="s-topbar-actions">
+        <span style="display:flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--s-muted)"><span class="s-online-dot"></span> 5 drivers live</span>
+        <a class="s-btn s-btn-ghost" href="driver-app.html" target="_blank">Open driver app</a>
+        <button class="s-btn s-btn-primary" onclick="openBook()">+ Book courier</button>
       </div>
     </div>
-    <div class="map-container">
-      <div class="map-bg"></div>
-      <!-- Simulated road grid -->
-      <div class="map-road-h map-road-main" style="top:45%;left:0;right:0;"></div>
-      <div class="map-road-h" style="top:25%;left:0;right:0;"></div>
-      <div class="map-road-h" style="top:65%;left:0;right:0;"></div>
-      <div class="map-road-v map-road-main" style="left:40%;top:0;bottom:0;"></div>
-      <div class="map-road-v" style="left:20%;top:0;bottom:0;"></div>
-      <div class="map-road-v" style="left:65%;top:0;bottom:0;"></div>
-      <!-- Labels -->
-      <div class="map-label" style="top:42%;left:2%;">Samora Machel Ave</div>
-      <div class="map-label" style="top:22%;left:2%;">Borrowdale Rd</div>
-      <div class="map-label" style="top:62%;left:2%;">Robert Mugabe Rd</div>
-      <div class="map-label" style="top:2%;left:37%;">Julius Nyerere Way</div>
-      <!-- POIs -->
-      <div class="map-poi" style="top:44%;left:19%;background:#3B5BDB;" title="City Hospital"></div>
-      <div class="map-poi" style="top:24%;left:64%;background:#8B5CF6;" title="Avenues Clinic"></div>
-      <!-- Delivery pins -->
-      <div class="delivery-marker" style="top:44%;left:60%;" onclick="openPanel('TRK-441822')"><div class="del-pin" style="background:var(--s-danger);"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2" style="width:8px;height:8px;"><rect x="1" y="3" width="10" height="8"/><path d="M4 3V2a2 2 0 0 1 4 0v1"/></svg></div></div>
-      <div class="delivery-marker" style="top:28%;left:28%;" onclick="openPanel('TRK-441831')"><div class="del-pin" style="background:var(--s-danger);"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2" style="width:8px;height:8px;"><rect x="1" y="3" width="10" height="8"/><path d="M4 3V2a2 2 0 0 1 4 0v1"/></svg></div></div>
-      <div class="delivery-marker" style="top:68%;left:72%;" onclick="openPanel('TRK-441845')"><div class="del-pin" style="background:var(--s-danger);"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2" style="width:8px;height:8px;"><rect x="1" y="3" width="10" height="8"/><path d="M4 3V2a2 2 0 0 1 4 0v1"/></svg></div></div>
-      <!-- Driver 1 — moving -->
-      <div class="driver-marker" id="d1" style="left:48%;top:46%;">
-        <div class="driver-pulse"></div>
-        <div class="driver-bubble"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2" style="width:14px;height:14px;"><circle cx="8" cy="5" r="2.5"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg></div>
+
+    <div class="s-body">
+
+      <div class="s-kpi-grid">
+        <div class="s-kpi"><div class="s-kpi-label">Out for delivery</div><div class="s-kpi-val">14</div><div class="s-kpi-delta up">5 drivers active</div></div>
+        <div class="s-kpi"><div class="s-kpi-label">Delivered today</div><div class="s-kpi-val">63</div><div class="s-kpi-delta up">98.2% on time</div></div>
+        <div class="s-kpi"><div class="s-kpi-label">Avg delivery time</div><div class="s-kpi-val">41m</div><div class="s-kpi-sub">Harare metro</div></div>
+        <div class="s-kpi"><div class="s-kpi-label">Awaiting dispatch</div><div class="s-kpi-val">8</div><div class="s-kpi-delta dn">2 priority</div></div>
       </div>
-      <!-- Driver 2 -->
-      <div class="driver-marker" id="d2" style="left:22%;top:30%;">
-        <div class="driver-pulse" style="animation-delay:0.7s;"></div>
-        <div class="driver-bubble" style="background:#3B5BDB;box-shadow:0 2px 8px rgba(59,91,219,0.5);"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2" style="width:14px;height:14px;"><circle cx="8" cy="5" r="2.5"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg></div>
-      </div>
-      <!-- Driver 3 -->
-      <div class="driver-marker" id="d3" style="left:68%;top:62%;">
-        <div class="driver-pulse" style="animation-delay:1.4s;background:rgba(255,140,0,0.25);"></div>
-        <div class="driver-bubble" style="background:#FF8C00;box-shadow:0 2px 8px rgba(255,140,0,0.4);"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2" style="width:14px;height:14px;"><circle cx="8" cy="5" r="2.5"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg></div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Delivery list -->
-  <div class="s-card" style="overflow:hidden;">
-    <div class="s-card-head"><span class="s-card-title">Active &amp; Recent Deliveries</span>
-      <div style="display:flex;gap:0.5rem;">
-        <input type="text" class="s-search" placeholder="Search tracking code…" style="width:200px;">
-        <select class="s-search" style="width:130px;padding:0 0.75rem;"><option>All Status</option><option>In Transit</option><option>Out for Delivery</option><option>Delivered</option><option>Pending</option></select>
-      </div>
-    </div>
-    <div class="del-row del-head"><div>Tracking Code</div><div>Member / Recipient</div><div>Driver</div><div>Status</div><div>ETA</div><div>Actions</div></div>
+      <div class="lg-grid">
+        <!-- Orders list -->
+        <div class="s-card" style="padding:1rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.85rem">
+            <div class="s-section-title" style="margin:0">Active deliveries</div>
+            <span class="s-chip s-chip-gold">Live</span>
+          </div>
+          <div id="orderList"></div>
+        </div>
 
-    <div class="del-row" onclick="openPanel('TRK-441822')">
-      <div><div style="font-family:var(--s-font-mono);font-weight:800;font-size:0.78rem;">GF-TRK-441822</div></div>
-      <div><div style="font-weight:700;">Chipo Mabika</div><div style="font-size:0.7rem;color:var(--s-muted);">14 Glen Eagles Dr, Borrowdale</div></div>
-      <div><div style="font-weight:600;">Tendai Mhuka</div><div style="font-size:0.7rem;color:var(--s-muted);">★★★★★ 4.9</div></div>
-      <div><span class="s-badge green" style="font-size:0.68rem;">In Transit</span></div>
-      <div><span class="eta-badge green">≈ 8 min</span></div>
-      <div style="display:flex;gap:0.375rem;"><button class="s-btn s-btn-ghost" style="font-size:0.7rem;padding:0.25rem 0.5rem;" onclick="event.stopPropagation();openPanel('TRK-441822')">Track</button></div>
-    </div>
+        <!-- Tracking detail -->
+        <div>
+          <div class="s-card" style="margin-bottom:1.25rem">
+            <div class="s-card-head">
+              <h3>Tracking <span id="trkCode" class="lg-code" style="color:var(--s-scan)">GEN-DLV-4821</span></h3>
+              <span class="s-chip s-chip-gold" id="trkStatus">Out for delivery</span>
+            </div>
+            <div id="map"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;flex-wrap:wrap;gap:1rem">
+              <div style="display:flex;align-items:center;gap:0.75rem">
+                <div class="drv-av" id="drvAv">SN</div>
+                <div>
+                  <div style="font-weight:700;font-size:0.85rem" id="drvName">Simba Ndlovu</div>
+                  <div style="font-size:0.74rem;color:var(--s-muted)" id="drvVeh">Motorbike · ADI 4821 · +263 77 123 4567</div>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:0.7rem;color:var(--s-faint);text-transform:uppercase;letter-spacing:0.06em">Estimated arrival</div>
+                <div class="eta-big"><span id="etaMin">9</span> min</div>
+                <div style="font-size:0.73rem;color:var(--s-muted)"><span id="etaKm">2.4</span> km away · updated <span id="etaUpd">just now</span></div>
+              </div>
+            </div>
+          </div>
 
-    <div class="del-row" style="background:var(--s-bg);" onclick="openPanel('TRK-441831')">
-      <div><div style="font-family:var(--s-font-mono);font-weight:800;font-size:0.78rem;">GF-TRK-441831</div></div>
-      <div><div style="font-weight:700;">Farai Mutasa</div><div style="font-size:0.7rem;color:var(--s-muted);">42 Coventry Rd, Avondale</div></div>
-      <div><div style="font-weight:600;">Grace Zimba</div><div style="font-size:0.7rem;color:var(--s-muted);">★★★★★ 4.8</div></div>
-      <div><span class="s-badge green" style="font-size:0.68rem;">Out for Delivery</span></div>
-      <div><span class="eta-badge green">≈ 4 min</span></div>
-      <div style="display:flex;gap:0.375rem;"><button class="s-btn s-btn-ghost" style="font-size:0.7rem;padding:0.25rem 0.5rem;" onclick="event.stopPropagation();openPanel('TRK-441831')">Track</button></div>
-    </div>
-
-    <div class="del-row" onclick="openPanel('TRK-441845')">
-      <div><div style="font-family:var(--s-font-mono);font-weight:800;font-size:0.78rem;">GF-TRK-441845</div></div>
-      <div><div style="font-weight:700;">Rudo Ncube</div><div style="font-size:0.7rem;color:var(--s-muted);">7 Arcturus Rd, Greendale</div></div>
-      <div><div style="font-weight:600;">Brian Chikore</div><div style="font-size:0.7rem;color:var(--s-muted);">★★★★☆ 4.4</div></div>
-      <div><span class="s-badge warn" style="font-size:0.68rem;">Picked Up</span></div>
-      <div><span class="eta-badge gold">≈ 22 min</span></div>
-      <div style="display:flex;gap:0.375rem;"><button class="s-btn s-btn-ghost" style="font-size:0.7rem;padding:0.25rem 0.5rem;" onclick="event.stopPropagation();openPanel('TRK-441845')">Track</button></div>
-    </div>
-
-    <div class="del-row" style="background:var(--s-bg);">
-      <div><div style="font-family:var(--s-font-mono);font-weight:800;font-size:0.78rem;">GF-TRK-441799</div></div>
-      <div><div style="font-weight:700;">Tatenda Moyo</div><div style="font-size:0.7rem;color:var(--s-muted);">88 Harare Drive, Mt Pleasant</div></div>
-      <div><div style="font-weight:600;">Tendai Mhuka</div><div style="font-size:0.7rem;color:var(--s-muted);">★★★★★ 4.9</div></div>
-      <div><span class="s-badge" style="font-size:0.68rem;background:#E8FBF5;color:#00845E;">Delivered</span></div>
-      <div><span class="eta-badge green">11:42 AM ✓</span></div>
-      <div style="display:flex;gap:0.375rem;"><button class="s-btn s-btn-ghost" style="font-size:0.7rem;padding:0.25rem 0.5rem;">View</button></div>
-    </div>
-
-    <div class="del-row">
-      <div><div style="font-family:var(--s-font-mono);font-weight:800;font-size:0.78rem;">GF-TRK-441768</div></div>
-      <div><div style="font-weight:700;">Memory Dube</div><div style="font-size:0.7rem;color:var(--s-muted);">32 Natal Rd, Belgravia</div></div>
-      <div><div style="font-weight:600;">Grace Zimba</div><div style="font-size:0.7rem;color:var(--s-muted);">★★★★★ 4.8</div></div>
-      <div><span class="s-badge" style="font-size:0.68rem;background:#E8FBF5;color:#00845E;">Delivered</span></div>
-      <div><span class="eta-badge green">10:18 AM ✓</span></div>
-      <div style="display:flex;gap:0.375rem;"><button class="s-btn s-btn-ghost" style="font-size:0.7rem;padding:0.25rem 0.5rem;">View</button></div>
-    </div>
-  </div>
-</main>
-</div>
-
-<!-- ── Detail Panel ── -->
-<div class="del-panel" id="delPanel">
-  <div class="del-panel-head">
-    <button onclick="closePanel()" style="background:none;border:none;cursor:pointer;color:var(--s-muted);" title="Close">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <div style="flex:1;">
-      <div style="font-weight:800;font-size:1rem;" id="panelTitle">GF-TRK-441822</div>
-      <div style="font-size:0.72rem;color:var(--s-muted);" id="panelSub">Chipo Mabika · In Transit</div>
-    </div>
-    <div id="panelStatus"></div>
-  </div>
-  <div style="padding:1.25rem;">
-    <!-- Tracking code block -->
-    <div style="margin-bottom:1.25rem;">
-      <div class="trk-code-label">Tracking Code</div>
-      <div class="trk-code" id="panelCode">GF-TRK-441822
-        <button onclick="copyCode()" style="background:none;border:none;cursor:pointer;color:var(--s-muted);" title="Copy code">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        </button>
-      </div>
-      <div style="font-size:0.72rem;color:var(--s-muted);margin-top:0.375rem;">Members can use this code to track their delivery at genfin.co.zw/track</div>
-    </div>
-
-    <!-- ETA -->
-    <div class="s-card" style="margin-bottom:1.25rem;padding:1rem 1.25rem;background:var(--s-scan);border-color:var(--s-scan);">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div><div style="font-size:0.7rem;color:rgba(255,255,255,0.75);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Estimated Arrival</div><div style="font-size:1.75rem;font-weight:800;color:#fff;font-family:var(--s-font-mono);" id="etaDisplay">8 min</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.8);">Approx 12:34 PM · Driver 0.8 km away</div></div>
-        <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:28px;height:28px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <div class="s-grid-2">
+            <div class="s-card">
+              <div class="s-card-head"><h3>Delivery journey</h3></div>
+              <div class="s-card-body">
+                <div class="timeline" id="timeline">
+                  <div class="tl-step done"><div class="tl-dot"></div><div class="tl-title">Order confirmed</div><div class="tl-time">08:42 · Ambuya Stella Pharmacy</div></div>
+                  <div class="tl-step done"><div class="tl-dot"></div><div class="tl-title">Courier booked — code generated</div><div class="tl-time">08:47 · GEN-DLV-4821</div></div>
+                  <div class="tl-step done"><div class="tl-dot"></div><div class="tl-title">Picked up by driver</div><div class="tl-time">09:03 · Simba Ndlovu</div></div>
+                  <div class="tl-step current"><div class="tl-dot"></div><div class="tl-title">Out for delivery</div><div class="tl-time">In transit · live GPS</div></div>
+                  <div class="tl-step"><div class="tl-dot"></div><div class="tl-title">Delivered — PIN verified</div><div class="tl-time">Awaiting recipient PIN</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="s-card">
+              <div class="s-card-head"><h3>Release verification</h3></div>
+              <div class="s-card-body">
+                <div style="font-size:0.8rem;color:var(--s-muted);margin-bottom:0.6rem">Recipient collection PIN — the driver enters this to release the goods.</div>
+                <div class="pin-box" id="pinBox">4821</div>
+                <div class="s-alert s-alert-info" style="margin-top:0.85rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><div>No mobile data? The driver can reply to the WhatsApp job message with the PIN to confirm release. It routes through <strong>WhatsApp → Logistics</strong> and closes the job.</div></div>
+                <div style="display:flex;gap:0.5rem;margin-top:0.85rem">
+                  <button class="s-btn s-btn-ghost s-btn-sm" style="flex:1;justify-content:center" onclick="alert('Recipient notified via SMS + WhatsApp with their collection PIN and live tracking link.')">Resend PIN</button>
+                  <button class="s-btn s-btn-primary s-btn-sm" style="flex:1;justify-content:center" onclick="alert('Live tracking link sent to recipient:\nhttps://track.genfin.co.zw/GEN-DLV-4821')">Share tracking</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Timeline -->
-    <div style="font-weight:800;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--s-muted);margin-bottom:0.75rem;">Delivery Timeline</div>
-    <div class="timeline">
-      <div class="timeline-item"><div class="timeline-dot done"></div><div class="timeline-line done"></div><div class="timeline-content"><div class="timeline-step">Order Created</div><div class="timeline-time">11:48 AM · Pharmacy dispatch raised, code generated</div></div></div>
-      <div class="timeline-item"><div class="timeline-dot done"></div><div class="timeline-line done"></div><div class="timeline-content"><div class="timeline-step">Courier Assigned</div><div class="timeline-time">11:51 AM · Tendai Mhuka accepted the delivery</div></div></div>
-      <div class="timeline-item"><div class="timeline-dot done"></div><div class="timeline-line done"></div><div class="timeline-content"><div class="timeline-step">Picked Up from Pharmacy</div><div class="timeline-time">12:04 PM · Prescription collected · Member notified by SMS</div></div></div>
-      <div class="timeline-item"><div class="timeline-dot active"></div><div class="timeline-line"></div><div class="timeline-content"><div class="timeline-step" style="color:var(--s-gold);">In Transit ← now</div><div class="timeline-time">12:18 PM · 0.8 km from destination · ETA 8 min</div></div></div>
-      <div class="timeline-item"><div class="timeline-dot pending"></div><div class="timeline-line"></div><div class="timeline-content"><div class="timeline-step" style="color:var(--s-muted);">Out for Delivery</div><div class="timeline-time">Arriving soon</div></div></div>
-      <div class="timeline-item"><div class="timeline-dot pending"></div><div class="timeline-content"><div class="timeline-step" style="color:var(--s-muted);">Delivered</div><div class="timeline-time">Pending confirmation</div></div></div>
     </div>
+  </main>
+</div>
 
-    <div style="height:1px;background:var(--s-border);margin:1.25rem 0;"></div>
-
-    <!-- Driver info -->
-    <div style="font-weight:800;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--s-muted);margin-bottom:0.75rem;">Driver</div>
-    <div style="display:flex;align-items:center;gap:0.875rem;margin-bottom:1rem;">
-      <div style="width:42px;height:42px;border-radius:50%;background:var(--s-scan);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:0.875rem;">TM</div>
-      <div style="flex:1;"><div style="font-weight:700;">Tendai Mhuka</div><div style="font-size:0.72rem;color:var(--s-muted);">★★★★★  4.9 · 1,284 deliveries</div></div>
-      <button class="s-btn s-btn-ghost" style="font-size:0.75rem;" onclick="alert('Calling driver...')">📞 Call</button>
+<!-- Booking modal -->
+<div class="s-modal-overlay" id="bookModal" style="display:none">
+  <div class="s-modal">
+    <div class="s-modal-head"><div class="s-modal-title">Book courier</div><button class="s-modal-close" onclick="closeBook()">×</button></div>
+    <div id="bookForm">
+      <div class="s-form-group"><label class="s-label">Order / prescription reference</label><input class="s-input" value="RX-889244" id="bkRef"></div>
+      <div class="s-form-group"><label class="s-label">Recipient</label><input class="s-input" value="Chiedza Nyamuzihwa" id="bkName"></div>
+      <div class="s-form-group"><label class="s-label">Delivery address</label><input class="s-input" value="14 Fife Ave, Harare" id="bkAddr"></div>
+      <div class="s-form-row">
+        <div class="s-form-group"><label class="s-label">Assign driver</label><select class="s-select" id="bkDrv"><option>Simba Ndlovu — Motorbike</option><option>Tapiwa Zhou — Van</option><option>Kuda Rusike — Motorbike</option></select></div>
+        <div class="s-form-group"><label class="s-label">Priority</label><select class="s-select"><option>Standard</option><option>Priority</option><option>Chronic meds</option></select></div>
+      </div>
+      <div class="s-modal-foot"><button class="s-btn s-btn-ghost" onclick="closeBook()">Cancel</button><button class="s-btn s-btn-primary" onclick="doBook()">Book &amp; generate code</button></div>
     </div>
-    <div style="display:flex;gap:0.75rem;">
-      <button class="s-btn s-btn-ghost" style="flex:1;font-size:0.8rem;" onclick="alert('Sending delivery update to member via SMS and WhatsApp...')">Notify Member</button>
-      <button class="s-btn s-btn-ghost" style="flex:1;font-size:0.8rem;color:var(--s-danger);" onclick="alert('Cancel delivery — are you sure?')">Cancel</button>
+    <div id="bookDone" style="display:none;text-align:center;padding:0.5rem 0">
+      <div style="width:56px;height:56px;border-radius:50%;background:rgba(0,196,138,0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem"><svg style="width:28px;height:28px;color:var(--s-scan)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div style="font-weight:800;font-size:1.05rem;margin-bottom:0.35rem">Courier booked</div>
+      <div style="font-size:0.85rem;color:var(--s-muted);margin-bottom:1rem">Tracking code &amp; release PIN generated and pushed to the driver app + recipient.</div>
+      <div style="display:flex;gap:0.75rem;justify-content:center;margin-bottom:0.5rem">
+        <div><div style="font-size:0.68rem;color:var(--s-faint);text-transform:uppercase">Tracking code</div><div class="lg-code" style="font-size:1.1rem;color:var(--s-scan)" id="newCode">GEN-DLV-0000</div></div>
+        <div><div style="font-size:0.68rem;color:var(--s-faint);text-transform:uppercase">Release PIN</div><div class="lg-code" style="font-size:1.1rem;color:var(--s-gold)" id="newPin">0000</div></div>
+      </div>
+      <button class="s-btn s-btn-primary" style="margin-top:0.75rem" onclick="closeBook()">Done</button>
     </div>
   </div>
 </div>
 
-<!-- ── New Delivery Modal ── -->
-<div class="modal-overlay" id="newDelivModal">
-  <div style="background:var(--s-card);border-radius:12px;width:500px;max-width:95vw;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
-      <div><div style="font-weight:800;font-size:1.125rem;">Book a Courier</div><div style="font-size:0.75rem;color:var(--s-muted);margin-top:0.125rem;">A tracking code will be generated automatically</div></div>
-      <button onclick="document.getElementById('newDelivModal').classList.remove('open')" style="background:none;border:none;cursor:pointer;font-size:1.25rem;color:var(--s-muted);">×</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:0.875rem;">
-      <div><label style="font-size:0.75rem;font-weight:700;color:var(--s-muted);display:block;margin-bottom:0.25rem;">Member Name</label><input class="s-search" style="width:100%;box-sizing:border-box;" placeholder="Search member…"></div>
-      <div><label style="font-size:0.75rem;font-weight:700;color:var(--s-muted);display:block;margin-bottom:0.25rem;">Delivery Address</label><input class="s-search" style="width:100%;box-sizing:border-box;" placeholder="Full delivery address"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
-        <div><label style="font-size:0.75rem;font-weight:700;color:var(--s-muted);display:block;margin-bottom:0.25rem;">Pharmacy / Origin</label><select class="s-search" style="width:100%;padding:0 0.75rem;"><option>Avenues Pharmacy</option><option>Greendale Pharmacy</option><option>Borrowdale Pharmacy</option><option>Hatfield Pharmacy</option></select></div>
-        <div><label style="font-size:0.75rem;font-weight:700;color:var(--s-muted);display:block;margin-bottom:0.25rem;">Delivery Type</label><select class="s-search" style="width:100%;padding:0 0.75rem;"><option>Prescription Medication</option><option>Medical Supplies</option><option>Documents</option><option>Equipment</option></select></div>
-      </div>
-      <div><label style="font-size:0.75rem;font-weight:700;color:var(--s-muted);display:block;margin-bottom:0.25rem;">Assign Driver</label><select class="s-search" style="width:100%;padding:0 0.75rem;"><option>Auto-assign (nearest available)</option><option>Tendai Mhuka · ★4.9</option><option>Grace Zimba · ★4.8</option><option>Brian Chikore · ★4.4</option></select></div>
-      <div><label style="font-size:0.75rem;font-weight:700;color:var(--s-muted);display:block;margin-bottom:0.25rem;">Notes for Driver</label><textarea class="s-search" rows="2" style="width:100%;box-sizing:border-box;resize:none;" placeholder="Any special instructions…"></textarea></div>
-      <div style="background:var(--s-bg);border-radius:8px;padding:0.875rem;font-size:0.8rem;color:var(--s-muted);">
-        <b style="color:var(--s-ink);">On booking:</b> A tracking code (GF-TRK-XXXXXX) will be generated. The member will be notified immediately by SMS and WhatsApp with their tracking code and live link.
-      </div>
-      <div style="display:flex;gap:0.75rem;justify-content:flex-end;">
-        <button class="s-btn s-btn-ghost" onclick="document.getElementById('newDelivModal').classList.remove('open')">Cancel</button>
-        <button class="s-btn s-btn-primary" onclick="bookCourier()">Book &amp; Generate Tracking Code</button>
-      </div>
-    </div>
-  </div>
-</div>
-
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
-const PANELS = {
-  'TRK-441822': { title:'GF-TRK-441822', sub:'Chipo Mabika · In Transit', code:'GF-TRK-441822', eta:'8 min', statusColor:'var(--s-scan)', statusText:'In Transit' },
-  'TRK-441831': { title:'GF-TRK-441831', sub:'Farai Mutasa · Out for Delivery', code:'GF-TRK-441831', eta:'4 min', statusColor:'var(--s-scan)', statusText:'Out for Delivery' },
-  'TRK-441845': { title:'GF-TRK-441845', sub:'Rudo Ncube · Picked Up', code:'GF-TRK-441845', eta:'22 min', statusColor:'var(--s-gold)', statusText:'Picked Up' },
-};
-function openPanel(id) {
-  const p = PANELS[id] || PANELS['TRK-441822'];
-  document.getElementById('panelTitle').textContent = p.title;
-  document.getElementById('panelSub').textContent = p.sub;
-  document.getElementById('panelCode').childNodes[0].textContent = p.code + ' ';
-  document.getElementById('etaDisplay').textContent = p.eta;
-  document.getElementById('panelStatus').innerHTML = `<span style="font-size:0.72rem;padding:0.2rem 0.6rem;border-radius:99px;font-weight:700;background:${p.statusColor}22;color:${p.statusColor}">${p.statusText}</span>`;
-  document.getElementById('delPanel').classList.add('open');
-}
-function closePanel() { document.getElementById('delPanel').classList.remove('open'); }
-function copyCode() {
-  const txt = document.getElementById('panelCode').textContent.trim().split('\n')[0].trim();
-  navigator.clipboard.writeText(txt).catch(()=>{});
-  alert('Tracking code copied: ' + txt);
-}
-function bookCourier() {
-  const code = 'GF-TRK-' + (440000 + Math.floor(Math.random()*9999));
-  document.getElementById('newDelivModal').classList.remove('open');
-  alert(`Courier booked!\n\nTracking code: ${code}\n\nThe member has been notified by SMS and WhatsApp.\nUse the tracking code to monitor progress.`);
-}
-// Animate drivers
-const drivers = [
-  { el:'d1', paths:[[48,46],[50,44],[52,43],[55,44],[58,45]] },
-  { el:'d2', paths:[[22,30],[24,29],[26,28],[27,27],[28,27]] },
-  { el:'d3', paths:[[68,62],[69,63],[70,64],[71,65],[72,66]] },
+// ---- Order data ----
+var ORDERS = [
+  { code:'GEN-DLV-4821', name:'Chiedza Nyamuzihwa', meta:'RX-889244 · 14 Fife Ave, Harare', status:'Out for delivery', chip:'s-chip-gold',
+    driver:'Simba Ndlovu', av:'SN', veh:'Motorbike · ADI 4821 · +263 77 123 4567', pin:'4821',
+    from:[-17.8292,31.0522], to:[-17.8112,31.0430], eta:9, km:2.4 },
+  { code:'GEN-DLV-4820', name:'Peter Chando', meta:'RX-889201 · Belgravia, Harare', status:'Out for delivery', chip:'s-chip-gold',
+    driver:'Tapiwa Zhou', av:'TZ', veh:'Van · ACM 1180 · +263 77 555 2211', pin:'7710',
+    from:[-17.8292,31.0522], to:[-17.7996,31.0385], eta:16, km:4.1 },
+  { code:'GEN-DLV-4818', name:'Grace Sibanda', meta:'RX-889150 · Mbare, Harare', status:'Picked up', chip:'s-chip-blue',
+    driver:'Kuda Rusike', av:'KR', veh:'Motorbike · ADH 9902 · +263 71 902 4410', pin:'3390',
+    from:[-17.8292,31.0522], to:[-17.8570,31.0360], eta:22, km:5.3 },
+  { code:'GEN-DLV-4815', name:'Nokuthula Dube', meta:'RX-889044 · Avondale, Harare', status:'Delivered', chip:'s-chip-green',
+    driver:'Simba Ndlovu', av:'SN', veh:'Motorbike · ADI 4821', pin:'——',
+    from:[-17.8292,31.0522], to:[-17.7899,31.0360], eta:0, km:0 }
 ];
-let di = 0;
-setInterval(() => {
-  drivers.forEach(d => {
-    const el = document.getElementById(d.el);
-    const pos = d.paths[di % d.paths.length];
-    el.style.left = pos[0] + '%'; el.style.top = pos[1] + '%';
-  });
-  di++;
-}, 4000);
+
+// ---- Render list ----
+var listEl = document.getElementById('orderList');
+ORDERS.forEach(function(o,i){
+  var d=document.createElement('div');
+  d.className='lg-order'+(i===0?' active':'');
+  d.onclick=function(){ selectOrder(i,d); };
+  d.innerHTML='<div class="lg-order-top"><span class="lg-code" style="color:var(--s-ink)">'+o.code+'</span><span class="s-chip '+o.chip+'">'+o.status+'</span></div>'+
+    '<div class="lg-order-name">'+o.name+'</div><div class="lg-order-meta">'+o.meta+'</div>'+
+    '<div class="lg-order-meta">Driver: '+o.driver+'</div>';
+  listEl.appendChild(d);
+});
+
+// ---- Map ----
+var map = L.map('map',{ zoomControl:true, scrollWheelZoom:false }).setView([-17.8200,31.0480],13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  maxZoom:19, attribution:'© OpenStreetMap contributors'
+}).addTo(map);
+
+var goldIcon = L.divIcon({ className:'', html:'<div style="width:26px;height:26px;border-radius:50%;background:#FBBD3E;border:3px solid #14141A;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.3)"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#14141A" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7z"/></svg></div>', iconSize:[26,26], iconAnchor:[13,13] });
+var destIcon = L.divIcon({ className:'', html:'<div style="width:22px;height:22px;border-radius:50% 50% 50% 0;background:#00C48A;border:2px solid #fff;transform:rotate(-45deg);box-shadow:0 2px 5px rgba(0,0,0,.3)"></div>', iconSize:[22,22], iconAnchor:[11,20] });
+
+var driverMarker, destMarker, routeLine, animTimer, tick=0;
+
+function selectOrder(i, el){
+  document.querySelectorAll('.lg-order').forEach(function(n){n.classList.remove('active');});
+  if(el) el.classList.add('active');
+  var o = ORDERS[i];
+  document.getElementById('trkCode').textContent=o.code;
+  document.getElementById('trkStatus').textContent=o.status;
+  document.getElementById('drvName').textContent=o.driver;
+  document.getElementById('drvAv').textContent=o.av;
+  document.getElementById('drvVeh').textContent=o.veh;
+  document.getElementById('pinBox').textContent=o.pin;
+  document.getElementById('etaMin').textContent=o.eta;
+  document.getElementById('etaKm').textContent=o.km;
+  drawRoute(o);
+}
+
+function drawRoute(o){
+  if(driverMarker){ map.removeLayer(driverMarker); }
+  if(destMarker){ map.removeLayer(destMarker); }
+  if(routeLine){ map.removeLayer(routeLine); }
+  if(animTimer){ clearInterval(animTimer); }
+  // simple curved-ish route via a mid waypoint
+  var mid=[ (o.from[0]+o.to[0])/2 + 0.004, (o.from[1]+o.to[1])/2 - 0.003 ];
+  var path=[o.from, mid, o.to];
+  routeLine=L.polyline(path,{color:'#14141A',weight:4,opacity:0.55,dashArray:'2,8'}).addTo(map);
+  destMarker=L.marker(o.to,{icon:destIcon}).addTo(map).bindPopup('Destination');
+  var pts=interpolate(path,60);
+  var start = o.status==='Delivered' ? pts.length-1 : Math.floor(pts.length*0.45);
+  tick=start;
+  driverMarker=L.marker(pts[tick],{icon:goldIcon}).addTo(map).bindPopup(o.driver);
+  map.fitBounds(routeLine.getBounds().pad(0.3));
+  if(o.status!=='Delivered'){
+    animTimer=setInterval(function(){
+      tick++; if(tick>=pts.length-1){ tick=pts.length-1; clearInterval(animTimer); document.getElementById('etaMin').textContent='0'; document.getElementById('trkStatus').textContent='Arriving'; return; }
+      driverMarker.setLatLng(pts[tick]);
+      var remain = Math.max(0, Math.round(o.eta * (1 - tick/(pts.length-1))));
+      document.getElementById('etaMin').textContent=remain;
+      document.getElementById('etaKm').textContent=(o.km*(1-tick/(pts.length-1))).toFixed(1);
+      document.getElementById('etaUpd').textContent='just now';
+    }, 1400);
+  }
+}
+function interpolate(path,steps){
+  var out=[];
+  for(var s=0;s<path.length-1;s++){
+    for(var t=0;t<steps;t++){
+      var f=t/steps;
+      out.push([ path[s][0]+(path[s+1][0]-path[s][0])*f, path[s][1]+(path[s+1][1]-path[s][1])*f ]);
+    }
+  }
+  out.push(path[path.length-1]);
+  return out;
+}
+selectOrder(0, document.querySelector('.lg-order'));
+
+// ---- Booking ----
+function openBook(){ document.getElementById('bookModal').style.display='flex'; document.getElementById('bookForm').style.display='block'; document.getElementById('bookDone').style.display='none'; }
+function closeBook(){ document.getElementById('bookModal').style.display='none'; }
+function doBook(){
+  var code='GEN-DLV-'+Math.floor(4000+Math.random()*5999);
+  var pin=(''+Math.floor(1000+Math.random()*8999));
+  document.getElementById('newCode').textContent=code;
+  document.getElementById('newPin').textContent=pin;
+  document.getElementById('bookForm').style.display='none';
+  document.getElementById('bookDone').style.display='block';
+}
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(function(){}); }
 </script>
 </body>
 </html>

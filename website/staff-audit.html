@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audit Log — GENFIN Staff</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/staff.css">
+<style>
+.au-filters { display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:1.25rem; }
+.au-filters .s-select, .au-filters .s-input { width:auto; padding:7px 11px; font-size:0.8rem; }
+.au-diff { font-family:var(--s-font-mono); font-size:0.74rem; }
+.au-old { color:var(--s-danger); text-decoration:line-through; }
+.au-new { color:#00A872; }
+.au-action { font-size:0.62rem; font-weight:800; padding:2px 8px; border-radius:20px; letter-spacing:0.03em; }
+.a-create{ background:rgba(0,196,138,0.12); color:#00A872; }
+.a-update{ background:rgba(59,91,219,0.1); color:#3B5BDB; }
+.a-delete{ background:rgba(229,57,53,0.12); color:var(--s-danger); }
+.a-login{ background:rgba(20,20,26,0.07); color:var(--s-muted); }
+.a-approve{ background:rgba(251,189,62,0.16); color:#946500; }
+</style>
+</head>
+<body>
+<div class="s-layout">
+
+  <aside class="s-sidebar">
+    <div class="s-sidebar-logo">
+      <div class="s-logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#14141A" stroke-width="2.2" style="width:16px;height:16px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div><div class="s-logo-text">GEN<span>FIN</span></div><div class="s-logo-sub">Audit</div></div>
+    </div>
+    <div class="s-nav-section">Navigation</div>
+    <a href="superadmin.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="staff-members.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Members</a>
+    <a href="staff-claims.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Claims<span class="s-nav-badge">47</span></a>
+    <a href="staff-hr.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>HR &amp; Payroll</a>
+    <a href="staff-finance.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Accounts</a>
+    <a href="staff-inventory.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Inventory</a>
+    <a href="staff-tracking.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Order Tracking<span class="s-nav-badge warn">8</span></a>
+    <a href="staff-whatsapp.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>WhatsApp<span class="s-nav-badge">6</span></a>
+    <a href="bioverify-facial.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>BioVerify</a>
+    <a href="staff-audit.html" class="s-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Audit log</a>
+    <div class="s-sidebar-foot"><div class="s-foot-av">WK</div><div><div class="s-foot-name">Dr W. Kapapiro</div><div class="s-foot-role">Super Admin</div></div></div>
+  </aside>
+
+  <main class="s-main">
+    <div class="s-topbar">
+      <div class="s-topbar-title">Audit Log &amp; Activity Monitoring</div>
+      <div class="s-topbar-actions">
+        <span style="display:flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--s-muted)"><span class="s-online-dot"></span> Append-only · tamper-evident</span>
+        <button class="s-btn s-btn-ghost">Export CSV</button>
+        <button class="s-btn s-btn-primary">Export signed report</button>
+      </div>
+    </div>
+
+    <div class="s-body">
+      <div class="s-alert s-alert-info" style="margin-bottom:1.25rem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <div><strong>Every create, update, delete, approval and login is recorded here</strong> with the actor, role, module, before/after values, IP address and timestamp. Records are append-only and cannot be edited or removed — supporting accountability and Zimbabwe data-protection compliance.</div>
+      </div>
+
+      <div class="s-kpi-grid">
+        <div class="s-kpi"><div class="s-kpi-label">Events today</div><div class="s-kpi-val">1,284</div><div class="s-kpi-sub">Across 9 modules</div></div>
+        <div class="s-kpi"><div class="s-kpi-label">Active users (24h)</div><div class="s-kpi-val">41</div><div class="s-kpi-delta up">Peak 09:00–11:00</div></div>
+        <div class="s-kpi"><div class="s-kpi-label">Privileged actions</div><div class="s-kpi-val">63</div><div class="s-kpi-sub">All 2FA-verified</div></div>
+        <div class="s-kpi"><div class="s-kpi-label">Flagged events</div><div class="s-kpi-val" style="color:var(--s-danger)">2</div><div class="s-kpi-delta dn">Failed logins</div></div>
+      </div>
+
+      <div class="au-filters">
+        <select class="s-select"><option>All modules</option><option>Accounts</option><option>HR &amp; Payroll</option><option>Claims</option><option>Members</option><option>Order Tracking</option><option>WhatsApp</option><option>BioVerify</option><option>Inventory</option></select>
+        <select class="s-select"><option>All users</option><option>Faith Ncube</option><option>Tendai Mangwiro</option><option>Ops Control</option><option>Dr W. Kapapiro</option></select>
+        <select class="s-select"><option>All actions</option><option>Create</option><option>Update</option><option>Delete</option><option>Approve</option><option>Login</option></select>
+        <input class="s-input" type="date" value="2026-07-05">
+        <input class="s-input" placeholder="Search record / entity…" style="min-width:200px">
+      </div>
+
+      <div class="s-card">
+        <div class="s-card-head"><h3>Activity — 5 July 2026</h3><span class="s-chip s-chip-green">Live</span></div>
+        <div class="s-table-wrap">
+          <table class="s-table">
+            <thead><tr><th>Time</th><th>User / role</th><th>Module</th><th>Action</th><th>Entity</th><th>Change</th><th>IP</th></tr></thead>
+            <tbody>
+              <tr><td class="s-td-mono">14:23:41</td><td class="s-td-primary">Pharmacist · B. Sithole</td><td>BioVerify</td><td><span class="au-action a-create">DISPENSE</span></td><td class="s-td-mono">RX-889244</td><td class="au-diff">Verified by <span class="au-new">Facial</span> · conf 99.4%</td><td class="s-td-mono">10.20.4.8</td></tr>
+              <tr><td class="s-td-mono">14:21:02</td><td class="s-td-primary">Ops Control</td><td>Order Tracking</td><td><span class="au-action a-approve">PIN OK</span></td><td class="s-td-mono">GEN-DLV-4820</td><td class="au-diff">Status <span class="au-old">In transit</span> → <span class="au-new">Delivered</span> (WhatsApp PIN)</td><td class="s-td-mono">10.20.1.2</td></tr>
+              <tr><td class="s-td-mono">13:58:10</td><td class="s-td-primary">Finance · F. Ncube</td><td>Accounts</td><td><span class="au-action a-update">POST</span></td><td class="s-td-mono">JN-2026-0712</td><td class="au-diff">Journal <span class="au-old">Draft</span> → <span class="au-new">Posted</span> · $184,000</td><td class="s-td-mono">10.20.2.5</td></tr>
+              <tr><td class="s-td-mono">13:47:55</td><td class="s-td-primary">Ops Control</td><td>Order Tracking</td><td><span class="au-action a-create">BOOK</span></td><td class="s-td-mono">GEN-DLV-4821</td><td class="au-diff">Courier booked · driver S. Ndlovu · PIN issued</td><td class="s-td-mono">10.20.1.2</td></tr>
+              <tr><td class="s-td-mono">13:32:19</td><td class="s-td-primary">HR · T. Mangwiro</td><td>HR &amp; Payroll</td><td><span class="au-action a-approve">APPROVE</span></td><td class="s-td-mono">PAY-2026-07</td><td class="au-diff">Payroll run submitted → Finance · net $148,240</td><td class="s-td-mono">10.20.3.7</td></tr>
+              <tr><td class="s-td-mono">12:08:44</td><td class="s-td-primary">Member Services</td><td>WhatsApp</td><td><span class="au-action a-update">REPLY</span></td><td class="s-td-mono">GF-0040021</td><td class="au-diff">Auto-reply BALANCE sent</td><td class="s-td-mono">10.20.5.1</td></tr>
+              <tr><td class="s-td-mono">11:14:03</td><td class="s-td-primary">Claims · R. Chikafu</td><td>Claims</td><td><span class="au-action a-update">EDIT</span></td><td class="s-td-mono">CLM-0041798</td><td class="au-diff">Amount <span class="au-old">$2,600</span> → <span class="au-new">$2,800</span></td><td class="s-td-mono">10.20.6.4</td></tr>
+              <tr><td class="s-td-mono">10:52:37</td><td class="s-td-primary">Admin · N. Kadzviti</td><td>Members</td><td><span class="au-action a-create">ENROL</span></td><td class="s-td-mono">GF-0041999</td><td class="au-diff">New member · plan Gold · face + fingerprint enrolled</td><td class="s-td-mono">10.20.7.9</td></tr>
+              <tr><td class="s-td-mono">09:40:11</td><td class="s-td-primary">Super Admin · W. Kapapiro</td><td>System</td><td><span class="au-action a-update">ROLE</span></td><td class="s-td-mono">EMP-0079</td><td class="au-diff">Role <span class="au-old">Viewer</span> → <span class="au-new">Claims Clerk</span></td><td class="s-td-mono">10.20.0.1</td></tr>
+              <tr><td class="s-td-mono">09:02:58</td><td class="s-td-primary">Unknown</td><td>System</td><td><span class="au-action a-login">LOGIN FAIL</span></td><td class="s-td-mono">—</td><td class="au-diff" style="color:var(--s-danger)">2 failed attempts · account locked</td><td class="s-td-mono">41.85.x.x</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:0.75rem 1.25rem;border-top:1px solid var(--s-border);display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;color:var(--s-muted)">
+          <span>Showing 10 of 1,284 events</span>
+          <span>Integrity: <strong style="color:#00A872">✓ hash chain verified</strong></span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script>if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(function(){}); }</script>
+</body>
+</html>

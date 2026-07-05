@@ -50,7 +50,7 @@
     <div>
       <div class="bv-eyebrow">Biometric Identity Platform</div>
       <h1>Confirm who<br>is <em>really</em> collecting<br>the prescription.</h1>
-      <p class="bv-hero lead">BioVerify authenticates member identity at the point of dispensing using fingerprint scanning — preventing prescription fraud, protecting benefits, and closing the dispensary accountability gap.</p>
+      <p class="bv-hero lead">BioVerify authenticates member identity at the point of dispensing using fingerprint <em>and facial recognition</em> — preventing prescription fraud, protecting benefits, and closing the dispensary accountability gap.</p>
       <div class="bv-hero-cta">
         <a href="#pricing" class="bv-btn bv-btn-primary bv-btn-xl">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 11c0-1.1.9-2 2-2s2 .9 2 2v1a2 2 0 0 1-4 0v-1z"/><path d="M6 9a6 6 0 0 1 12 0"/><path d="M6 9c0 5 2 8 6 10"/><path d="M18 9c0 5-2 8-6 10"/></svg>
@@ -372,6 +372,29 @@ if (result.matched) {
       </div>
 
     </div>
+
+    <!-- Face Verification add-on -->
+    <style>@media (max-width:760px){ #bvFaceAddon{ grid-template-columns:1fr !important; } #bvFaceAddon > div:last-child{ border-left:none !important; padding-left:0 !important; border-top:1px solid rgba(255,255,255,0.12); padding-top:1.5rem !important; } }</style>
+    <div id="bvFaceAddon" class="bv-plan featured" style="margin-top:2rem; display:grid; grid-template-columns:1.2fr 1fr; gap:2rem; align-items:center; max-width:none">
+      <div>
+        <div class="bv-plan-badge">New · sold separately</div>
+        <div class="bv-plan-name" style="font-size:1.35rem">Face Verification module</div>
+        <div class="bv-plan-desc" style="margin-bottom:1rem">Add camera-based facial recognition to any BioVerify terminal. The pharmacist scans the member's face and the system confirms identity in under two seconds — ideal where fingerprints are hard to capture (manual workers, elderly, injured hands) or for touch-free, higher-assurance dual-factor checks. Available as a standalone offering or bundled with fingerprint.</div>
+        <div class="bv-plan-feats" style="grid-template-columns:1fr 1fr">
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Works with any USB / laptop webcam</div>
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Liveness / anti-spoof detection</div>
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Face-only or face + fingerprint</div>
+          <div class="bv-plan-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Encrypted templates, no raw images stored</div>
+        </div>
+      </div>
+      <div style="text-align:center; border-left:1px solid rgba(255,255,255,0.12); padding-left:2rem">
+        <div class="bv-plan-price"><sup>$</sup>29<sub>/mo per terminal</sub></div>
+        <div class="bv-plan-desc" style="margin-bottom:1.25rem">Add-on to any plan, or from $69/mo as a standalone face-only terminal.</div>
+        <a href="mailto:bioverify@genfin.co.zw?subject=BioVerify%20Face%20Module" class="bv-btn bv-btn-primary" style="width:100%; justify-content:center">Add face verification</a>
+        <a href="verify.html" class="bv-btn bv-btn-ghost" style="width:100%; justify-content:center; margin-top:0.6rem">Try the terminal demo</a>
+      </div>
+    </div>
+
   </div>
 </section>
 

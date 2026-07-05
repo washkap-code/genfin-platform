@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioVerify Enrolment — GENFIN Staff</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/staff.css">
+<style>
+.en-steps { display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+.en-step { flex:1; min-width:120px; border:1px solid var(--s-border); border-radius:10px; padding:0.7rem 0.9rem; background:#fff; display:flex; gap:0.6rem; align-items:center; opacity:0.55; }
+.en-step.active { opacity:1; border-color:var(--s-gold); box-shadow:0 0 0 2px rgba(251,189,62,0.2); }
+.en-step.done { opacity:1; }
+.en-num { width:26px; height:26px; border-radius:50%; background:var(--s-page); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem; flex-shrink:0; }
+.en-step.done .en-num { background:var(--s-scan); color:#fff; }
+.en-step.active .en-num { background:var(--s-gold); color:var(--s-ink); }
+.en-lbl { font-size:0.78rem; font-weight:700; }
+.en-panel { display:none; } .en-panel.active { display:block; }
+
+.stage { background:#080C12; border-radius:14px; padding:2rem; text-align:center; color:#fff; }
+.finger-row { display:flex; gap:0.6rem; justify-content:center; flex-wrap:wrap; margin:1.25rem 0; }
+.finger { width:70px; border:2px solid rgba(255,255,255,0.12); border-radius:12px; padding:0.75rem 0.4rem; cursor:pointer; transition:all 0.15s; }
+.finger.cap { border-color:var(--s-scan); background:rgba(0,196,138,0.1); }
+.finger.active { border-color:var(--s-gold); }
+.finger svg { width:26px; height:34px; margin:0 auto; color:rgba(255,255,255,0.5); }
+.finger.cap svg { color:var(--s-scan); }
+.finger-lbl { font-size:0.62rem; color:rgba(255,255,255,0.5); margin-top:4px; }
+
+.face-stage { position:relative; width:230px; height:230px; margin:1rem auto; border-radius:18px; overflow:hidden; background:#0b1a17; }
+.face-stage video { width:100%; height:100%; object-fit:cover; transform:scaleX(-1); }
+.face-oval { position:absolute; top:50%; left:50%; width:130px; height:170px; transform:translate(-50%,-50%); border:2.5px solid rgba(0,212,170,0.8); border-radius:50%/42%; }
+.face-oval.locked { border-color:#00C48A; box-shadow:0 0 22px rgba(0,196,138,0.4); }
+.face-sim { position:absolute; inset:0; background-image:radial-gradient(rgba(0,196,138,0.5) 1px, transparent 1px); background-size:13px 13px; opacity:0.3; }
+.en-bar { height:6px; background:rgba(255,255,255,0.12); border-radius:4px; overflow:hidden; margin:0.75rem auto; max-width:320px; }
+.en-bar > span { display:block; height:100%; background:var(--s-scan); width:0; transition:width 0.2s; }
+@media (max-width:900px){ .s-grid-2{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="s-layout">
+
+  <aside class="s-sidebar">
+    <div class="s-sidebar-logo">
+      <div class="s-logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#14141A" stroke-width="2.2" style="width:16px;height:16px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+      <div><div class="s-logo-text">GEN<span>FIN</span></div><div class="s-logo-sub">BioVerify Enrol</div></div>
+    </div>
+    <div class="s-nav-section">Navigation</div>
+    <a href="superadmin.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+    <a href="staff-members.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Members</a>
+    <a href="staff-claims.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Claims<span class="s-nav-badge">47</span></a>
+    <a href="staff-hr.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>HR &amp; Payroll</a>
+    <a href="staff-finance.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Accounts</a>
+    <a href="staff-inventory.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Inventory</a>
+    <a href="staff-tracking.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Order Tracking<span class="s-nav-badge warn">8</span></a>
+    <a href="staff-whatsapp.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>WhatsApp<span class="s-nav-badge">6</span></a>
+    <a href="bioverify-facial.html" class="s-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>BioVerify</a>
+    <a href="staff-audit.html" class="s-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Audit log</a>
+    <div class="s-sidebar-foot"><div class="s-foot-av">RK</div><div><div class="s-foot-name">Rutendo Kanyowa</div><div class="s-foot-role">Enrolment Officer</div></div></div>
+  </aside>
+
+  <main class="s-main">
+    <div class="s-topbar">
+      <div class="s-topbar-title">BioVerify — Biometric Enrolment</div>
+      <div class="s-topbar-actions">
+        <a class="s-btn s-btn-ghost" href="bioverify-facial.html">Verification terminal</a>
+        <button class="s-btn s-btn-primary" onclick="alert('Bulk enrolment drive:\n• Generate a schedule by branch/employer group\n• Send WhatsApp invites with time slots\n• Track completion against the 100% target')">Run enrolment drive</button>
+      </div>
+    </div>
+
+    <div class="s-body">
+
+      <!-- Coverage -->
+      <div class="s-kpi-grid">
+        <div class="s-kpi"><div class="s-kpi-label">Members + dependents</div><div class="s-kpi-val">60,821</div><div class="s-kpi-sub">Total lives covered</div></div>
+        <div class="s-kpi"><div class="s-kpi-label">Fully enrolled</div><div class="s-kpi-val" style="color:var(--s-scan)">47,940</div><div class="s-kpi-delta up">78.8% coverage</div></div>
+        <div class="s-kpi"><div class="s-kpi-label">Partial (one modality)</div><div class="s-kpi-val">8,610</div><div class="s-kpi-sub">Face or fingerprint only</div></div>
+        <div class="s-kpi"><div class="s-kpi-label">Not enrolled</div><div class="s-kpi-val" style="color:var(--s-danger)">4,271</div><div class="s-kpi-delta dn">Target: 0</div></div>
+      </div>
+
+      <div class="s-card" style="margin-bottom:1.5rem">
+        <div class="s-card-body">
+          <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:0.5rem"><strong>Enrolment coverage toward 100% goal</strong><span style="color:var(--s-scan);font-weight:700">78.8%</span></div>
+          <div class="s-progress" style="height:10px"><div class="s-progress-fill" style="width:78.8%;background:linear-gradient(90deg,var(--s-scan),var(--s-gold))"></div></div>
+          <div style="font-size:0.75rem;color:var(--s-muted);margin-top:0.5rem">Every member and dependent should have <strong>both</strong> face and fingerprint on file. Enrolment can happen at any branch terminal, during a claim, or via a scheduled drive.</div>
+        </div>
+      </div>
+
+      <div class="s-grid-2" style="align-items:start">
+        <!-- Enrolment wizard -->
+        <div class="s-card">
+          <div class="s-card-head"><h3>New enrolment</h3><span class="s-chip s-chip-gold" id="enBadge">Step 1 of 4</span></div>
+          <div class="s-card-body">
+            <div class="en-steps">
+              <div class="en-step active" id="st1"><div class="en-num">1</div><div class="en-lbl">Person</div></div>
+              <div class="en-step" id="st2"><div class="en-num">2</div><div class="en-lbl">Fingerprint</div></div>
+              <div class="en-step" id="st3"><div class="en-num">3</div><div class="en-lbl">Face</div></div>
+              <div class="en-step" id="st4"><div class="en-num">4</div><div class="en-lbl">Confirm</div></div>
+            </div>
+
+            <!-- Step 1: person -->
+            <div class="en-panel active" id="p1">
+              <div class="s-form-group"><label class="s-label">Member or dependent</label>
+                <select class="s-select" id="enWho">
+                  <option>Anesu Nyamuzihwa — dependent (GF-0041882-3)</option>
+                  <option>Mai Nyamuzihwa — dependent (GF-0041882-4)</option>
+                  <option>New member — search…</option>
+                </select>
+              </div>
+              <div class="s-form-row">
+                <div class="s-form-group"><label class="s-label">National ID / birth cert</label><input class="s-input" value="63-9988776 K 22"></div>
+                <div class="s-form-group"><label class="s-label">Enrolment site</label><input class="s-input" value="Harare CBD · TERM-0041"></div>
+              </div>
+              <label style="display:flex;gap:0.5rem;align-items:flex-start;font-size:0.8rem;color:var(--s-muted);margin:0.5rem 0 1rem"><input type="checkbox" id="enConsent" style="margin-top:2px"> Member consents to biometric enrolment. Templates are encrypted; no raw images are stored. Consent recorded to the audit log.</label>
+              <button class="s-btn s-btn-primary" style="width:100%;justify-content:center" onclick="toStep(2)">Continue to fingerprint</button>
+            </div>
+
+            <!-- Step 2: fingerprint -->
+            <div class="en-panel" id="p2">
+              <div class="stage">
+                <div style="font-weight:700;margin-bottom:0.3rem">Capture fingerprints</div>
+                <div style="font-size:0.82rem;color:rgba(255,255,255,0.6)">Place at least two fingers on the reader. Recommended: both index fingers.</div>
+                <div class="finger-row" id="fingerRow"></div>
+                <div class="en-bar"><span id="fpBar"></span></div>
+                <div style="font-size:0.8rem;color:rgba(255,255,255,0.7)"><span id="fpCount">0</span> of 2 minimum captured</div>
+                <button class="s-btn s-btn-primary" style="margin-top:1rem" onclick="captureFinger()">Simulate finger scan</button>
+              </div>
+              <div style="display:flex;gap:0.5rem;margin-top:1rem"><button class="s-btn s-btn-ghost" onclick="toStep(1)">Back</button><button class="s-btn s-btn-primary" style="flex:1;justify-content:center" id="fpNext" onclick="toStep(3)" disabled>Continue to face</button></div>
+            </div>
+
+            <!-- Step 3: face -->
+            <div class="en-panel" id="p3">
+              <div class="stage">
+                <div style="font-weight:700;margin-bottom:0.3rem">Capture face</div>
+                <div style="font-size:0.82rem;color:rgba(255,255,255,0.6)" id="faceMsg">Look at the camera and hold still.</div>
+                <div class="face-stage" id="faceStage">
+                  <div class="face-sim" id="faceSim"></div>
+                  <video id="faceVideo" autoplay playsinline muted style="display:none"></video>
+                  <div class="face-oval" id="faceOval"></div>
+                </div>
+                <div class="en-bar"><span id="faceBar"></span></div>
+                <button class="s-btn s-btn-primary" style="margin-top:0.5rem" id="faceBtn" onclick="captureFace()">Start face capture</button>
+              </div>
+              <div style="display:flex;gap:0.5rem;margin-top:1rem"><button class="s-btn s-btn-ghost" onclick="toStep(2)">Back</button><button class="s-btn s-btn-primary" style="flex:1;justify-content:center" id="faceNext" onclick="toStep(4)" disabled>Review</button></div>
+            </div>
+
+            <!-- Step 4: confirm -->
+            <div class="en-panel" id="p4">
+              <div style="text-align:center;padding:1rem 0">
+                <div style="width:64px;height:64px;border-radius:50%;background:rgba(0,196,138,0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem"><svg style="width:32px;height:32px;color:var(--s-scan)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div style="font-family:var(--s-font-disp);font-weight:800;font-size:1.15rem">Enrolment complete</div>
+                <div style="font-size:0.85rem;color:var(--s-muted);margin-top:0.35rem">Both modalities captured and encrypted. This person can now be verified by face or fingerprint at any terminal.</div>
+              </div>
+              <div class="mp-def" style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--s-border);font-size:0.85rem"><span style="color:var(--s-muted)">Fingerprints</span><strong id="cfFp">2 captured</strong></div>
+              <div class="mp-def" style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--s-border);font-size:0.85rem"><span style="color:var(--s-muted)">Face template</span><strong style="color:var(--s-scan)">Captured</strong></div>
+              <div class="mp-def" style="display:flex;justify-content:space-between;padding:0.5rem 0;font-size:0.85rem"><span style="color:var(--s-muted)">Enrolment ID</span><strong id="cfId">ENR-000000</strong></div>
+              <button class="s-btn s-btn-primary" style="width:100%;justify-content:center;margin-top:1rem" onclick="resetWizard()">Enrol next person</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Not-enrolled queue -->
+        <div class="s-card">
+          <div class="s-card-head"><h3>Awaiting enrolment</h3><span class="s-chip s-chip-red">4,271</span></div>
+          <div class="s-table-wrap">
+            <table class="s-table">
+              <thead><tr><th>Person</th><th>Type</th><th>Have</th><th>Missing</th><th></th></tr></thead>
+              <tbody>
+                <tr><td class="s-td-primary">Anesu Nyamuzihwa</td><td>Dependent</td><td class="s-td-mono">—</td><td><span class="s-chip s-chip-red">Face + FP</span></td><td><button class="s-btn s-btn-primary s-btn-sm" onclick="toStep(1)">Enrol</button></td></tr>
+                <tr><td class="s-td-primary">Mai Nyamuzihwa</td><td>Dependent</td><td class="s-td-mono">—</td><td><span class="s-chip s-chip-red">Face + FP</span></td><td><button class="s-btn s-btn-primary s-btn-sm" onclick="toStep(1)">Enrol</button></td></tr>
+                <tr><td class="s-td-primary">Thomas Mukoko</td><td>Member</td><td>Fingerprint</td><td><span class="s-chip s-chip-gold">Face</span></td><td><button class="s-btn s-btn-primary s-btn-sm" onclick="toStep(1)">Enrol</button></td></tr>
+                <tr><td class="s-td-primary">Blessing Chihuri</td><td>Member</td><td>Face</td><td><span class="s-chip s-chip-gold">Fingerprint</span></td><td><button class="s-btn s-btn-primary s-btn-sm" onclick="toStep(1)">Enrol</button></td></tr>
+                <tr><td class="s-td-primary">Grace Sibanda +2</td><td>Family</td><td class="s-td-mono">—</td><td><span class="s-chip s-chip-red">Face + FP</span></td><td><button class="s-btn s-btn-primary s-btn-sm" onclick="toStep(1)">Enrol</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding:0.75rem 1.25rem;border-top:1px solid var(--s-border)">
+            <div class="s-alert s-alert-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><div>Send WhatsApp enrolment invites with the nearest branch and a booking link to everyone still outstanding.</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script>
+var FINGERS=['L-Thumb','L-Index','L-Middle','R-Index','R-Middle','R-Thumb'];
+var capped=0, faceStream=null, curStep=1;
+var fr=document.getElementById('fingerRow');
+FINGERS.forEach(function(f,i){
+  var d=document.createElement('div'); d.className='finger'; d.id='fg'+i;
+  d.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 11c0-1.1.9-2 2-2s2 .9 2 2v1a2 2 0 0 1-4 0v-1z"/><path d="M6 9a6 6 0 0 1 12 0"/><path d="M6 9c0 5 2 8 6 10"/></svg><div class="finger-lbl">'+f+'</div>';
+  fr.appendChild(d);
+});
+function captureFinger(){
+  if(capped>=FINGERS.length) return;
+  var bar=document.getElementById('fpBar'); bar.style.width='0%';
+  var p=0; var iv=setInterval(function(){ p+=Math.random()*22; if(p>100)p=100; bar.style.width=p+'%';
+    if(p>=100){ clearInterval(iv);
+      var el=document.getElementById('fg'+capped); el.classList.add('cap'); capped++;
+      document.getElementById('fpCount').textContent=Math.min(capped,6);
+      if(capped>=2){ document.getElementById('fpNext').disabled=false; }
+      document.getElementById('cfFp').textContent=capped+' captured';
+      setTimeout(function(){bar.style.width='0%';},300);
+    }
+  },90);
+}
+function captureFace(){
+  var video=document.getElementById('faceVideo'), sim=document.getElementById('faceSim'), oval=document.getElementById('faceOval'), bar=document.getElementById('faceBar');
+  document.getElementById('faceBtn').disabled=true;
+  function run(live){
+    document.getElementById('faceMsg').textContent = live ? 'Live camera — capturing…' : 'Camera unavailable — simulating capture…';
+    var p=0; bar.style.width='0%';
+    var iv=setInterval(function(){ p+=Math.random()*10; if(p>100)p=100; bar.style.width=p+'%';
+      if(p>55) oval.classList.add('locked');
+      if(p>=100){ clearInterval(iv); stopFace(); document.getElementById('faceMsg').textContent='Face captured ✓'; document.getElementById('faceNext').disabled=false; }
+    },130);
+  }
+  if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}}).then(function(s){ faceStream=s; video.srcObject=s; video.style.display='block'; sim.style.display='none'; run(true); })
+    .catch(function(){ run(false); });
+  } else { run(false); }
+}
+function stopFace(){ if(faceStream){ faceStream.getTracks().forEach(function(t){t.stop();}); faceStream=null; } var v=document.getElementById('faceVideo'); if(v) v.style.display='none'; }
+function toStep(n){
+  curStep=n;
+  if(n===2 && !document.getElementById('enConsent').checked){ alert('Please record the member\'s consent before capturing biometrics.'); curStep=1; n=1; }
+  for(var i=1;i<=4;i++){
+    document.getElementById('p'+i).classList.toggle('active', i===n);
+    var st=document.getElementById('st'+i);
+    st.classList.toggle('active', i===n);
+    st.classList.toggle('done', i<n);
+  }
+  document.getElementById('enBadge').textContent='Step '+n+' of 4';
+  if(n===4){ document.getElementById('cfId').textContent='ENR-'+Math.floor(100000+Math.random()*899999); }
+  if(n!==3){ stopFace(); }
+}
+function resetWizard(){
+  capped=0; document.getElementById('fpCount').textContent='0'; document.getElementById('fpNext').disabled=true;
+  FINGERS.forEach(function(f,i){ document.getElementById('fg'+i).classList.remove('cap'); });
+  document.getElementById('faceNext').disabled=true; document.getElementById('faceBtn').disabled=false;
+  document.getElementById('faceOval').classList.remove('locked'); document.getElementById('faceMsg').textContent='Look at the camera and hold still.';
+  document.getElementById('faceVideo').style.display='none'; document.getElementById('faceSim').style.display='block';
+  document.getElementById('enConsent').checked=false;
+  toStep(1);
+}
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(function(){}); }
+</script>
+</body>
+</html>

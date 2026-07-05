@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sign in — GENFIN</title>
 <link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="stylesheet" href="shared/fonts.css">
 <link rel="stylesheet" href="shared/tokens.css">
 <style>
@@ -352,5 +353,6 @@ document.getElementById('loginPass').addEventListener('keydown', e => {
   if (e.key === 'Enter') doLogin();
 });
 </script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}</script>
 </body>
 </html>

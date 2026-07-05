@@ -10,12 +10,22 @@
 <link rel="stylesheet" href="biometric.css">
 <style>
   body { margin:0; }
-  /* State panels */
-  .bv-state-idle    { display:flex; }
-  .bv-state-scan    { display:none; }
-  .bv-state-success { display:none; }
-  .bv-state-fail    { display:none; }
-  /* Simulate cycling with CSS animation trigger */
+  /* Mode toggle */
+  .bv-mode { display:inline-flex; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:3px; margin-bottom:1.25rem; }
+  .bv-mode button { font-family:var(--bv-font-sans,'Manrope'); font-weight:700; font-size:0.8rem; color:rgba(255,255,255,0.55); background:none; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; display:flex; align-items:center; gap:6px; }
+  .bv-mode button.active { background:var(--bv-scan,#00D4AA); color:#04120E; }
+  .bv-mode svg { width:15px; height:15px; }
+  /* Face scan */
+  .bv-face-stage { position:relative; width:260px; height:260px; border-radius:20px; overflow:hidden; background:#0b1a17; display:flex; align-items:center; justify-content:center; }
+  .bv-face-stage video { width:100%; height:100%; object-fit:cover; transform:scaleX(-1); }
+  .bv-face-overlay { position:absolute; inset:0; pointer-events:none; }
+  .bv-face-oval { position:absolute; top:50%; left:50%; width:150px; height:190px; transform:translate(-50%,-50%); border:2.5px solid rgba(0,212,170,0.85); border-radius:50% / 42%; box-shadow:0 0 0 2000px rgba(4,18,14,0.45); }
+  .bv-face-oval.locked { border-color:#00D4AA; }
+  .bv-scanline { position:absolute; left:12%; right:12%; height:2px; background:linear-gradient(90deg,transparent,#00D4AA,transparent); top:20%; opacity:0; }
+  .scanning .bv-scanline { animation:bvScan 1.6s ease-in-out infinite; opacity:1; }
+  @keyframes bvScan { 0%{top:22%} 50%{top:74%} 100%{top:22%} }
+  .bv-face-sim { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .bv-dot-grid { position:absolute; inset:0; opacity:0.25; background-image:radial-gradient(rgba(0,212,170,0.6) 1px, transparent 1px); background-size:14px 14px; }
 </style>
 </head>
 <body class="bv-root">
@@ -29,13 +39,13 @@
     </div>
     <div>
       <div class="bv-logo-text" style="font-size:0.85rem">Bio<span>Verify</span></div>
-      <div class="bv-logo-by">Pharmacy Terminal v2.4.1</div>
+      <div class="bv-logo-by">Pharmacy Terminal v2.5 · Fingerprint + Face</div>
     </div>
   </div>
   <div class="bv-terminal-info">
     <span><strong>Site:</strong> Ambuya Stella Pharmacy, Harare CBD</span>
     <span><strong>Terminal:</strong> TERM-0041</span>
-    <span>Fri 27 Jun 2025 · 14:23</span>
+    <span id="clock">—</span>
     <div class="bv-terminal-online">ONLINE</div>
   </div>
 </div>
@@ -47,7 +57,11 @@
   <div class="bv-verify-panel" id="verifyPanel">
 
     <!-- IDLE STATE -->
-    <div class="bv-verify-state" id="stateIdle">
+    <div class="bv-verify-state" id="stateIdle" style="display:flex">
+      <div class="bv-mode">
+        <button id="modeFp" class="active" onclick="setMode('fp')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 11c0-1.1.9-2 2-2s2 .9 2 2v1a2 2 0 0 1-4 0v-1z"/><path d="M6 9a6 6 0 0 1 12 0"/><path d="M6 9c0 5 2 8 6 10"/></svg>Fingerprint</button>
+        <button id="modeFace" onclick="setMode('face')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>Face</button>
+      </div>
       <div class="bv-verify-ring" id="scanRing">
         <svg class="bv-fp-large" viewBox="0 0 100 100" fill="none">
           <path d="M50 10 C28 10 12 26 12 48 C12 70 28 86 50 86 C72 86 88 70 88 48 C88 26 72 10 50 10Z" stroke="rgba(0,212,170,0.55)" stroke-width="1.5"/>
@@ -57,25 +71,24 @@
           <circle cx="50" cy="48" r="4" fill="rgba(0,212,170,0.25)"/>
         </svg>
       </div>
-      <div class="bv-verify-title">Awaiting fingerprint</div>
-      <div class="bv-verify-sub">Ask the member to place their finger on the scanner</div>
+      <div class="bv-verify-title" id="idleTitle">Awaiting fingerprint</div>
+      <div class="bv-verify-sub" id="idleSub">Ask the member to place their finger on the scanner</div>
       <div style="display:flex; gap:0.75rem; justify-content:center; margin-top:1rem">
-        <button class="bv-btn bv-btn-primary" onclick="startScan()">
+        <button class="bv-btn bv-btn-primary" id="scanBtn" onclick="startScan()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:17px;height:17px"><path d="M12 11c0-1.1.9-2 2-2s2 .9 2 2v1a2 2 0 0 1-4 0v-1z"/><path d="M6 9a6 6 0 0 1 12 0"/></svg>
-          Simulate Scan
+          <span id="scanBtnLabel">Simulate Scan</span>
         </button>
         <button class="bv-btn bv-btn-ghost" style="color:rgba(255,255,255,0.5); border-color:rgba(255,255,255,0.15)" onclick="showOverride()">Manual ID lookup</button>
       </div>
     </div>
 
-    <!-- SCANNING STATE -->
+    <!-- FINGERPRINT SCANNING -->
     <div class="bv-verify-state" id="stateScan" style="display:none">
-      <div class="bv-verify-ring scanning" id="scanRingScan">
+      <div class="bv-verify-ring scanning">
         <svg class="bv-fp-large" viewBox="0 0 100 100" fill="none">
           <path d="M50 10 C28 10 12 26 12 48 C12 70 28 86 50 86 C72 86 88 70 88 48 C88 26 72 10 50 10Z" stroke="rgba(0,212,170,0.8)" stroke-width="2"/>
           <path d="M50 20 C34 20 22 32 22 48 C22 64 34 76 50 76 C66 76 78 64 78 48 C78 32 66 20 50 20Z" stroke="rgba(0,212,170,0.65)" stroke-width="2"/>
           <path d="M50 30 C40 30 32 38 32 48 C32 58 40 66 50 66 C60 66 68 58 68 48 C68 38 60 30 50 30Z" stroke="rgba(0,212,170,0.55)" stroke-width="1.5"/>
-          <path d="M50 40 C46 40 42 44 42 48 C42 52 46 56 50 56 C54 56 58 52 58 48 C58 44 54 40 50 40Z" stroke="rgba(0,212,170,0.45)" stroke-width="1.5"/>
           <circle cx="50" cy="48" r="4" fill="rgba(0,212,170,0.4)"/>
         </svg>
       </div>
@@ -85,22 +98,37 @@
       <div class="bv-verify-percent" id="progressPct">0%</div>
     </div>
 
+    <!-- FACE SCANNING -->
+    <div class="bv-verify-state" id="stateFace" style="display:none">
+      <div class="bv-face-stage" id="faceStage">
+        <div class="bv-dot-grid" id="faceSim"></div>
+        <video id="faceVideo" autoplay playsinline muted style="display:none"></video>
+        <div class="bv-face-overlay">
+          <div class="bv-face-oval" id="faceOval"></div>
+          <div class="bv-scanline"></div>
+        </div>
+      </div>
+      <div class="bv-verify-title" style="margin-top:1rem" id="faceTitle">Position face in the frame</div>
+      <div class="bv-verify-sub" id="faceSub">Ask the member to look at the camera and hold still</div>
+      <div class="bv-verify-progress" style="margin-top:0.75rem"><div class="bv-verify-bar" id="faceBar"></div></div>
+      <div class="bv-verify-percent" id="facePct">0%</div>
+    </div>
+
     <!-- SUCCESS STATE -->
     <div class="bv-verify-state" id="stateSuccess" style="display:none">
       <div class="bv-verify-ring success">
         <svg style="width:72px;height:72px;color:#1F9D57" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <div class="bv-verify-title" style="color:#1F9D57">Identity verified</div>
-      <div class="bv-verify-sub">Match confidence: 99.8% · 1.4 seconds</div>
+      <div class="bv-verify-sub" id="successSub">Match confidence: 99.8% · 1.4 seconds</div>
       <div style="background:rgba(31,157,87,0.1); border:1px solid rgba(31,157,87,0.25); border-radius:12px; padding:0.875rem 1.5rem; margin-top:1rem; font-family:var(--bv-font-mono); font-size:0.8125rem; color:rgba(255,255,255,0.65); line-height:1.6">
         <div>Member: <span style="color:#fff">Chiedza Nyamuzihwa</span></div>
         <div>ID: <span style="color:#fff">GF-0041882</span></div>
+        <div>Method: <span style="color:#fff" id="successMethod">Fingerprint</span></div>
         <div>Event: <span style="color:#fff">RX-889244 dispensed</span></div>
-        <div>Logged: <span style="color:#fff">2025-06-27T14:23:41Z</span></div>
+        <div>Logged: <span style="color:#fff" id="successTime">2025-06-27T14:23:41Z</span></div>
       </div>
-      <button class="bv-btn bv-btn-primary" style="margin-top:1.25rem" onclick="resetScan()">
-        New verification
-      </button>
+      <button class="bv-btn bv-btn-primary" style="margin-top:1.25rem" onclick="resetScan()">New verification</button>
     </div>
 
     <!-- FAIL STATE -->
@@ -124,82 +152,52 @@
       <div class="bv-eyebrow" style="color:var(--bv-scan); font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:700; margin-bottom:0.5rem">Active Prescription</div>
       <div class="bv-mp-name" id="memberName">Chiedza Nyamuzihwa</div>
       <div class="bv-mp-meta">
-        <span>Female · DOB 12 Mar 1984</span>
-        <span>·</span>
+        <span>Female · DOB 12 Mar 1984</span><span>·</span>
         <span style="color:var(--bv-success); font-weight:700">Active member</span>
       </div>
-      <div class="bv-mp-id">Member #GF-0041882 · Plan: Gold</div>
+      <div class="bv-mp-id">Member #GF-0041882 · Plan: Gold · <span style="color:var(--bv-scan)">Face + Fingerprint enrolled</span></div>
     </div>
 
     <div class="bv-mp-body">
-
-      <!-- Prescriptions -->
       <div class="bv-mp-section">
         <div class="bv-mp-section-title">Pending Prescriptions</div>
-
         <div class="bv-mp-card">
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px">
-            <div class="bv-mc-name">Metformin 500mg</div>
-            <span class="bv-status-chip auth">Authorised</span>
-          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px"><div class="bv-mc-name">Metformin 500mg</div><span class="bv-status-chip auth">Authorised</span></div>
           <div class="bv-mc-detail">Chronic — Type 2 Diabetes Management</div>
           <div class="bv-mc-detail" style="margin-top:3px">Prescribed by Dr. S. Mupamha · 24 Jun 2025</div>
           <div class="bv-mc-qty">Qty: 60 tablets · 1 refill remaining</div>
         </div>
-
         <div class="bv-mp-card">
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px">
-            <div class="bv-mc-name">Enalapril 10mg</div>
-            <span class="bv-status-chip auth">Authorised</span>
-          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px"><div class="bv-mc-name">Enalapril 10mg</div><span class="bv-status-chip auth">Authorised</span></div>
           <div class="bv-mc-detail">Chronic — Hypertension</div>
           <div class="bv-mc-detail" style="margin-top:3px">Prescribed by Dr. S. Mupamha · 24 Jun 2025</div>
           <div class="bv-mc-qty">Qty: 30 tablets · 2 refills remaining</div>
         </div>
-
         <div class="bv-mp-card">
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px">
-            <div class="bv-mc-name">Vitamin B12 Injection</div>
-            <span class="bv-status-chip pend">Pending auth</span>
-          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px"><div class="bv-mc-name">Vitamin B12 Injection</div><span class="bv-status-chip pend">Pending auth</span></div>
           <div class="bv-mc-detail">Acute — Deficiency treatment</div>
           <div class="bv-mc-detail" style="margin-top:3px">Prescribed by Dr. S. Mupamha · 26 Jun 2025</div>
           <div class="bv-mc-qty">Qty: 4 vials</div>
         </div>
       </div>
 
-      <!-- Benefit balance -->
       <div class="bv-mp-section">
         <div class="bv-mp-section-title">Benefit Balance · June 2025</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.625rem">
-          <div class="bv-mp-card" style="padding:0.75rem">
-            <div style="font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--bv-faint); margin-bottom:4px">Medicines</div>
-            <div style="font-family:var(--bv-font-mono); font-weight:700; font-size:1.1rem; color:var(--bv-success)">$41.20</div>
-            <div style="font-size:0.7rem; color:var(--bv-faint)">of $80.00 remaining</div>
-          </div>
-          <div class="bv-mp-card" style="padding:0.75rem">
-            <div style="font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--bv-faint); margin-bottom:4px">Acute Benefit</div>
-            <div style="font-family:var(--bv-font-mono); font-weight:700; font-size:1.1rem; color:var(--bv-text)">$280.00</div>
-            <div style="font-size:0.7rem; color:var(--bv-faint)">of $500.00 remaining</div>
-          </div>
+          <div class="bv-mp-card" style="padding:0.75rem"><div style="font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--bv-faint); margin-bottom:4px">Medicines</div><div style="font-family:var(--bv-font-mono); font-weight:700; font-size:1.1rem; color:var(--bv-success)">$41.20</div><div style="font-size:0.7rem; color:var(--bv-faint)">of $80.00 remaining</div></div>
+          <div class="bv-mp-card" style="padding:0.75rem"><div style="font-size:0.65rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--bv-faint); margin-bottom:4px">Acute Benefit</div><div style="font-family:var(--bv-font-mono); font-weight:700; font-size:1.1rem; color:var(--bv-text)">$280.00</div><div style="font-size:0.7rem; color:var(--bv-faint)">of $500.00 remaining</div></div>
         </div>
       </div>
 
-      <!-- Co-payment -->
       <div class="bv-mp-section">
         <div class="bv-mp-section-title">Co-payment Due</div>
         <div class="bv-mp-card" style="display:flex; align-items:center; justify-content:space-between">
-          <div>
-            <div class="bv-mc-name">Metformin + Enalapril</div>
-            <div class="bv-mc-detail">Standard chronic co-pay applies</div>
-          </div>
+          <div><div class="bv-mc-name">Metformin + Enalapril</div><div class="bv-mc-detail">Standard chronic co-pay applies</div></div>
           <div style="font-family:var(--bv-font-mono); font-weight:700; font-size:1.25rem; color:var(--bv-text)">$3.00</div>
         </div>
       </div>
-
     </div>
 
-    <!-- Footer actions -->
     <div class="bv-mp-footer">
       <button class="bv-btn bv-btn-success" style="flex:1; justify-content:center" onclick="dispenseRx()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:17px;height:17px"><polyline points="20 6 9 17 4 12"/></svg>
@@ -216,48 +214,94 @@
 </div><!-- /.bv-terminal -->
 
 <script>
+var mode='fp', stream=null, successMethod='Fingerprint';
 function hide(id){ document.getElementById(id).style.display='none'; }
 function show(id){ document.getElementById(id).style.display='flex'; }
 
+function tick(){ var d=new Date(); document.getElementById('clock').textContent=d.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short',year:'numeric'})+' · '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}); }
+tick(); setInterval(tick,10000);
+
+function setMode(m){
+  mode=m;
+  document.getElementById('modeFp').classList.toggle('active',m==='fp');
+  document.getElementById('modeFace').classList.toggle('active',m==='face');
+  if(m==='fp'){
+    document.getElementById('idleTitle').textContent='Awaiting fingerprint';
+    document.getElementById('idleSub').textContent='Ask the member to place their finger on the scanner';
+    document.getElementById('scanBtnLabel').textContent='Simulate Scan';
+    document.getElementById('scanRing').style.display='';
+  } else {
+    document.getElementById('idleTitle').textContent='Facial verification';
+    document.getElementById('idleSub').textContent='Ask the member to look at the camera. Uses the live camera if available, otherwise simulates.';
+    document.getElementById('scanBtnLabel').textContent='Start face scan';
+    document.getElementById('scanRing').style.display='none';
+  }
+}
+
 function startScan(){
   hide('stateIdle'); hide('stateSuccess'); hide('stateFail');
-  show('stateScan');
-  // Animate progress
-  var bar = document.getElementById('progressBar');
-  var pct = document.getElementById('progressPct');
-  bar.style.animation = 'none'; bar.style.width = '0%';
-  var p = 0;
-  var iv = setInterval(function(){
-    p += Math.random() * 14;
-    if(p > 100) p = 100;
-    bar.style.width = Math.round(p) + '%';
-    pct.textContent = Math.round(p) + '%';
-    if(p >= 100){
-      clearInterval(iv);
-      setTimeout(function(){
-        hide('stateScan');
-        show('stateSuccess');
-      }, 400);
-    }
-  }, 120);
+  if(mode==='fp'){ startFingerprint(); } else { startFace(); }
 }
+
+function startFingerprint(){
+  successMethod='Fingerprint';
+  show('stateScan');
+  var bar=document.getElementById('progressBar'), pct=document.getElementById('progressPct');
+  bar.style.width='0%'; var p=0;
+  var iv=setInterval(function(){ p+=Math.random()*14; if(p>100)p=100; bar.style.width=Math.round(p)+'%'; pct.textContent=Math.round(p)+'%';
+    if(p>=100){ clearInterval(iv); setTimeout(function(){ hide('stateScan'); finishSuccess('99.8%','1.4 seconds'); },400); } },120);
+}
+
+function startFace(){
+  successMethod='Facial recognition';
+  show('stateFace');
+  var stage=document.getElementById('faceStage'), sim=document.getElementById('faceSim'), video=document.getElementById('faceVideo'), oval=document.getElementById('faceOval');
+  document.getElementById('faceTitle').textContent='Position face in the frame';
+  document.getElementById('faceSub').textContent='Detecting…';
+  stage.classList.remove('scanning'); oval.classList.remove('locked');
+  // Try live camera
+  if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}}).then(function(s){
+      stream=s; video.srcObject=s; video.style.display='block'; sim.style.display='none';
+      runFaceScan(true);
+    }).catch(function(){ video.style.display='none'; sim.style.display='block'; runFaceScan(false); });
+  } else { video.style.display='none'; sim.style.display='block'; runFaceScan(false); }
+}
+
+function runFaceScan(live){
+  var stage=document.getElementById('faceStage'), oval=document.getElementById('faceOval');
+  var bar=document.getElementById('faceBar'), pct=document.getElementById('facePct');
+  document.getElementById('faceSub').textContent = live ? 'Live camera — hold still' : 'Camera unavailable — simulating face match';
+  setTimeout(function(){
+    document.getElementById('faceTitle').textContent='Analysing facial landmarks…';
+    stage.classList.add('scanning');
+    var p=0; bar.style.width='0%';
+    var iv=setInterval(function(){ p+=Math.random()*12; if(p>100)p=100; bar.style.width=Math.round(p)+'%'; pct.textContent=Math.round(p)+'%';
+      if(p>60){ oval.classList.add('locked'); document.getElementById('faceTitle').textContent='Face locked'; }
+      if(p>=100){ clearInterval(iv); stopCamera(); setTimeout(function(){ hide('stateFace'); finishSuccess('99.4%','1.9 seconds'); },400); }
+    },140);
+  }, 700);
+}
+
+function finishSuccess(conf,time){
+  document.getElementById('successSub').textContent='Match confidence: '+conf+' · '+time;
+  document.getElementById('successMethod').textContent=successMethod;
+  document.getElementById('successTime').textContent=new Date().toISOString();
+  show('stateSuccess');
+}
+
+function stopCamera(){ if(stream){ stream.getTracks().forEach(function(t){t.stop();}); stream=null; } var v=document.getElementById('faceVideo'); if(v){ v.style.display='none'; } }
 
 function resetScan(){
-  hide('stateScan'); hide('stateSuccess'); hide('stateFail');
-  document.getElementById('progressBar').style.width='0%';
-  document.getElementById('progressPct').textContent='0%';
-  show('stateIdle');
+  stopCamera();
+  hide('stateScan'); hide('stateFace'); hide('stateSuccess'); hide('stateFail');
+  document.getElementById('progressBar').style.width='0%'; document.getElementById('progressPct').textContent='0%';
+  document.getElementById('faceBar').style.width='0%'; document.getElementById('facePct').textContent='0%';
+  document.getElementById('faceStage').classList.remove('scanning');
+  show('stateIdle'); setMode(mode);
 }
-
-function showOverride(){
-  var id = prompt('Enter member ID or national ID number:');
-  if(id){ alert('Manual lookup for: ' + id + '\n\nIn production this would query the BioVerify API.'); }
-}
-
-function dispenseRx(){
-  alert('Dispensing event logged:\nRX-889244 — Chiedza Nyamuzihwa\nEvent ID: EVT-' + Math.random().toString(36).substr(2,9).toUpperCase() + '\nTimestamp: ' + new Date().toISOString());
-  resetScan();
-}
+function showOverride(){ var id=prompt('Enter member ID or national ID number:'); if(id){ alert('Manual lookup for: '+id+'\n\nIn production this would query the BioVerify API.'); } }
+function dispenseRx(){ alert('Dispensing event logged:\nRX-889244 — Chiedza Nyamuzihwa\nVerified by: '+successMethod+'\nEvent ID: EVT-'+Math.random().toString(36).substr(2,9).toUpperCase()+'\nTimestamp: '+new Date().toISOString()); resetScan(); }
 </script>
 </body>
 </html>

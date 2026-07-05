@@ -1,0 +1,22 @@
+{
+  "name": "GENFIN Enterprise Platform",
+  "short_name": "GENFIN",
+  "description": "GENFIN medical aid and enterprise healthcare platform — staff console, member portal, logistics, WhatsApp and BioVerify.",
+  "start_url": "./login-select.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#14141A",
+  "theme_color": "#14141A",
+  "lang": "en",
+  "categories": ["medical", "business", "productivity"],
+  "icons": [
+    { "src": "assets/genfin-logo.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/genfin-logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Driver app", "url": "driver-app.html" },
+    { "name": "Order Tracking", "url": "staff-tracking.html" },
+    { "name": "WhatsApp desk", "url": "staff-whatsapp.html" }
+  ]
+}
