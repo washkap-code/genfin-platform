@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GENFIN Platform — Page Directory</title>
+<style>
+  :root{ --ink:#14141A; --gold:#FBBD3E; --scan:#00A872; --muted:#6A6870; --line:#E4E3DE; --page:#F0F0EC; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{ font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:#fff; line-height:1.45; }
+  .wrap{ max-width:900px; margin:0 auto; padding:28px 34px; }
+  .head{ display:flex; align-items:center; gap:18px; border-bottom:3px solid var(--gold); padding-bottom:16px; margin-bottom:18px; }
+  .head img{ height:52px; width:auto; border-radius:6px; }
+  .head h1{ font-size:20px; }
+  .head .sub{ color:var(--muted); font-size:13px; margin-top:2px; }
+  .intro{ font-size:13.5px; color:#333; margin-bottom:18px; }
+  .intro a{ color:var(--scan); font-weight:700; }
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px 26px; }
+  .col h2{ font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); border-bottom:1px solid var(--line); padding-bottom:5px; margin-bottom:8px; }
+  .col h2 b{ color:var(--ink); }
+  .row{ display:flex; justify-content:space-between; align-items:baseline; padding:4px 0; border-bottom:1px dotted var(--line); font-size:13px; gap:10px; }
+  .row:last-child{ border-bottom:none; }
+  .row .n{ font-weight:600; }
+  .row a{ color:var(--scan); text-decoration:none; font-size:12px; white-space:nowrap; }
+  .row a:hover{ text-decoration:underline; }
+  .note{ margin-top:16px; background:var(--page); border:1px solid var(--line); border-radius:8px; padding:10px 14px; font-size:12px; color:var(--muted); }
+  .foot{ margin-top:16px; border-top:1px solid var(--line); padding-top:10px; font-size:11px; color:var(--muted); display:flex; justify-content:space-between; }
+  @media print{ body{-webkit-print-color-adjust:exact;print-color-adjust:exact;} .wrap{padding:12px 18px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <img src="https://genfin-platform.vercel.app/assets/genfin-logo.png" alt="GENFIN Medical Aid Fund">
+    <div>
+      <h1>GENFIN Digital Platform — Page Directory</h1>
+      <div class="sub">Live preview build · developed &amp; operated by Jonomi Digital</div>
+    </div>
+  </div>
+
+  <div class="intro">
+    Everything below is live at <a href="https://genfin-platform.vercel.app">genfin-platform.vercel.app</a>.
+    Click any link to open that page. The staff platform, member portal, driver app and BioVerify terminals are interactive prototypes —
+    some figures are illustrative for demonstration.
+  </div>
+
+  <div class="grid">
+
+    <div class="col">
+      <h2>Public <b>website</b></h2>
+      <div class="row"><span class="n">Home</span><a href="https://genfin-platform.vercel.app/">/</a></div>
+      <div class="row"><span class="n">About GENFIN</span><a href="https://genfin-platform.vercel.app/about">/about</a></div>
+      <div class="row"><span class="n">Plans &amp; cover</span><a href="https://genfin-platform.vercel.app/plans">/plans</a></div>
+      <div class="row"><span class="n">Benefits</span><a href="https://genfin-platform.vercel.app/benefits">/benefits</a></div>
+      <div class="row"><span class="n">For employers</span><a href="https://genfin-platform.vercel.app/employers">/employers</a></div>
+      <div class="row"><span class="n">For providers</span><a href="https://genfin-platform.vercel.app/providers">/providers</a></div>
+      <div class="row"><span class="n">Pharmacy</span><a href="https://genfin-platform.vercel.app/pharmacy">/pharmacy</a></div>
+      <div class="row"><span class="n">Support</span><a href="https://genfin-platform.vercel.app/support">/support</a></div>
+    </div>
+
+    <div class="col">
+      <h2>Member <b>portal</b></h2>
+      <div class="row"><span class="n">Login hub (all portals)</span><a href="https://genfin-platform.vercel.app/login-select">/login-select</a></div>
+      <div class="row"><span class="n">Member dashboard</span><a href="https://genfin-platform.vercel.app/portal">/portal</a></div>
+      <div class="row"><span class="n">Pre-authorisation</span><a href="https://genfin-platform.vercel.app/portal-preauth">/portal-preauth</a></div>
+      <div class="row"><span class="n">My claims</span><a href="https://genfin-platform.vercel.app/portal-claims">/portal-claims</a></div>
+      <div class="row"><span class="n">My benefits</span><a href="https://genfin-platform.vercel.app/portal-benefits">/portal-benefits</a></div>
+      <div class="row"><span class="n">My family</span><a href="https://genfin-platform.vercel.app/portal-family">/portal-family</a></div>
+      <div class="row"><span class="n">Documents</span><a href="https://genfin-platform.vercel.app/portal-documents">/portal-documents</a></div>
+      <div class="row"><span class="n">Policy certificate</span><a href="https://genfin-platform.vercel.app/policy-certificate">/policy-certificate</a></div>
+    </div>
+
+    <div class="col">
+      <h2>Staff <b>platform (backend)</b></h2>
+      <div class="row"><span class="n">Super Admin dashboard</span><a href="https://genfin-platform.vercel.app/superadmin">/superadmin</a></div>
+      <div class="row"><span class="n">Members</span><a href="https://genfin-platform.vercel.app/staff-members">/staff-members</a></div>
+      <div class="row"><span class="n">Member medical profile</span><a href="https://genfin-platform.vercel.app/member-profile">/member-profile</a></div>
+      <div class="row"><span class="n">Claims adjudication</span><a href="https://genfin-platform.vercel.app/staff-claims">/staff-claims</a></div>
+      <div class="row"><span class="n">HR &amp; Payroll</span><a href="https://genfin-platform.vercel.app/staff-hr">/staff-hr</a></div>
+      <div class="row"><span class="n">Accounts &amp; Finance</span><a href="https://genfin-platform.vercel.app/staff-finance">/staff-finance</a></div>
+      <div class="row"><span class="n">Inventory</span><a href="https://genfin-platform.vercel.app/staff-inventory">/staff-inventory</a></div>
+      <div class="row"><span class="n">Order Tracking</span><a href="https://genfin-platform.vercel.app/staff-tracking">/staff-tracking</a></div>
+      <div class="row"><span class="n">WhatsApp Business</span><a href="https://genfin-platform.vercel.app/staff-whatsapp">/staff-whatsapp</a></div>
+      <div class="row"><span class="n">Audit log</span><a href="https://genfin-platform.vercel.app/staff-audit">/staff-audit</a></div>
+    </div>
+
+    <div class="col">
+      <h2>Field apps &amp; <b>BioVerify</b></h2>
+      <div class="row"><span class="n">Driver app (PIN release)</span><a href="https://genfin-platform.vercel.app/driver-app">/driver-app</a></div>
+      <div class="row"><span class="n">Biometric enrolment (face + FP)</span><a href="https://genfin-platform.vercel.app/bioverify-enrol">/bioverify-enrol</a></div>
+      <div class="row"><span class="n">Facial verification terminal</span><a href="https://genfin-platform.vercel.app/bioverify-facial">/bioverify-facial</a></div>
+      <div class="row"><span class="n">BioVerify product / pricing</span><a href="https://genfin-platform.vercel.app/bioverify-product">/bioverify-product</a></div>
+      <div class="row"><span class="n">Fingerprint terminal (product)</span><a href="https://genfin-platform.vercel.app/biometric/">/biometric</a></div>
+
+      <h2 style="margin-top:14px">Install <b>as an app</b></h2>
+      <div class="row"><span class="n">Open the site, then choose “Install” / “Add to Home Screen” — it runs offline on laptops &amp; phones.</span></div>
+    </div>
+
+  </div>
+
+  <div class="note">
+    <b>Signing in:</b> from the Login hub, choose Member, Staff or Super Admin. This is a preview environment for review — please don’t enter real patient or financial data yet.
+  </div>
+
+  <div class="foot">
+    <span>GENFIN Medical Aid Fund · Prepared by Jonomi Digital · jonomi.digital</span>
+    <span>Authorised by Dr Washington Kapapiro · July 2026</span>
+  </div>
+
+</div>
+</body>
+</html>
