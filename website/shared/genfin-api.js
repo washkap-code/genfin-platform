@@ -59,6 +59,8 @@
     can(sess, moduleKey) {
       if (!sess) return false;
       if (sess.role === 'former_staff') return moduleKey === 'restricted';
+      /* Member-context pages need a member profile — staff/admin have none to show */
+      if (['portal', 'portal-pharmacy', 'member-profile'].includes(moduleKey)) return sess.kind === 'member';
       if (sess.kind === 'admin' || sess.role === 'superadmin') return true;
       const grants = {
         member: ['portal', 'portal-pharmacy', 'member-profile', 'documents'],
