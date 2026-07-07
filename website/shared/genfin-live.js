@@ -34,7 +34,7 @@
 
   function portalShell(sess, title) {
     return '<div class="portal-topbar"><div class="portal-topbar-inner">' +
-      '<a href="portal.html" class="portal-topbar-logo" style="text-decoration:none">GEN<b>FIN</b></a>' +
+      '<a href="portal.html" class="portal-topbar-logo" style="text-decoration:none"><img src="assets/genfin-logo.png" alt="GENFIN" style="height:30px;width:auto;display:block"></a>' +
       '<div class="portal-topbar-user" style="display:flex;align-items:center;gap:12px">' +
       '<span>' + GF.esc(sess.name) + ' · ' + GF.esc(sess.profile && sess.profile.member_no || '') + '</span>' +
       '<button class="s-btn s-btn-ghost" id="gfLogout" style="padding:5px 12px;font-size:12px;cursor:pointer">Log out</button></div></div></div>' +
