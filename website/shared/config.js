@@ -1,8 +1,7 @@
-/* GENFIN site configuration.
-   Fill these in from Supabase → Project Settings → API.
-   Safe to commit: the publishable (anon) key is designed to be public;
-   row-level security limits it to inserting quote requests only. */
+/* GENFIN platform configuration — Supabase backend (live demo environment).
+   Safe to commit: the publishable key is designed to be public;
+   row-level security restricts all writes to server-side functions. */
 window.GENFIN_CONFIG = {
-  SUPABASE_URL: "",            /* e.g. https://xxxx.supabase.co */
-  SUPABASE_PUBLISHABLE_KEY: "" /* sb_publishable_... or legacy anon key */
+  SUPABASE_URL: "https://kjabilwcdwpncthbskvy.supabase.co",
+  SUPABASE_PUBLISHABLE_KEY: "sb_publishable_d8kRProo39gwq5ynlybc7A_EQYj71sN"
 };

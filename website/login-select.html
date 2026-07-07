@@ -318,6 +318,7 @@ const portals = {
 };
 
 function openLogin(type) {
+  location.href = "login.html"; return;
   const p = portals[type];
   const badge = document.getElementById('panelBadge');
   badge.textContent = p.badge.text;

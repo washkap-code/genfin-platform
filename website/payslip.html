@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payslip — GENFIN Medical Aid Fund</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/tokens.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body { font-family: var(--font-sans); background: var(--surface-page); min-height: 100vh; color: var(--text-body); -webkit-font-smoothing: antialiased; }
+.screen-header { background: var(--surface-inverse); padding: var(--space-3) var(--space-8); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: var(--z-sticky); }
+.sh-brand { display: flex; align-items: center; gap: var(--space-3); }
+.sh-brand img { height: 30px; width: auto; display: block; }
+.sh-brand-label { font-size: var(--fs-2xs); font-weight: var(--fw-bold); letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--slate-400); border-left: var(--border-width) solid var(--slate-700); padding-left: var(--space-3); }
+.sh-actions { display: flex; gap: var(--space-2); }
+.sh-btn { font-family: var(--font-sans); font-weight: var(--fw-bold); font-size: var(--fs-xs); padding: 7px 16px; border-radius: var(--radius-sm); border: none; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+.sh-btn-primary { background: var(--brand); color: var(--brand-contrast); }
+.sh-btn-ghost { background: var(--ink-soft); color: var(--slate-300); }
+.doc-stage { padding: var(--space-10) var(--space-6); display: flex; flex-direction: column; align-items: center; }
+.doc { width: 700px; background: var(--surface-card); box-shadow: var(--shadow-xl); position: relative; overflow: hidden; }
+.doc-border { position: absolute; inset: 10px; border: var(--border-width-strong) solid var(--border-brand); pointer-events: none; z-index: 2; }
+.doc-masthead { background: var(--surface-inverse); padding: var(--space-6) var(--space-8); display: flex; align-items: center; justify-content: space-between; position: relative; }
+.doc-masthead::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: linear-gradient(90deg, var(--gold-400), var(--gold-600)); }
+.doc-masthead img { height: 48px; width: auto; }
+.doc-eyebrow { font-size: var(--fs-2xs); font-weight: var(--fw-bold); letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--gold-400); }
+.doc-org { font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--fs-sm); color: var(--white); margin-top: var(--space-1); }
+.title-band { background: var(--surface-brand); padding: var(--space-3) var(--space-8); display: flex; justify-content: space-between; align-items: center; }
+.title-band strong { font-family: var(--font-display); font-weight: var(--fw-extra); font-size: var(--fs-base); color: var(--text-on-brand); text-transform: uppercase; letter-spacing: var(--ls-wide); }
+.title-band span { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--gold-900); }
+.doc-body { padding: var(--space-8); position: relative; z-index: 1; }
+.ps-emp { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2) var(--space-8); margin-bottom: var(--space-6); font-size: var(--fs-xs); }
+.ps-emp div { display: flex; justify-content: space-between; border-bottom: var(--border-width) solid var(--border-subtle); padding: var(--space-2) 0; }
+.ps-emp span:first-child { color: var(--text-muted); font-weight: var(--fw-bold); text-transform: uppercase; font-size: var(--fs-2xs); letter-spacing: var(--ls-wide); }
+.ps-emp strong { color: var(--text-strong); }
+.ps-table { width: 100%; border-collapse: collapse; font-size: var(--fs-xs); margin-bottom: var(--space-4); }
+.ps-table th { text-align: left; padding: var(--space-2) var(--space-3); font-size: var(--fs-2xs); text-transform: uppercase; letter-spacing: var(--ls-wide); color: var(--text-muted); border-bottom: var(--border-width-strong) solid var(--border-default); }
+.ps-table td { padding: var(--space-2) var(--space-3); border-bottom: var(--border-width) solid var(--border-subtle); }
+.ps-table td:last-child { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.ps-net { background: var(--surface-inverse); border-radius: var(--radius-md); padding: var(--space-4) var(--space-5); display: flex; justify-content: space-between; align-items: center; margin-top: var(--space-4); }
+.ps-net span { font-size: var(--fs-2xs); font-weight: var(--fw-bold); letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--gold-400); }
+.ps-net strong { font-family: var(--font-display); font-weight: var(--fw-extra); font-size: var(--fs-h3); color: var(--white); }
+.ps-note { font-size: var(--fs-2xs); color: var(--text-muted); margin-top: var(--space-4); line-height: var(--lh-relaxed); }
+.doc-footer { background: var(--surface-inverse); padding: var(--space-3) var(--space-8); display: flex; justify-content: space-between; align-items: center; }
+.doc-footer div { font-size: 0.62rem; color: var(--slate-400); line-height: var(--lh-relaxed); }
+.doc-footer span { font-size: 0.6rem; color: var(--gold-400); font-family: var(--font-mono); }
+@media print { body { background: var(--white); } .screen-header { display: none; } .doc-stage { padding: 0; } .doc { box-shadow: none; width: 100%; } }
+</style>
+</head>
+<body>
+<div class="screen-header">
+  <div class="sh-brand"><img src="assets/genfin-logo.png" alt="GENFIN"><div class="sh-brand-label">Payroll</div></div>
+  <div class="sh-actions">
+    <a class="sh-btn sh-btn-ghost" href="staff-profile.html">← Back to my profile</a>
+    <button class="sh-btn sh-btn-primary" onclick="window.print()">Print / Save PDF</button>
+  </div>
+</div>
+<div class="doc-stage">
+  <div class="doc">
+    <div class="doc-border"></div>
+    <div class="doc-masthead">
+      <img src="assets/genfin-logo.png" alt="GENFIN Medical Aid Fund">
+      <div style="text-align:right">
+        <div class="doc-eyebrow">Confidential — payroll</div>
+        <div class="doc-org">GENFIN Medical Aid Fund</div>
+      </div>
+    </div>
+    <div class="title-band"><strong>Employee payslip</strong><span id="psRef">—</span></div>
+    <div class="doc-body">
+      <div class="ps-emp">
+        <div><span>Employee</span><strong id="psName">—</strong></div>
+        <div><span>Staff number</span><strong id="psNo">—</strong></div>
+        <div><span>Position</span><strong id="psRole">—</strong></div>
+        <div><span>Pay period</span><strong id="psPeriod">—</strong></div>
+        <div><span>Date of employment</span><strong id="psEmp">—</strong></div>
+        <div><span>Issued</span><strong id="psIssued">—</strong></div>
+      </div>
+      <table class="ps-table">
+        <tr><th>Earnings</th><th style="text-align:right">Amount</th></tr>
+        <tr><td>Basic salary</td><td id="psGross">—</td></tr>
+      </table>
+      <table class="ps-table">
+        <tr><th>Deductions</th><th style="text-align:right">Amount</th></tr>
+        <tbody id="psDeds"></tbody>
+      </table>
+      <div class="ps-net"><span>Net pay</span><strong id="psNet">—</strong></div>
+      <p class="ps-note">This payslip is system-generated from the GENFIN payroll module and is valid without a signature. Payroll is posted to the general ledger (account 6000 — Payroll Expense). Queries: payroll@genfin.health.</p>
+    </div>
+    <div class="doc-footer">
+      <div>GENFIN Medical Aid Fund · Reg. MAF/0041/08 · Heritage House, Harare · genfin.health</div>
+      <span id="psStamp">—</span>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="shared/config.js"></script>
+<script src="shared/genfin-api.js"></script>
+<script>
+(async function () {
+  const sess = GF.session();
+  if (!sess || sess.kind === 'member') { location.href = 'login.html'; return; }
+  const id = new URLSearchParams(location.search).get('id');
+  const slips = id ? await GF.table('genfin_payslips', { eq: { id: id } }) : [];
+  const p = slips[0];
+  if (!p) { document.getElementById('psName').textContent = 'Payslip not found'; return; }
+  const st = (await GF.table('genfin_staff', { eq: { id: p.staff_id } }))[0];
+  const isAdmin = sess.kind === 'admin' || sess.role === 'superadmin' || sess.role === 'hr_head';
+  if (!isAdmin && (!sess.profile || sess.profile.id !== p.staff_id)) { location.href = 'staff-profile.html'; return; }
+  document.getElementById('psName').textContent = st.full_name;
+  document.getElementById('psNo').textContent = st.staff_no || '—';
+  document.getElementById('psRole').textContent = (st.role || '—').replace(/_/g, ' ');
+  document.getElementById('psPeriod').textContent = p.period;
+  document.getElementById('psEmp').textContent = GF.d(st.employment_date);
+  document.getElementById('psIssued').textContent = GF.d(p.issued_at);
+  document.getElementById('psGross').textContent = GF.money(p.gross);
+  document.getElementById('psNet').textContent = GF.money(p.net);
+  document.getElementById('psRef').textContent = 'PS-' + (p.id || '').slice(0, 8).toUpperCase();
+  document.getElementById('psStamp').textContent = 'GENERATED ' + new Date().toLocaleDateString('en-GB').replace(/\//g, '.');
+  const deds = typeof p.deductions === 'string' ? JSON.parse(p.deductions) : (p.deductions || []);
+  document.getElementById('psDeds').innerHTML = deds.map(d => '<tr><td>' + GF.esc(d.label) + '</td><td>' + GF.money(d.amount) + '</td></tr>').join('') || '<tr><td colspan="2">None</td></tr>';
+  window.onbeforeprint = () => { document.title = 'GENFIN Payslip ' + p.period + ' — ' + st.full_name; };
+})();
+</script>
+</body>
+</html>

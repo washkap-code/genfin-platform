@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schedule of Benefits — GENFIN Medical Aid Fund</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/tokens.css">
+<style>
+/* ── Screen wrapper (not printed) — GENFIN Design System tokens only ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body {
+  font-family: var(--font-sans);
+  background: var(--surface-page); min-height: 100vh;
+  color: var(--text-body);
+  -webkit-font-smoothing: antialiased;
+}
+.screen-header {
+  background: var(--surface-inverse); padding: var(--space-3) var(--space-8);
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: var(--z-sticky);
+}
+.sh-brand { display: flex; align-items: center; gap: var(--space-3); }
+.sh-brand img { height: 30px; width: auto; display: block; }
+.sh-brand-label {
+  font-size: var(--fs-2xs); font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--slate-400);
+  border-left: var(--border-width) solid var(--slate-700); padding-left: var(--space-3);
+}
+.sh-actions { display: flex; gap: var(--space-2); }
+.sh-btn {
+  font-family: var(--font-sans); font-weight: var(--fw-bold); font-size: var(--fs-xs);
+  padding: 7px 16px; border-radius: var(--radius-sm); border: none; cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-standard);
+  text-decoration: none; display: inline-flex; align-items: center;
+}
+.sh-btn-primary { background: var(--brand); color: var(--brand-contrast); }
+.sh-btn-primary:hover { background: var(--brand-hover); }
+.sh-btn-ghost { background: var(--ink-soft); color: var(--slate-300); }
+.sh-btn-ghost:hover { background: var(--slate-800); color: var(--white); }
+.doc-stage { padding: var(--space-10) var(--space-6); display: flex; flex-direction: column; align-items: center; gap: var(--space-6); }
+.doc-label {
+  font-size: var(--fs-2xs); font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--text-faint); text-align: center;
+}
+
+/* ── The document ── */
+.doc {
+  width: 800px; min-height: 1130px;
+  background: var(--surface-card);
+  box-shadow: var(--shadow-xl);
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.doc-border {
+  position: absolute; inset: 12px;
+  border: var(--border-width-strong) solid var(--border-brand);
+  pointer-events: none; z-index: 2;
+}
+.doc-border-inner {
+  position: absolute; inset: 16px;
+  border: var(--border-width) solid var(--gold-100);
+  pointer-events: none; z-index: 2;
+}
+
+/* Masthead — ink surface with gold accent */
+.doc-masthead {
+  background: var(--surface-inverse);
+  padding: var(--space-8) var(--space-10);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; position: relative;
+}
+.doc-masthead::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  background: linear-gradient(90deg, var(--gold-400) 0%, var(--gold-600) 100%);
+}
+.doc-logo img { height: 60px; width: auto; display: block; }
+.doc-masthead-right { text-align: right; }
+.doc-masthead-eyebrow {
+  font-size: var(--fs-2xs); font-weight: var(--fw-bold); letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase; color: var(--gold-400); margin-bottom: var(--space-2);
+}
+.doc-masthead-org { font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--fs-sm); color: var(--white); }
+.doc-masthead-reg { font-family: var(--font-mono); font-size: var(--fs-2xs); color: var(--slate-400); margin-top: var(--space-1); }
+
+/* Title band */
+.doc-title-band {
+  background: var(--surface-brand); padding: var(--space-3) var(--space-10);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.doc-title-text {
+  font-family: var(--font-display); font-weight: var(--fw-extra);
+  font-size: var(--fs-lg); color: var(--text-on-brand); letter-spacing: var(--ls-wide); text-transform: uppercase;
+}
+.doc-serial {
+  font-family: var(--font-mono); font-size: var(--fs-xs); font-weight: var(--fw-semibold);
+  color: var(--gold-900); letter-spacing: var(--ls-wide);
+}
+
+/* Body */
+.doc-body { padding: var(--space-8) var(--space-10); flex: 1; position: relative; z-index: 1; }
+.doc-watermark {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  pointer-events: none; z-index: 0;
+}
+.doc-watermark-text {
+  font-family: var(--font-display); font-weight: var(--fw-extra); font-size: 5rem;
+  color: var(--gold-400); opacity: 0.06; text-transform: uppercase; letter-spacing: var(--ls-eyebrow);
+  transform: rotate(-30deg); white-space: nowrap;
+}
+
+/* Member strip */
+.sched-member {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+  background: var(--surface-sunken); border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--radius-md); padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-6); position: relative; z-index: 1;
+}
+.sched-member-name { font-family: var(--font-display); font-weight: var(--fw-extra); font-size: var(--fs-h4); color: var(--text-strong); }
+.sched-member-sub { font-size: var(--fs-xs); color: var(--text-muted); margin-top: 2px; }
+.sched-member-kv { text-align: right; }
+.sched-member-kv .k {
+  font-size: var(--fs-2xs); font-weight: var(--fw-bold); letter-spacing: var(--ls-wide);
+  text-transform: uppercase; color: var(--text-muted);
+}
+.sched-member-kv .v { font-family: var(--font-mono); font-size: var(--fs-sm); font-weight: var(--fw-bold); color: var(--text-strong); }
+.sched-plan-badge {
+  display: inline-block; background: var(--surface-brand); color: var(--text-on-brand);
+  font-weight: var(--fw-extra); font-size: var(--fs-2xs); padding: 3px 10px;
+  border-radius: var(--radius-xs); letter-spacing: var(--ls-wide); text-transform: uppercase;
+}
+
+/* Overall limit callout */
+.sched-overall {
+  display: flex; align-items: center; gap: var(--space-4);
+  background: var(--surface-inverse); border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5); margin-bottom: var(--space-6);
+  position: relative; z-index: 1;
+}
+.sched-overall-label {
+  font-size: var(--fs-2xs); font-weight: var(--fw-bold); letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase; color: var(--gold-400);
+}
+.sched-overall-amount {
+  font-family: var(--font-display); font-weight: var(--fw-extra); font-size: var(--fs-h3);
+  color: var(--white); margin-left: auto; font-variant-numeric: tabular-nums;
+}
+.sched-overall-per { font-size: var(--fs-2xs); color: var(--slate-400); }
+
+/* Category section */
+.sched-cat { margin-bottom: var(--space-6); position: relative; z-index: 1; }
+.sched-cat-title {
+  font-family: var(--font-display); font-weight: var(--fw-bold); font-size: var(--fs-sm);
+  color: var(--text-strong); margin-bottom: var(--space-3);
+  display: flex; align-items: center; gap: var(--space-2);
+}
+.sched-cat-title::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
+
+.sched-table { width: 100%; border-collapse: collapse; }
+.sched-table th {
+  font-size: var(--fs-2xs); font-weight: var(--fw-bold); letter-spacing: var(--ls-wide);
+  text-transform: uppercase; color: var(--text-muted); text-align: left;
+  padding: 0 var(--space-2) var(--space-2) 0; border-bottom: var(--border-width-strong) solid var(--border-default);
+}
+.sched-table th:nth-child(2), .sched-table td:nth-child(2) { width: 150px; }
+.sched-table th:nth-child(3), .sched-table td:nth-child(3) { width: 110px; }
+.sched-table td {
+  font-size: var(--fs-xs); padding: var(--space-2) var(--space-2) var(--space-2) 0;
+  border-bottom: var(--border-width) solid var(--border-subtle); vertical-align: top;
+}
+.sched-table tr:last-child td { border-bottom: none; }
+.sched-benefit { font-weight: var(--fw-bold); color: var(--text-strong); }
+.sched-note { font-size: var(--fs-2xs); color: var(--text-muted); margin-top: 2px; font-weight: var(--fw-regular); }
+.sched-limit { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: var(--fw-semibold); color: var(--text-strong); }
+.sched-copay { font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-body); }
+.sched-unlimited {
+  display: inline-block; background: var(--status-success-bg); border: var(--border-width) solid var(--status-success-bd);
+  color: var(--status-success-fg); font-size: var(--fs-2xs); font-weight: var(--fw-extra);
+  padding: 2px 8px; border-radius: var(--radius-xs); text-transform: uppercase; letter-spacing: var(--ls-wide);
+}
+
+.doc-divider-gold { height: 2px; background: linear-gradient(90deg, var(--gold-400), var(--gold-100)); margin: var(--space-6) 0; border-radius: var(--radius-pill); }
+
+/* Terms */
+.sched-terms {
+  font-size: var(--fs-2xs); color: var(--text-muted); line-height: var(--lh-relaxed);
+  position: relative; z-index: 1;
+}
+.sched-terms strong { color: var(--text-strong); }
+
+/* Footer band */
+.doc-footer {
+  background: var(--surface-inverse); padding: var(--space-4) var(--space-10);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-6);
+}
+.doc-footer-brand { display: flex; align-items: center; gap: var(--space-4); }
+.doc-footer-brand img { height: 34px; width: auto; display: block; }
+.doc-footer-left { font-size: 0.65rem; color: var(--slate-400); line-height: var(--lh-relaxed); }
+.doc-footer-stamp {
+  font-size: 0.6rem; color: var(--gold-400); text-align: right;
+  font-family: var(--font-mono); letter-spacing: var(--ls-wide); line-height: var(--lh-relaxed);
+}
+
+/* ── Print ── */
+@media print {
+  body { background: var(--white); }
+  .screen-header, .doc-stage > .doc-label { display: none; }
+  .doc-stage { padding: 0; }
+  .doc { box-shadow: none; width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="screen-header">
+  <div class="sh-brand">
+    <img src="assets/genfin-logo.png" alt="GENFIN Medical Aid Fund">
+    <div class="sh-brand-label">Policy documents</div>
+  </div>
+  <div class="sh-actions">
+    <a class="sh-btn sh-btn-ghost" href="member-profile.html">← Back to my profile</a>
+    <a class="sh-btn sh-btn-ghost" href="policy-certificate.html">Membership certificate</a>
+    <button class="sh-btn sh-btn-primary" onclick="window.print()">Print / Save PDF</button>
+  </div>
+</div>
+
+<div class="doc-stage">
+  <div class="doc-label">Schedule of Benefits 2026 · Confidential</div>
+
+  <div class="doc" id="theDoc">
+
+    <div class="doc-border"></div>
+    <div class="doc-border-inner"></div>
+
+    <!-- Masthead -->
+    <div class="doc-masthead">
+      <div class="doc-logo">
+        <img src="assets/genfin-logo.png" alt="GENFIN Medical Aid Fund">
+      </div>
+      <div class="doc-masthead-right">
+        <div class="doc-masthead-eyebrow">Official member document</div>
+        <div class="doc-masthead-org">GENFIN Medical Aid Fund</div>
+        <div class="doc-masthead-reg">Reg. No. MAF/0041/08</div>
+      </div>
+    </div>
+
+    <!-- Title band -->
+    <div class="doc-title-band">
+      <div class="doc-title-text">Schedule of Benefits</div>
+      <div class="doc-serial">No. SCHED-2026-GF-104928</div>
+    </div>
+
+    <!-- Body -->
+    <div class="doc-body">
+
+      <div class="doc-watermark"><div class="doc-watermark-text">GENFIN</div></div>
+
+      <!-- Member strip -->
+      <div class="sched-member">
+        <div>
+          <div class="sched-member-name">Tadiwa Moyo</div>
+          <div class="sched-member-sub">Principal Member · Econet Wireless (Group Scheme) · 3 registered dependants</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:var(--space-6)">
+          <div class="sched-member-kv">
+            <div class="k">Member ID</div>
+            <div class="v">GF-104928</div>
+          </div>
+          <div class="sched-member-kv">
+            <div class="k">Benefit year</div>
+            <div class="v">2026</div>
+          </div>
+          <span class="sched-plan-badge">Gold Plan</span>
+        </div>
+      </div>
+
+      <!-- Overall annual limit -->
+      <div class="sched-overall">
+        <div class="sched-overall-label">Overall annual benefit limit</div>
+        <div class="sched-overall-amount">$6,000.00 <span class="sched-overall-per">per beneficiary / annum</span></div>
+      </div>
+
+      <!-- General practice -->
+      <div class="sched-cat">
+        <div class="sched-cat-title">General practice &amp; wellness</div>
+        <table class="sched-table">
+          <tr><th>Benefit</th><th>Annual limit</th><th>Member pays</th><th>Conditions</th></tr>
+          <tr>
+            <td><div class="sched-benefit">GP consultations</div><div class="sched-note">Network general practitioners</div></td>
+            <td><span class="sched-unlimited">Unlimited</span></td>
+            <td class="sched-copay">$0</td>
+            <td>Within the GENFIN provider network; out-of-network subject to tariff</td>
+          </tr>
+          <tr>
+            <td><div class="sched-benefit">Annual wellness checkup</div><div class="sched-note">Screening &amp; preventive assessment</div></td>
+            <td class="sched-limit">$120.00</td>
+            <td class="sched-copay">$0</td>
+            <td>One checkup per beneficiary per benefit year</td>
+          </tr>
+          <tr>
+            <td><div class="sched-benefit">Acute medication</div><div class="sched-note">Prescribed at consultation</div></td>
+            <td class="sched-limit">Per tariff</td>
+            <td class="sched-copay">$0</td>
+            <td>Dispensed via GENFIN pharmacy network</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Specialist & hospital -->
+      <div class="sched-cat">
+        <div class="sched-cat-title">Specialist &amp; hospital care</div>
+        <table class="sched-table">
+          <tr><th>Benefit</th><th>Annual limit</th><th>Member pays</th><th>Conditions</th></tr>
+          <tr>
+            <td><div class="sched-benefit">Specialist consultations</div><div class="sched-note">Referral-based specialist care</div></td>
+            <td class="sched-limit">$1,200.00</td>
+            <td class="sched-copay">10%</td>
+            <td>GP referral required; pre-authorisation via member portal</td>
+          </tr>
+          <tr>
+            <td><div class="sched-benefit">Hospitalisation</div><div class="sched-note">In-patient &amp; day procedures</div></td>
+            <td class="sched-limit">$3,500.00</td>
+            <td class="sched-copay">$0</td>
+            <td>Pre-authorisation required except emergencies (notify within 48 hours)</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Dental & optical -->
+      <div class="sched-cat">
+        <div class="sched-cat-title">Dental &amp; optical</div>
+        <table class="sched-table">
+          <tr><th>Benefit</th><th>Annual limit</th><th>Member pays</th><th>Conditions</th></tr>
+          <tr>
+            <td><div class="sched-benefit">Dental — preventive &amp; restorative</div><div class="sched-note">Cleanings, fillings, extractions</div></td>
+            <td class="sched-limit">$400.00</td>
+            <td class="sched-copay">$0</td>
+            <td>Network dental providers; specialised dentistry per tariff</td>
+          </tr>
+          <tr>
+            <td><div class="sched-benefit">Eye exam &amp; eyewear</div><div class="sched-note">In-house optical service</div></td>
+            <td class="sched-limit">$320.00</td>
+            <td class="sched-copay">$0</td>
+            <td>One frame &amp; lens set per beneficiary per benefit year</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Pharmacy -->
+      <div class="sched-cat">
+        <div class="sched-cat-title">Chronic &amp; pharmacy</div>
+        <table class="sched-table">
+          <tr><th>Benefit</th><th>Annual limit</th><th>Member pays</th><th>Conditions</th></tr>
+          <tr>
+            <td><div class="sched-benefit">Prescription drugs (chronic)</div><div class="sched-note">Registered chronic conditions</div></td>
+            <td class="sched-limit">$2,400.00</td>
+            <td class="sched-copay">$0</td>
+            <td>Chronic registration required; nationwide delivery included</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="doc-divider-gold"></div>
+
+      <div class="sched-terms">
+        <strong>General conditions.</strong> Benefits apply per beneficiary per benefit year (1 January — 31 December 2026)
+        unless stated otherwise, and are subject to the overall annual limit, the GENFIN tariff schedule, and the rules of the Fund.
+        Limits are shared across the principal member and registered dependants where indicated. Pre-authorisation, where required,
+        can be requested through the GENFIN member portal or WhatsApp service. This schedule must be read together with
+        Membership Certificate No. CERT-2026-GF-104928. <strong>In case of emergency, call: +263 867 700 4422 (24/7)</strong>.
+      </div>
+
+    </div>
+
+    <!-- Footer band -->
+    <div class="doc-footer">
+      <div class="doc-footer-brand">
+        <img src="assets/genfin-logo.png" alt="">
+        <div class="doc-footer-left">
+          GENFIN Medical Aid Fund · Registered MAF/0041/08 under the Medical Services Act [Chapter 15:13]<br>
+          4th Floor, Heritage House, Cnr First St &amp; Kwame Nkrumah Ave, Harare, Zimbabwe<br>
+          +263 867 700 4400 · info@genfin.health · genfin.health
+        </div>
+      </div>
+      <div class="doc-footer-stamp">
+        ISSUED: 01 JAN 2026<br>
+        VALID TO: 31 DEC 2026<br>
+        AUTH: RK/2026/GF104928
+      </div>
+    </div>
+
+  </div><!-- /doc -->
+
+  <div class="doc-label">This document was issued by GENFIN Medical Aid Fund · Serial No. SCHED-2026-GF-104928</div>
+</div>
+
+<script>
+window.onbeforeprint = function() {
+  document.title = 'GENFIN Schedule of Benefits 2026 — Tadiwa Moyo GF-104928';
+};
+</script>
+</body>
+</html>
