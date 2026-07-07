@@ -2,17 +2,19 @@
    Each live page declares <body data-gf-page="..."> and includes an empty #gfApp mount.
    This engine enforces role access, renders the shell, and wires every module to Supabase. */
 (function () {
+  const GT = window.GT || (k => k);
   const PAGE = document.body.getAttribute('data-gf-page');
   const $ = (sel) => document.querySelector(sel);
 
   const NAV = [
-    { key: 'dashboard', href: 'superadmin.html', label: 'Dashboard', icon: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>' },
-    { key: 'staff-hr', href: 'staff-hr.html', label: 'HR & Payroll', icon: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' },
-    { key: 'staff-finance', href: 'staff-finance.html', label: 'Accounts', icon: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' },
-    { key: 'staff-inventory', href: 'staff-inventory.html', label: 'Inventory', icon: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>' },
-    { key: 'staff-logistics', href: 'staff-logistics.html', label: 'Logistics', icon: '<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>' },
-    { key: 'driver-app', href: 'driver-app.html', label: 'Driver app', icon: '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>' },
-    { key: 'staff-profile', href: 'staff-profile.html', label: 'My profile', icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>' }
+    { key: 'dashboard', href: 'superadmin.html', label: GT('nav.dashboard'), icon: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>' },
+    { key: 'staff-hr', href: 'staff-hr.html', label: GT('nav.hr'), icon: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' },
+    { key: 'staff-finance', href: 'staff-finance.html', label: GT('nav.accounts'), icon: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' },
+    { key: 'staff-inventory', href: 'staff-inventory.html', label: GT('nav.inventory'), icon: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>' },
+    { key: 'staff-logistics', href: 'staff-logistics.html', label: GT('nav.logistics'), icon: '<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>' },
+    { key: 'driver-app', href: 'driver-app.html', label: GT('nav.driver'), icon: '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>' },
+    { key: 'staff-profile', href: 'staff-profile.html', label: GT('nav.profile'), icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>' },
+    { key: 'guides', href: 'guides.html', label: GT('nav.guides'), icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>' }
   ];
 
   function staffShell(sess, title, active) {
@@ -27,8 +29,8 @@
       '<div><div class="s-foot-name">' + GF.esc(sess.name) + '</div><div class="s-foot-role">' + GF.esc((sess.role || sess.kind || '').replace(/_/g, ' ')) + '</div></div></div>' +
       '</aside>' +
       '<main class="s-main"><div class="s-topbar"><div class="s-topbar-title">' + GF.esc(title) + '</div>' +
-      '<div class="s-topbar-actions"><span class="s-chip s-chip-green">● Live</span>' +
-      '<button class="s-btn s-btn-ghost" id="gfLogout">Log out</button></div></div>' +
+      '<div class="s-topbar-actions"><span class="s-chip s-chip-green">' + GT('common.live') + '</span>' +
+      '<button class="s-btn s-btn-ghost" id="gfLogout">' + GT('auth.signout') + '</button></div></div>' +
       '<div class="s-body" id="gfBody"></div></main></div>';
   }
 
@@ -37,7 +39,7 @@
       '<a href="portal.html" class="portal-topbar-logo" style="text-decoration:none"><img src="assets/genfin-logo.png" alt="GENFIN" style="height:30px;width:auto;display:block"></a>' +
       '<div class="portal-topbar-user" style="display:flex;align-items:center;gap:12px">' +
       '<span>' + GF.esc(sess.name) + ' · ' + GF.esc(sess.profile && sess.profile.member_no || '') + '</span>' +
-      '<button class="s-btn s-btn-ghost" id="gfLogout" style="padding:5px 12px;font-size:12px;cursor:pointer">Log out</button></div></div></div>' +
+      '<button class="s-btn s-btn-ghost" id="gfLogout" style="padding:5px 12px;font-size:12px;cursor:pointer">' + GT('auth.signout') + '</button></div></div></div>' +
       '<div style="max-width:1080px;margin:0 auto;padding:28px 20px" id="gfBody">' +
       '<h1 class="portal-page-title">' + GF.esc(title) + '</h1></div>';
   }
@@ -69,7 +71,7 @@
       finance:  { title: 'Finance sign in', sub: 'Accounts & general ledger', demos: ['finance@genfin.demo'] },
       pharmacy: { title: 'Pharmacy sign in', sub: 'Inventory & logistics', demos: ['pharmacy@genfin.demo'] }
     };
-    const cfg = PORTALS[portal] || { title: 'Sign in to GENFIN', sub: 'Members, staff and administrators',
+    const cfg = PORTALS[portal] || { title: GT('auth.title'), sub: GT('auth.sub'),
       demos: ['member@genfin.demo', 'admin@genfin.demo', 'hr@genfin.demo', 'finance@genfin.demo', 'pharmacy@genfin.demo'] };
     /* Discreet admin entry from the member/default login, per spec */
     const adminLink = portal === 'admin' ? '' :
@@ -79,10 +81,10 @@
       '<div class="s-login-logo"><img src="assets/genfin-logo.png" alt="GENFIN" width="180"></div>' +
       '<div class="s-login-title">' + cfg.title + '</div>' +
       '<div class="s-login-sub">' + cfg.sub + '</div>' +
-      '<div class="s-form-group"><label class="s-label">Email</label><input class="s-input" id="lgEmail" type="email" placeholder="you@example.com"></div>' +
-      '<div class="s-form-group"><label class="s-label">Password</label><input class="s-input" id="lgPass" type="password" placeholder="••••••••"></div>' +
+      '<div class="s-form-group"><label class="s-label">' + GT('auth.email') + '</label><input class="s-input" id="lgEmail" type="email" placeholder="you@example.com"></div>' +
+      '<div class="s-form-group"><label class="s-label">' + GT('auth.password') + '</label><input class="s-input" id="lgPass" type="password" placeholder="••••••••"></div>' +
       '<div id="lgErr" style="color:#B93636;font-size:0.8rem;margin-bottom:0.75rem;display:none"></div>' +
-      '<button class="s-btn s-btn-primary s-btn-lg" id="lgBtn" style="width:100%">Sign in</button>' +
+      '<button class="s-btn s-btn-primary s-btn-lg" id="lgBtn" style="width:100%">' + GT('auth.signin') + '</button>' +
       (portal === 'admin' ? '' : '<p style="font-size:0.78rem;color:var(--s-muted);margin-top:1rem;text-align:center">New staff member? <a href="staff-signup.html" style="color:var(--s-ink);font-weight:700">Create your staff account</a> · <a href="login-select.html" style="color:var(--s-ink);font-weight:700">All portals</a></p>') +
       '<div style="margin-top:1.25rem;border-top:1px solid var(--s-border);padding-top:1rem">' +
       '<div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--s-muted);margin-bottom:0.5rem">Demo account' + (cfg.demos.length > 1 ? 's' : '') + ' (password: demo2026)</div>' +
@@ -406,7 +408,7 @@
   /* ============ MEMBER PORTAL HOME ============ */
   async function pagePortal(sess) {
     document.body.className = 'portal-body';
-    $('#gfApp').innerHTML = portalShell(sess, 'Welcome back, ' + (sess.name || '').split(' ')[0]);
+    $('#gfApp').innerHTML = portalShell(sess, GT('portal.welcome') + ', ' + (sess.name || '').split(' ')[0]);
     wireLogout();
     async function render() {
       const m = (await GF.table('genfin_members', { eq: { id: sess.profile.id } }))[0] || sess.profile;
@@ -419,23 +421,23 @@
       document.getElementById('gfBody').innerHTML = '<h1 class="portal-page-title">Welcome back, ' + GF.esc((sess.name || '').split(' ')[0]) + '</h1>' +
         '<p class="portal-page-sub">' + GF.esc(m.plan) + ' · ' + GF.esc(m.member_no) + ' · ' + GF.esc(m.employer || '') + '</p>' +
         '<div class="portal-card" style="margin-bottom:1rem"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px">' +
-        '<strong>Annual benefit used</strong><span>' + GF.money(m.used_benefit) + ' of ' + GF.money(m.annual_limit) + '</span></div>' +
+        '<strong>' + GT('portal.benefit') + '</strong><span>' + GF.money(m.used_benefit) + ' of ' + GF.money(m.annual_limit) + '</span></div>' +
         '<div style="height:10px;background:var(--slate-100,#EEEEF1);border-radius:6px"><div style="height:100%;width:' + pct + '%;background:#FBBD3E;border-radius:6px"></div></div></div>' +
         (invoices.length ? '<div class="portal-alert portal-alert-warn" style="margin-bottom:1rem"><strong>' + invoices.length + ' invoice(s) awaiting payment.</strong> ' +
-          invoices.map(i => GF.esc(i.invoice_no) + ' (' + GF.money(i.amount) + ') <button class="s-btn s-btn-primary s-btn-sm gf-paynow" data-id="' + i.id + '" style="margin-left:6px;cursor:pointer">Pay now (EcoCash)</button>').join('<br>') + '</div>' : '') +
+          invoices.map(i => GF.esc(i.invoice_no) + ' (' + GF.money(i.amount) + ') <button class="s-btn s-btn-primary s-btn-sm gf-paynow" data-id="' + i.id + '" style="margin-left:6px;cursor:pointer">' + GT('portal.paynow') + '</button>').join('<br>') + '</div>' : '') +
         '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:1.25rem">' +
-        [['portal-pharmacy.html', 'Order meds & optical', 'Pharmacy and eyewear delivered to your door'],
-         ['portal-preauth.html', 'Pre-authorisation', 'Request approval for specialist care'],
-         ['member-profile.html', 'My profile & family', 'Personal details and dependants'],
-         ['policy-certificate.html', 'Membership certificate', 'Official policy documents'],
-         ['policy-benefit-schedule.html', 'Benefit schedule', 'Your 2026 limits in detail']].map(l =>
+        [['portal-pharmacy.html', GT('portal.order'), GT('portal.ordersub')],
+         ['portal-preauth.html', GT('portal.preauth'), GT('portal.preauthsub')],
+         ['member-profile.html', GT('portal.profile'), GT('portal.profilesub')],
+         ['policy-certificate.html', GT('portal.cert'), GT('portal.certsub')],
+         ['policy-benefit-schedule.html', GT('portal.schedule'), GT('portal.schedulesub')]].map(l =>
           '<a href="' + l[0] + '" class="portal-card" style="text-decoration:none;color:inherit;display:block"><strong>' + l[1] + '</strong><div style="font-size:0.8rem;color:#6A6870;margin-top:4px">' + l[2] + '</div></a>').join('') + '</div>' +
-        '<h2 class="portal-section-title">My orders</h2>' +
+        '<h2 class="portal-section-title">' + GT('portal.orders') + '</h2>' +
         '<div class="portal-card">' + (orders.length ? orders.map(o =>
           '<div style="display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid #EEEEF1;font-size:0.85rem;flex-wrap:wrap">' +
           '<span><strong>' + GF.esc(o.order_no) + '</strong> · ' + GF.esc(o.type) + '</span><span>' + GF.money(o.total) + '</span>' + GF.statusChip(o.status) +
           '<span style="color:#82818C;font-size:0.75rem">' + GF.dt(o.created_at) + '</span></div>').join('') : 'No orders yet — try ordering your meds or new glasses.') + '</div>' +
-        '<h2 class="portal-section-title" style="margin-top:1.25rem">Messages & email receipts</h2>' +
+        '<h2 class="portal-section-title" style="margin-top:1.25rem">' + GT('portal.messages') + '</h2>' +
         '<div class="portal-card">' + (notes.length ? notes.map(n =>
           '<div style="padding:9px 0;border-bottom:1px solid #EEEEF1"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
           GF.chip(n.channel === 'email' ? '✉ email' : '🔔 portal', n.channel === 'email' ? 'blue' : 'gold') +

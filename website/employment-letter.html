@@ -135,5 +135,7 @@ body { font-family: var(--font-sans); background: var(--surface-page); min-heigh
   window.onbeforeprint = () => { document.title = (st.status === 'terminated' ? 'GENFIN Work Reference — ' : 'GENFIN Proof of Employment — ') + st.full_name; };
 })();
 </script>
+<script src="shared/genfin-i18n.js"></script>
+<script src="shared/genfin-assistant.js"></script>
 </body>
 </html>

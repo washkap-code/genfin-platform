@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Help & User Guides — GENFIN</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/tokens.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--surface-page);color:var(--text-body);-webkit-font-smoothing:antialiased}
+.gh-head{background:var(--surface-inverse);padding:var(--space-4) var(--space-8);display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--gold-400)}
+.gh-head img{height:38px}
+.gh-head a.back{color:var(--slate-300);font-size:var(--fs-xs);font-weight:var(--fw-bold);text-decoration:none}
+.gh-wrap{max-width:960px;margin:0 auto;padding:var(--space-8) var(--space-5) var(--space-16)}
+h1{font-family:var(--font-display);font-size:var(--fs-h2);color:var(--text-strong);margin-bottom:var(--space-2)}
+.gh-sub{color:var(--text-muted);font-size:var(--fs-sm);margin-bottom:var(--space-6);line-height:var(--lh-relaxed)}
+.gh-toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:var(--space-10)}
+.gh-toc a{background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px 14px;text-decoration:none;color:var(--text-strong);font-weight:var(--fw-bold);font-size:var(--fs-xs);transition:border-color .15s}
+.gh-toc a:hover{border-color:var(--gold-400)}
+.gh-toc a span{display:block;color:var(--text-muted);font-weight:var(--fw-regular);font-size:var(--fs-2xs);margin-top:3px}
+h2{font-family:var(--font-display);font-size:var(--fs-h4);color:var(--text-strong);margin:var(--space-10) 0 var(--space-3);padding-bottom:var(--space-2);border-bottom:2px solid var(--gold-400)}
+h3{font-size:var(--fs-sm);color:var(--gold-700);margin:var(--space-5) 0 var(--space-2)}
+p,li{font-size:var(--fs-xs);line-height:var(--lh-relaxed)}
+ol,ul{padding-left:1.3rem;margin-bottom:var(--space-3)}
+li{margin-bottom:4px}
+.tip{background:var(--gold-50);border:1px solid var(--gold-100);border-radius:var(--radius-md);padding:10px 14px;font-size:var(--fs-2xs);margin:var(--space-3) 0}
+code{font-family:var(--font-mono);font-size:0.9em;background:var(--surface-sunken);padding:1px 6px;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="gh-head">
+  <a href="index.html"><img src="assets/genfin-logo.png" alt="GENFIN Medical Aid Fund"></a>
+  <a class="back" href="index.html">← genfin.health</a>
+</div>
+<div class="gh-wrap">
+<h1>Help & user guides</h1>
+<p class="gh-sub">Everything you need to use the GENFIN platform — whether you are visiting for the first time, managing your cover as a member, or running a module as GENFIN staff. The GENFIN Assistant (gold button, bottom-right of every page) can answer questions and bring you straight to the right section here.</p>
+
+<div class="gh-toc">
+  <a href="#visitors">New to GENFIN?<span>Plans, joining, first questions</span></a>
+  <a href="#member">Member portal<span>Orders, payments, pre-auth, documents</span></a>
+  <a href="#staff-start">Staff: getting started<span>Accounts, roles, your profile</span></a>
+  <a href="#hr">HR & payroll<span>Approvals, payroll, offboarding</span></a>
+  <a href="#finance">Finance & accounts<span>Ledger, invoices, payments</span></a>
+  <a href="#inventory">Inventory<span>Stock, movements, alerts</span></a>
+  <a href="#logistics">Logistics & drivers<span>Deliveries and dispatch</span></a>
+  <a href="#dashboard">Enterprise dashboard<span>Realtime feed, presence, pre-auth queue</span></a>
+  <a href="#bioverify">BioVerify<span>Biometric enrolment & verification</span></a>
+  <a href="#trouble">Troubleshooting<span>Common questions</span></a>
+</div>
+
+<h2 id="visitors">New to GENFIN? Start here</h2>
+<p>GENFIN Medical Aid Fund provides managed health care across Zimbabwe — GP and dental care, in-house optical, chronic medication delivered nationwide, and a wide provider network.</p>
+<h3>Choosing a plan</h3>
+<ol>
+<li>Open <a href="plans.html">Plans</a> and compare Essential (from $29/month), Comprehensive (from $59/month) and Corporate (custom, for employer groups).</li>
+<li>Every package is finally priced to your needs — use the quote form on the Plans page and our team confirms your exact cover and premium.</li>
+<li>Employer groups: see <a href="employers.html">For employers</a> for group billing, reporting and a dedicated account manager.</li>
+</ol>
+<h3>Questions before joining</h3>
+<ul>
+<li>Benefits and limits by plan: <a href="benefits.html">Benefits</a>.</li>
+<li>Which doctors and pharmacies you can use: <a href="providers.html">Providers</a>.</li>
+<li>Anything else: <a href="support.html">Support</a>, or ask the GENFIN Assistant on any page.</li>
+</ul>
+
+<h2 id="member">Member portal guide</h2>
+<h3>Signing in</h3>
+<ol>
+<li>Click Portal login on the website (or go to <code>/login</code>), enter your email and password, and you land on your dashboard.</li>
+<li>Your dashboard shows your plan, your annual benefit usage bar, quick actions, your orders and your messages.</li>
+</ol>
+<h3>Ordering medication or optical items</h3>
+<ol>
+<li>Open <strong>Order meds & optical</strong>. Every item shows live stock.</li>
+<li>Add items with the + button and press <strong>Place order</strong>.</li>
+<li>The platform instantly confirms stock, raises your invoice, books a delivery driver and gives you a delivery date.</li>
+<li>Pay from the banner on your dashboard (<strong>Pay now</strong>). Your receipt arrives in Messages — portal alert plus an email copy — and your benefit usage updates.</li>
+</ol>
+<h3>Pre-authorisation</h3>
+<ol>
+<li>Open <strong>Pre-authorisation</strong>, choose the category (specialist consultation, hospitalisation, specialised dental, optical beyond limit, chronic registration or other).</li>
+<li>Enter the provider, the procedure and the estimated cost — your remaining benefit shows at the top.</li>
+<li>Submit. You get a reference (PA-…), and the decision — with the assessor's note — arrives in your Messages and email. Track everything in "My requests".</li>
+</ol>
+<h3>Documents & family</h3>
+<ul>
+<li><strong>Membership certificate</strong> — official, QR-verified; print or save as PDF.</li>
+<li><strong>Benefit schedule</strong> — your full 2026 limits by category.</li>
+<li><strong>My profile & family</strong> — your details and registered dependants.</li>
+</ul>
+
+<h2 id="staff-start">Staff: getting started</h2>
+<ol>
+<li>New staff: choose <strong>Create your staff account</strong> on the sign-in page. Enter your full personal details, position and proposed employment date, and choose a password.</li>
+<li>Your account activates once the Head of HR approves it and assigns your role. Your role decides which modules you see.</li>
+<li><strong>My profile</strong> holds your personal record, HR history, proof-of-employment letter and payslips — all downloadable on official letterhead.</li>
+</ol>
+
+<h2 id="hr">HR & payroll module</h2>
+<h3>Approving new staff</h3>
+<ol>
+<li>Pending applications appear at the top of the HR screen with the applicant's full details.</li>
+<li>Assign a role (this controls their access), confirm the employment date, and press <strong>Approve</strong>. The approval — who and when — is recorded permanently in the HR log.</li>
+</ol>
+<h3>Payroll</h3>
+<ol>
+<li>Press <strong>Run payroll for [month]</strong>. Payslips are issued to every approved staff member and the payroll journal posts to the ledger (DR 6000 Payroll / CR 1000 Cash).</li>
+<li>Staff download their own payslips from My profile.</li>
+</ol>
+<h3>Offboarding</h3>
+<ol>
+<li>In the Offboarding panel, select the lawful reason for termination — the dropdown is aligned to the Labour Act [Chapter 28:01] and names the due process each ground presumes. Complete and document that process first.</li>
+<li>Set the last day of employment and confirm. Access is restricted immediately; the former staff member keeps payslip downloads and their letter becomes a Work Reference Letter (dates and role only — the reason is never stated on it).</li>
+</ol>
+
+<h2 id="finance">Finance & accounts module</h2>
+<ul>
+<li>The KPI row shows Cash at Bank, Receivables, Inventory value and the <strong>trial balance check</strong> — it must always read "Balanced".</li>
+<li>Invoices are raised automatically when members order. Record a direct payment with <strong>Record payment</strong>; member portal payments post themselves.</li>
+<li>Every posting is double-entry and visible in the Journal — invoice (DR AR / CR Sales), payment (DR Cash / CR AR), cost of sales (DR COGS / CR Inventory), payroll (DR Payroll / CR Cash).</li>
+</ul>
+
+<h2 id="inventory">Inventory module</h2>
+<ul>
+<li>Live stock for pharmacy and optical with reorder alerts; the stock value always matches ledger account 1200.</li>
+<li>Stock deducts automatically when an order is paid; every movement is logged with its invoice reference for audit.</li>
+</ul>
+
+<h2 id="logistics">Logistics & driver module</h2>
+<ul>
+<li>The driver register shows every registered driver with vehicle and live availability. Orders book the next available driver automatically.</li>
+<li>Staff press <strong>Dispatch</strong> to start a run; the driver presses <strong>Mark delivered</strong> on the Driver app, which frees them for the next booking and notifies the member.</li>
+</ul>
+
+<h2 id="dashboard">Enterprise dashboard (administrators)</h2>
+<ul>
+<li><strong>Realtime activity</strong> — every event in every module, with actor and timestamp, refreshing automatically.</li>
+<li><strong>Pre-authorisations awaiting decision</strong> — approve or decline member requests directly; the member is notified instantly.</li>
+<li><strong>Who is logged in</strong> — all sessions with role and last-seen; a green dot means active in the last two minutes. This is your staff monitoring view.</li>
+<li>KPIs: cash at bank, unpaid invoices, stock alerts, staff online now.</li>
+</ul>
+
+<h2 id="bioverify">BioVerify — biometric identity</h2>
+<ul>
+<li><strong>Enrolment</strong> (<code>/bioverify-enrol</code>): 4 steps — person and consent, fingerprints, face capture (uses your device camera — allow access when asked), confirm.</li>
+<li><strong>Verification</strong> (<code>/biometric/verify.html</code>): the counter screen used before dispensing.</li>
+<li><strong>QR check</strong>: scan the QR on any membership certificate to confirm it is valid.</li>
+<li>In this environment the fingerprint scan is simulated; production adds certified USB scanners. No raw images are stored; consent is recorded at enrolment.</li>
+</ul>
+
+<h2 id="trouble">Troubleshooting</h2>
+<ul>
+<li><strong>A staff or portal link sends me to the sign-in page.</strong> That page is protected — sign in with an account whose role has access. This is access control, not a broken link.</li>
+<li><strong>My account says "awaiting HR approval".</strong> The Head of HR has not yet approved your application; you will be able to sign in as soon as they do.</li>
+<li><strong>I see old content.</strong> Refresh the page (Ctrl+Shift+R / Cmd+Shift+R once); the platform now always serves the latest version.</li>
+<li><strong>Camera does not start on BioVerify.</strong> Allow camera access in the browser prompt, and check the page address begins with https.</li>
+<li><strong>Language.</strong> Use the EN / SN / ND switch at the bottom-left of any page for English, chiShona or isiNdebele.</li>
+<li><strong>Anything else</strong> — ask the GENFIN Assistant (bottom-right), or contact <a href="support.html">Support</a>: +263 867 700 4400 · info@genfin.health.</li>
+</ul>
+<div class="tip">Demo environment note: all demo accounts use password <code>demo2026</code>. See the portal access hub at <a href="login-select.html">login-select</a> for every portal on one page.</div>
+</div>
+<script src="shared/genfin-i18n.js"></script>
+<script src="shared/genfin-assistant.js"></script>
+</body>
+</html>
