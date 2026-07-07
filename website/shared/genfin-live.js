@@ -148,15 +148,17 @@
   async function pageDashboard(sess) {
     $('#gfApp').innerHTML = staffShell(sess, 'Enterprise dashboard', 'dashboard'); wireLogout();
     async function render() {
-      const [accts, invoices, inv, sessions, activity, members, orders] = await Promise.all([
+      const [accts, invoices, inv, sessions, activity, members, orders, preauths] = await Promise.all([
         GF.table('genfin_gl_accounts'),
         GF.table('genfin_invoices', { eq: { status: 'unpaid' } }),
         GF.table('genfin_inventory'),
         GF.table('genfin_sessions', { eq: { active: true }, order: 'last_seen' }),
         GF.table('genfin_activity', { order: 'created_at', limit: 25 }),
         GF.table('genfin_members'),
-        GF.table('genfin_orders', { order: 'created_at', limit: 8 })
+        GF.table('genfin_orders', { order: 'created_at', limit: 8 }),
+        GF.table('genfin_preauths', { eq: { status: 'pending' }, order: 'created_at' })
       ]);
+      const memName = {}; members.forEach(mm => memName[mm.id] = mm.full_name);
       const cash = accts.find(a => a.code === '1000');
       const low = inv.filter(i => i.qty_on_hand <= i.reorder_level);
       const cutoff = Date.now() - 2 * 60 * 1000;
@@ -175,6 +177,14 @@
             '<span style="flex:1"><strong>' + GF.esc(a.actor) + '</strong> · ' + GF.esc(a.detail) + '</span>' +
             '<span style="color:var(--s-muted);font-size:0.72rem;white-space:nowrap">' + GF.dt(a.created_at) + '</span></div>').join('')) + '</div>' +
         '<div>' +
+        card('Pre-authorisations awaiting decision', preauths.length ? preauths.map(p =>
+          '<div style="padding:9px 0;border-bottom:1px solid var(--s-border)">' +
+          '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:0.83rem"><strong>' + GF.esc(p.ref) + '</strong>' +
+          '<span>' + GF.esc(memName[p.member_id] || '') + '</span><span style="color:var(--s-muted);font-size:0.72rem;margin-left:auto">' + GF.dt(p.created_at) + '</span></div>' +
+          '<div style="font-size:0.78rem;color:var(--s-muted);margin:3px 0">' + GF.esc(p.procedure_desc) + ' · est. ' + GF.money(p.estimated_cost) + (p.provider ? ' · ' + GF.esc(p.provider) : '') + '</div>' +
+          '<div style="display:flex;gap:6px"><button class="s-btn s-btn-success s-btn-sm gf-pa-yes" data-id="' + p.id + '">Approve</button>' +
+          '<button class="s-btn s-btn-danger s-btn-sm gf-pa-no" data-id="' + p.id + '">Decline</button></div></div>').join('')
+          : '<p style="color:var(--s-muted);font-size:0.85rem">Queue clear.</p>') +
         card('Who is logged in', tbl(['Name', 'Role', 'Last seen', 'Status'], sessions.slice(0, 12).map(s => {
           const on = new Date(s.last_seen).getTime() > cutoff;
           return [GF.esc(s.display_name), GF.esc((s.role || s.kind || '').replace(/_/g, ' ')), GF.dt(s.last_seen), on ? GF.chip('● online', 'green') : GF.chip('idle', 'gray')];
@@ -182,6 +192,7 @@
         card('Recent orders', tbl(['Order', 'Status', 'Total'], orders.map(o => [GF.esc(o.order_no), GF.statusChip(o.status), GF.money(o.total)]))) +
         card('Members', tbl(['Member', 'Plan', 'Benefit used'], members.map(m => [GF.esc(m.full_name) + '<br><span style="color:var(--s-muted);font-size:0.72rem">' + GF.esc(m.member_no) + '</span>', GF.esc(m.plan), GF.money(m.used_benefit) + ' / ' + GF.money(m.annual_limit)]))) +
         '</div></div>';
+      wirePreauthButtons(sess, render);
     }
     await render();
     setInterval(render, 6000);
@@ -414,6 +425,7 @@
           invoices.map(i => GF.esc(i.invoice_no) + ' (' + GF.money(i.amount) + ') <button class="s-btn s-btn-primary s-btn-sm gf-paynow" data-id="' + i.id + '" style="margin-left:6px;cursor:pointer">Pay now (EcoCash)</button>').join('<br>') + '</div>' : '') +
         '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:1.25rem">' +
         [['portal-pharmacy.html', 'Order meds & optical', 'Pharmacy and eyewear delivered to your door'],
+         ['portal-preauth.html', 'Pre-authorisation', 'Request approval for specialist care'],
          ['member-profile.html', 'My profile & family', 'Personal details and dependants'],
          ['policy-certificate.html', 'Membership certificate', 'Official policy documents'],
          ['policy-benefit-schedule.html', 'Benefit schedule', 'Your 2026 limits in detail']].map(l =>
@@ -439,6 +451,21 @@
     }
     await render();
     setInterval(render, 8000);
+  }
+
+  /* Dashboard pre-auth decisions */
+  function wirePreauthButtons(sess, render) {
+    document.querySelectorAll('.gf-pa-yes').forEach(b => b.onclick = async () => {
+      b.textContent = '…';
+      await GF.rpc('genfin_decide_preauth', { p_id: b.dataset.id, p_actor: sess.name, p_approve: true, p_note: 'Within benefit and tariff' });
+      render();
+    });
+    document.querySelectorAll('.gf-pa-no').forEach(b => b.onclick = async () => {
+      const note = prompt('Reason for declining (sent to the member):', 'Insufficient information — please resubmit with a referral letter');
+      if (note === null) return;
+      await GF.rpc('genfin_decide_preauth', { p_id: b.dataset.id, p_actor: sess.name, p_approve: false, p_note: note });
+      render();
+    });
   }
 
   /* ============ MEMBER SHOP (pharmacy + optical) ============ */
@@ -501,6 +528,47 @@
       };
     }
     await render();
+  }
+
+  /* ============ MEMBER PRE-AUTHORISATION ============ */
+  async function pagePreauth(sess) {
+    document.body.className = 'portal-body';
+    $('#gfApp').innerHTML = portalShell(sess, 'Pre-authorisation');
+    wireLogout();
+    const CATS = ['Specialist consultation', 'Hospitalisation / procedure', 'Dental — specialised', 'Optical — beyond limit', 'Chronic condition registration', 'Other'];
+    async function render() {
+      const m = (await GF.table('genfin_members', { eq: { id: sess.profile.id } }))[0] || sess.profile;
+      const reqs = await GF.table('genfin_preauths', { eq: { member_id: m.id }, order: 'created_at' });
+      document.getElementById('gfBody').innerHTML = '<h1 class="portal-page-title">Pre-authorisation</h1>' +
+        '<p class="portal-page-sub"><a href="portal.html" style="color:#14141A;font-weight:700">← Back to my portal</a> · Remaining benefit: <strong>' + GF.money(Number(m.annual_limit) - Number(m.used_benefit)) + '</strong></p>' +
+        '<div style="display:grid;grid-template-columns:1fr 1.2fr;gap:1.25rem;align-items:start">' +
+        '<div class="portal-card"><strong>New request</strong>' +
+        '<div class="s-form-group" style="margin-top:10px"><label class="s-label">Category</label><select class="s-input" id="paCat">' + CATS.map(c => '<option>' + c + '</option>').join('') + '</select></div>' +
+        '<div class="s-form-group"><label class="s-label">Provider / facility</label><input class="s-input" id="paProv" placeholder="e.g. Avenues Clinic, Harare"></div>' +
+        '<div class="s-form-group"><label class="s-label">Procedure or service *</label><input class="s-input" id="paDesc" placeholder="e.g. MRI scan — lumbar spine"></div>' +
+        '<div class="s-form-group"><label class="s-label">Estimated cost (USD) *</label><input class="s-input" id="paCost" type="number" min="1" step="0.01" placeholder="450.00"></div>' +
+        '<div class="s-form-group"><label class="s-label">Notes for the assessor</label><input class="s-input" id="paNotes" placeholder="Referral details, urgency…"></div>' +
+        '<div id="paErr" style="color:#B93636;font-size:0.8rem;margin-bottom:8px;display:none"></div>' +
+        '<button class="s-btn s-btn-primary" id="paSend" style="width:100%;cursor:pointer">Submit for review</button>' +
+        '<div id="paOk"></div></div>' +
+        '<div><h2 class="portal-section-title" style="margin-top:0">My requests</h2><div class="portal-card">' +
+        (reqs.length ? reqs.map(r => '<div style="padding:9px 0;border-bottom:1px solid #EEEEF1">' +
+          '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><strong style="font-size:0.85rem">' + GF.esc(r.ref) + '</strong>' + GF.statusChip(r.status) +
+          '<span style="color:#82818C;font-size:0.72rem;margin-left:auto">' + GF.dt(r.created_at) + '</span></div>' +
+          '<div style="font-size:0.8rem;color:#4E4D55;margin-top:3px">' + GF.esc(r.procedure_desc) + ' · est. ' + GF.money(r.estimated_cost) + (r.provider ? ' · ' + GF.esc(r.provider) : '') + '</div>' +
+          (r.decided_by ? '<div style="font-size:0.72rem;color:#82818C;margin-top:2px">Decision by ' + GF.esc(r.decided_by) + ' on ' + GF.dt(r.decided_at) + (r.decision_note ? ' — ' + GF.esc(r.decision_note) : '') + '</div>' : '') +
+          '</div>').join('') : 'No pre-authorisation requests yet.') + '</div></div></div>';
+      document.getElementById('paSend').onclick = async () => {
+        const desc = $('#paDesc').value.trim(), cost = parseFloat($('#paCost').value);
+        if (!desc || !(cost > 0)) { $('#paErr').textContent = 'Procedure and a valid estimated cost are required.'; $('#paErr').style.display = 'block'; return; }
+        $('#paSend').textContent = 'Submitting…';
+        const res = await GF.rpc('genfin_request_preauth', { p_member: sess.profile.id, p_category: $('#paCat').value, p_provider: $('#paProv').value.trim(), p_desc: desc, p_cost: cost, p_notes: $('#paNotes').value.trim() });
+        if (res && res.ok) { render(); }
+        else { $('#paSend').textContent = 'Submit for review'; $('#paErr').textContent = (res && res.error) || 'Failed'; $('#paErr').style.display = 'block'; }
+      };
+    }
+    await render();
+    setInterval(render, 10000);
   }
 
   /* ============ MEMBER PROFILE ============ */
@@ -605,7 +673,8 @@
     const guard = {
       dashboard: 'dashboard', inventory: 'staff-inventory', finance: 'staff-finance', hr: 'staff-hr',
       logistics: 'staff-logistics', driver: 'driver-app', portal: 'portal', shop: 'portal-pharmacy',
-      'member-profile': 'member-profile', 'staff-profile': 'staff-profile', restricted: 'restricted'
+      'member-profile': 'member-profile', 'staff-profile': 'staff-profile', restricted: 'restricted',
+      preauth: 'portal-preauth'
     }[PAGE];
     const sess = GF.requireAuth(guard);
     if (!sess) return;
@@ -620,5 +689,6 @@
     if (PAGE === 'member-profile') return pageMemberProfile(sess);
     if (PAGE === 'staff-profile') return pageStaffProfile(sess);
     if (PAGE === 'restricted') return pageRestricted(sess);
+    if (PAGE === 'preauth') return pagePreauth(sess);
   });
 })();
