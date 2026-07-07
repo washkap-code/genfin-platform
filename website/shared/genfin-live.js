@@ -61,21 +61,34 @@
   async function pageLogin() {
     const existing = GF.session();
     if (existing) { location.href = GF.homeFor(existing); return; }
+    const portal = new URLSearchParams(location.search).get('portal') || '';
+    const PORTALS = {
+      member:   { title: 'Member sign in', sub: 'Your benefits, orders and documents', demos: ['member@genfin.demo'] },
+      admin:    { title: 'Administrator sign in', sub: 'GENFIN enterprise administration — authorised personnel only', demos: ['admin@genfin.demo'] },
+      hr:       { title: 'HR sign in', sub: 'Human resources & payroll', demos: ['hr@genfin.demo'] },
+      finance:  { title: 'Finance sign in', sub: 'Accounts & general ledger', demos: ['finance@genfin.demo'] },
+      pharmacy: { title: 'Pharmacy sign in', sub: 'Inventory & logistics', demos: ['pharmacy@genfin.demo'] }
+    };
+    const cfg = PORTALS[portal] || { title: 'Sign in to GENFIN', sub: 'Members, staff and administrators',
+      demos: ['member@genfin.demo', 'admin@genfin.demo', 'hr@genfin.demo', 'finance@genfin.demo', 'pharmacy@genfin.demo'] };
+    /* Discreet admin entry from the member/default login, per spec */
+    const adminLink = portal === 'admin' ? '' :
+      '<p style="text-align:center;margin-top:0.75rem"><a href="login.html?portal=admin" style="font-size:0.68rem;color:var(--s-muted);text-decoration:none;opacity:0.7">Admin login</a></p>';
     $('#gfApp').innerHTML =
       '<div class="s-login-page"><div class="s-login-card">' +
       '<div class="s-login-logo"><img src="assets/genfin-logo.png" alt="GENFIN" width="180"></div>' +
-      '<div class="s-login-title">Sign in to GENFIN</div>' +
-      '<div class="s-login-sub">Members, staff and administrators</div>' +
+      '<div class="s-login-title">' + cfg.title + '</div>' +
+      '<div class="s-login-sub">' + cfg.sub + '</div>' +
       '<div class="s-form-group"><label class="s-label">Email</label><input class="s-input" id="lgEmail" type="email" placeholder="you@example.com"></div>' +
       '<div class="s-form-group"><label class="s-label">Password</label><input class="s-input" id="lgPass" type="password" placeholder="••••••••"></div>' +
       '<div id="lgErr" style="color:#B93636;font-size:0.8rem;margin-bottom:0.75rem;display:none"></div>' +
       '<button class="s-btn s-btn-primary s-btn-lg" id="lgBtn" style="width:100%">Sign in</button>' +
-      '<p style="font-size:0.78rem;color:var(--s-muted);margin-top:1rem;text-align:center">New staff member? <a href="staff-signup.html" style="color:var(--s-ink);font-weight:700">Create your staff account</a></p>' +
+      (portal === 'admin' ? '' : '<p style="font-size:0.78rem;color:var(--s-muted);margin-top:1rem;text-align:center">New staff member? <a href="staff-signup.html" style="color:var(--s-ink);font-weight:700">Create your staff account</a> · <a href="login-select.html" style="color:var(--s-ink);font-weight:700">All portals</a></p>') +
       '<div style="margin-top:1.25rem;border-top:1px solid var(--s-border);padding-top:1rem">' +
-      '<div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--s-muted);margin-bottom:0.5rem">Demo accounts (password: demo2026)</div>' +
-      ['member@genfin.demo', 'admin@genfin.demo', 'hr@genfin.demo', 'finance@genfin.demo', 'pharmacy@genfin.demo'].map(e =>
+      '<div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--s-muted);margin-bottom:0.5rem">Demo account' + (cfg.demos.length > 1 ? 's' : '') + ' (password: demo2026)</div>' +
+      cfg.demos.map(e =>
         '<button class="s-btn s-btn-ghost s-btn-sm gf-demo" data-e="' + e + '" style="margin:2px">' + e + '</button>').join('') +
-      '</div></div></div>';
+      '</div>' + adminLink + '</div></div>';
     async function doLogin(email, pass) {
       $('#lgErr').style.display = 'none';
       $('#lgBtn').textContent = 'Signing in…';
@@ -260,7 +273,20 @@
       ]);
       const byId = {}; staff.forEach(s => byId[s.id] = s);
       const pending = staff.filter(s => s.status === 'pending');
+      const activeStaff = staff.filter(s => s.status === 'approved');
       const period = new Date().toLocaleString('en-GB', { month: 'long', year: 'numeric' });
+      /* Lawful termination grounds — Zimbabwe Labour Act [Chapter 28:01].
+         Each requires the documented process noted; the reason is never shown on reference letters. */
+      const TERM_REASONS = [
+        'Retrenchment (redundancy) — s12C Labour Act, with works council/retrenchment board process',
+        'Mutual separation agreement — signed by both parties',
+        'Expiry of fixed-term contract — non-renewal',
+        'Resignation — employee initiated, notice served',
+        'Retirement — per contract/pension rules',
+        'Dismissal for misconduct — after disciplinary hearing per registered Code of Conduct',
+        'Termination on medical incapacity — after due process and medical evidence',
+        'Termination for poor performance — after documented performance procedure'
+      ];
       $('#gfBody').innerHTML =
         '<div class="s-kpi-grid">' +
         kpi('Staff', staff.filter(s => s.status === 'approved').length, 'Approved & active') +
@@ -279,6 +305,17 @@
           '<button class="s-btn s-btn-success s-btn-sm gf-approve" data-id="' + p.id + '">Approve</button>' +
           '<button class="s-btn s-btn-danger s-btn-sm gf-reject" data-id="' + p.id + '">Reject</button>' +
           '</div></div></div>').join('') : '<p style="color:var(--s-muted);font-size:0.85rem">No applications waiting.</p>') +
+        card('Offboarding <span style="font-weight:400;color:var(--s-muted);font-size:0.72rem">(reasons aligned to the Labour Act [Chapter 28:01] — due process must be completed and documented before offboarding)</span>',
+          activeStaff.length ? activeStaff.map(s =>
+            '<div style="border:1px solid var(--s-border);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">' +
+            '<div><strong>' + GF.esc(s.full_name) + '</strong> — ' + GF.esc((s.role || '').replace(/_/g, ' ')) +
+            '<div style="font-size:0.74rem;color:var(--s-muted)">' + GF.esc(s.staff_no || '') + ' · employed since ' + GF.d(s.employment_date) + '</div></div>' +
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+            '<select class="s-input" id="treason-' + s.id + '" style="width:280px;max-width:100%"><option value="">Reason for termination…</option>' +
+            TERM_REASONS.map(r => '<option>' + r + '</option>').join('') + '</select>' +
+            '<input class="s-input" type="date" id="tdate-' + s.id + '" style="width:auto" title="Last day of employment">' +
+            '<button class="s-btn s-btn-danger s-btn-sm gf-offboard" data-id="' + s.id + '">Offboard</button>' +
+            '</div></div>').join('') : '<p style="color:var(--s-muted);font-size:0.85rem">No active staff.</p>') +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:start"><div>' +
         card('Staff directory', tbl(['Staff', 'Role', 'Employed', 'Status', 'Approved by'], staff.map(s => [
           GF.esc(s.full_name) + '<br><span style="color:var(--s-muted);font-size:0.72rem">' + GF.esc(s.staff_no || '') + '</span>',
@@ -295,6 +332,16 @@
         if (!role) { alert('Assign a role first — access rights depend on it.'); return; }
         b.textContent = 'Approving…';
         const res = await GF.rpc('genfin_approve_staff', { p_staff: id, p_approver: sess.name, p_role: role, p_department: null, p_employment_date: emp || null });
+        if (!(res && res.ok)) alert((res && res.error) || 'Failed');
+        render();
+      });
+      document.querySelectorAll('.gf-offboard').forEach(b => b.onclick = async () => {
+        const id = b.dataset.id;
+        const reason = $('#treason-' + id).value; const tdate = $('#tdate-' + id).value;
+        if (!reason) { alert('Select a lawful reason for termination — this is recorded in the HR log.'); return; }
+        if (!confirm('Offboard ' + byId[id].full_name + '?\n\nReason: ' + reason + '\n\nTheir access will be restricted immediately. Confirm that the required due process has been completed and documented.')) return;
+        b.textContent = 'Offboarding…';
+        const res = await GF.rpc('genfin_terminate_staff', { p_staff: id, p_actor: sess.name, p_reason: reason, p_date: tdate || null, p_note: null });
         if (!(res && res.ok)) alert((res && res.error) || 'Failed');
         render();
       });
@@ -501,6 +548,31 @@
       '</div></div>';
   }
 
+  /* ============ RESTRICTED PORTAL (former staff) ============ */
+  async function pageRestricted(sess) {
+    const st = (await GF.table('genfin_staff', { eq: { id: sess.profile.id } }))[0] || sess.profile;
+    const slips = await GF.table('genfin_payslips', { eq: { staff_id: st.id }, order: 'issued_at' });
+    $('#gfApp').innerHTML =
+      '<div class="s-login-page"><div class="s-login-card" style="max-width:640px">' +
+      '<div class="s-login-logo"><img src="assets/genfin-logo.png" alt="GENFIN" width="160"></div>' +
+      '<div class="s-login-title">Former staff portal</div>' +
+      '<div class="s-alert s-alert-warn" style="margin:0.75rem 0;text-align:left">' +
+      '<strong>' + GF.esc(st.full_name) + ', you are no longer employed by GENFIN Medical Aid Fund.</strong><br>' +
+      '<span style="font-size:0.82rem">Employment: ' + GF.d(st.employment_date) + ' — ' + GF.d(st.termination_date) + '<br>' +
+      'Reason recorded: <strong>' + GF.esc(st.termination_reason || '—') + '</strong></span></div>' +
+      '<p style="font-size:0.82rem;color:var(--s-muted);text-align:left;margin-bottom:1rem">Your access is limited to the documents below. Your work reference letter confirms your role and dates of service only — it does not state the reason your employment ended. For queries contact hr@genfin.health.</p>' +
+      '<div style="text-align:left;margin-bottom:1rem">' +
+      '<a class="s-btn s-btn-primary" href="employment-letter.html" style="text-decoration:none">Download work reference letter</a></div>' +
+      '<div style="text-align:left"><strong style="font-size:0.85rem">My payslips</strong>' +
+      (slips.length ? slips.map(p => '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--s-border);font-size:0.83rem">' +
+        '<span>' + GF.esc(p.period) + ' — net <strong>' + GF.money(p.net) + '</strong></span>' +
+        '<a class="s-btn s-btn-ghost s-btn-sm" href="payslip.html?id=' + p.id + '" style="text-decoration:none">Download</a></div>').join('') :
+        '<p style="font-size:0.8rem;color:var(--s-muted)">No payslips on record.</p>') + '</div>' +
+      '<button class="s-btn s-btn-ghost" id="gfLogout" style="margin-top:1.25rem;width:100%">Log out</button>' +
+      '</div></div>';
+    wireLogout();
+  }
+
   /* ============ DRIVER APP ============ */
   async function pageDriver(sess) {
     $('#gfApp').innerHTML = staffShell(sess, 'Driver app', 'driver-app'); wireLogout();
@@ -533,7 +605,7 @@
     const guard = {
       dashboard: 'dashboard', inventory: 'staff-inventory', finance: 'staff-finance', hr: 'staff-hr',
       logistics: 'staff-logistics', driver: 'driver-app', portal: 'portal', shop: 'portal-pharmacy',
-      'member-profile': 'member-profile', 'staff-profile': 'staff-profile'
+      'member-profile': 'member-profile', 'staff-profile': 'staff-profile', restricted: 'restricted'
     }[PAGE];
     const sess = GF.requireAuth(guard);
     if (!sess) return;
@@ -547,5 +619,6 @@
     if (PAGE === 'shop') return pageShop(sess);
     if (PAGE === 'member-profile') return pageMemberProfile(sess);
     if (PAGE === 'staff-profile') return pageStaffProfile(sess);
+    if (PAGE === 'restricted') return pageRestricted(sess);
   });
 })();

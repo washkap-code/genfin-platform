@@ -48,6 +48,7 @@
 
     homeFor(sess) {
       if (!sess) return 'login.html';
+      if (sess.role === 'former_staff') return 'restricted-portal.html';
       if (sess.kind === 'member') return 'portal.html';
       if (sess.kind === 'admin' || sess.role === 'superadmin') return 'superadmin.html';
       const map = { hr_head: 'staff-hr.html', finance: 'staff-finance.html', pharmacy: 'staff-inventory.html', driver: 'driver-app.html', logistics: 'staff-logistics.html' };
@@ -57,6 +58,7 @@
     /* Role-based access. Admin sees everything. */
     can(sess, moduleKey) {
       if (!sess) return false;
+      if (sess.role === 'former_staff') return moduleKey === 'restricted';
       if (sess.kind === 'admin' || sess.role === 'superadmin') return true;
       const grants = {
         member: ['portal', 'portal-pharmacy', 'member-profile', 'documents'],
@@ -98,7 +100,7 @@
         active: 'green', available: 'green', approved: 'green', paid: 'green', delivered: 'green',
         paid_scheduled: 'blue', out_for_delivery: 'blue', driver_booked: 'blue', invoiced: 'gold',
         booked: 'gold', unpaid: 'gold', pending: 'gold', on_delivery: 'blue',
-        rejected: 'red', off_duty: 'gray', placed: 'gray'
+        rejected: 'red', terminated: 'red', off_duty: 'gray', placed: 'gray'
       };
       return GF.chip(String(st || '').replace(/_/g, ' '), m[st] || 'gray');
     }

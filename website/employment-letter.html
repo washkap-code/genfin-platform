@@ -70,17 +70,17 @@ body { font-family: var(--font-sans); background: var(--surface-page); min-heigh
     </div>
     <div class="doc-body">
       <div class="letter-date" id="ltDate">—</div>
-      <div class="letter-title">To whom it may concern — Proof of employment</div>
+      <div class="letter-title" id="ltTitle">To whom it may concern — Proof of employment</div>
       <div class="letter-body">
-        <p>This letter serves to confirm that <strong id="ltName">—</strong> (National ID <strong id="ltNid">—</strong>) is employed by <strong>GENFIN Medical Aid Fund</strong> on a full-time basis.</p>
+        <p id="ltIntro">This letter serves to confirm that <strong id="ltName">—</strong> (National ID <strong id="ltNid">—</strong>) is employed by <strong>GENFIN Medical Aid Fund</strong> on a full-time basis.</p>
         <div class="letter-facts">
           <div><span>Staff number</span><strong id="ltNo">—</strong></div>
           <div><span>Position</span><strong id="ltRole">—</strong></div>
           <div><span>Department</span><strong id="ltDept">—</strong></div>
-          <div><span>Date of employment</span><strong id="ltEmp">—</strong></div>
-          <div><span>Employment status</span><strong>Full-time, confirmed</strong></div>
+          <div><span id="ltEmpLabel">Date of employment</span><strong id="ltEmp">—</strong></div>
+          <div><span>Employment status</span><strong id="ltStatus">Full-time, confirmed</strong></div>
         </div>
-        <p>The above-named employee remains in good standing with the organisation as at the date of this letter. This confirmation is issued at the employee's request for official purposes.</p>
+        <p id="ltPara2">The above-named employee remains in good standing with the organisation as at the date of this letter. This confirmation is issued at the employee's request for official purposes.</p>
         <p>For any verification, contact the Human Resources office on +263 867 700 4400 or hr@genfin.health, quoting the staff number above.</p>
       </div>
       <div class="letter-sig">
@@ -108,20 +108,31 @@ body { font-family: var(--font-sans); background: var(--surface-page); min-heigh
   const sess = GF.session();
   if (!sess || sess.kind === 'member') { location.href = 'login.html'; return; }
   const st = (await GF.table('genfin_staff', { eq: { id: sess.profile.id } }))[0] || sess.profile;
-  if (st.status !== 'approved') {
+  if (st.status !== 'approved' && st.status !== 'terminated') {
     document.querySelector('.letter-body').innerHTML = '<p><strong>This letter is only available once your account has been approved by HR.</strong></p>';
     return;
   }
   const now = new Date();
+  if (st.status === 'terminated') {
+    /* Work reference letter: duration of service and role only — no reason for departure. */
+    document.getElementById('ltTitle').textContent = 'To whom it may concern — Work reference letter';
+    document.getElementById('ltIntro').innerHTML = 'This letter serves to confirm that <strong>' + GF.esc(st.full_name) + '</strong> (National ID <strong>' + GF.esc(st.national_id || '—') + '</strong>) was employed by <strong>GENFIN Medical Aid Fund</strong> on a full-time basis.';
+    document.getElementById('ltEmpLabel').textContent = 'Period of employment';
+    document.getElementById('ltStatus').textContent = 'Employment ended';
+    document.getElementById('ltPara2').textContent = 'During the period of employment stated above, the above-named held the position indicated and carried out the duties associated with that role. This reference is issued at the former employee\'s request for official purposes.';
+    document.getElementById('ltEmp').textContent = GF.d(st.employment_date) + ' — ' + GF.d(st.termination_date);
+    document.title = 'Work Reference Letter — GENFIN Medical Aid Fund';
+  } else {
+    document.getElementById('ltEmp').textContent = GF.d(st.employment_date);
+  }
   document.getElementById('ltDate').textContent = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) + ' · Harare, Zimbabwe';
   document.getElementById('ltName').textContent = st.full_name;
   document.getElementById('ltNid').textContent = st.national_id || '—';
   document.getElementById('ltNo').textContent = st.staff_no || '—';
   document.getElementById('ltRole').textContent = (st.role || st.position_applied || '—').replace(/_/g, ' ');
   document.getElementById('ltDept').textContent = st.department || '—';
-  document.getElementById('ltEmp').textContent = GF.d(st.employment_date);
   document.getElementById('ltStamp').innerHTML = 'REF: HR/' + now.getFullYear() + '/' + (st.staff_no || '') + '<br>ISSUED: ' + now.toLocaleDateString('en-GB').replace(/\//g, '.');
-  window.onbeforeprint = () => { document.title = 'GENFIN Proof of Employment — ' + st.full_name; };
+  window.onbeforeprint = () => { document.title = (st.status === 'terminated' ? 'GENFIN Work Reference — ' : 'GENFIN Proof of Employment — ') + st.full_name; };
 })();
 </script>
 </body>
