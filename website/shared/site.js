@@ -218,20 +218,20 @@
       var personalQs = finder.querySelectorAll('[data-fq="personal"]');
 
       var PLANS = {
-        Essential: {
-          price: '<span class="fr-cur">$</span>29<span class="fr-per">/ month \u00b7 indicative</span>',
-          cta: 'Choose Essential',
+        Vital: {
+          price: '<span class="fr-cur">$</span>20<span class="fr-per">/ month \u00b7 covers 2 people</span>',
+          cta: 'Choose Vital',
           why: ['Core GP & acute medication cover', 'Full provider network access', 'Member portal & WhatsApp support']
         },
-        Comprehensive: {
-          price: '<span class="fr-cur">$</span>59<span class="fr-per">/ month \u00b7 indicative</span>',
-          cta: 'Choose Comprehensive',
+        Gold: {
+          price: '<span class="fr-cur">$</span>30<span class="fr-per">/ month \u00b7 covers 2 people</span>',
+          cta: 'Choose Gold',
           why: []
         },
-        Corporate: {
-          price: 'Custom<span class="fr-per">/ per group</span>',
-          cta: 'Talk to sales',
-          why: ['Free wellness programs for your staff', 'Group billing & consolidated reporting', 'On-site delivery to your premises']
+        Diamond: {
+          price: '<span class="fr-cur">$</span>50<span class="fr-per">/ month \u00b7 covers 2 people</span>',
+          cta: 'Choose Diamond',
+          why: ['Our highest level of cover', 'Group billing & SSB payroll deduction available', 'On-site delivery to your premises']
         }
       };
 
@@ -250,16 +250,16 @@
 
         var plan, why;
         if (company) {
-          plan = 'Corporate'; why = PLANS.Corporate.why.slice();
+          plan = 'Diamond'; why = PLANS.Diamond.why.slice();
         } else if (chronic === 'yes' || optical === 'yes' || who === 'family') {
-          plan = 'Comprehensive';
+          plan = 'Gold';
           why = [];
           if (chronic === 'yes') why.push('Chronic medication delivered nationwide');
           if (optical === 'yes') why.push('In-house optical & spectacles included');
           if (who === 'family') why.push('Cover for your dependants included');
           why.push('Dental & specialist cover');
         } else {
-          plan = 'Essential'; why = PLANS.Essential.why.slice();
+          plan = 'Vital'; why = PLANS.Vital.why.slice();
         }
 
         frName.textContent = plan;
