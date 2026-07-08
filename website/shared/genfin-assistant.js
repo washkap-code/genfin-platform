@@ -94,8 +94,8 @@
       a: "When you place an order, the next available registered driver is booked automatically and you're given a delivery date right away. Logistics staff dispatch the run, and the driver confirms delivery from the Driver app — you get a portal message the moment it's done. If all drivers are out, your order queues for the next available slot.",
       links: [['Logistics guide', 'guides.html#logistics']], c: ['How do I order medication?'] },
 
-    { k: ['finance', 'ledger', 'accounts module', 'trial balance', 'accounting', 'books'],
-      a: "The Accounts module is a true double-entry ledger. Orders post DR Receivables / CR Sales; payments post DR Cash / CR Receivables plus cost-of-sales against inventory; payroll posts DR Payroll / CR Cash. The trial balance indicator must always read 'Balanced' — every figure traces to a journal entry you can inspect.",
+    { k: ['finance', 'ledger', 'accounts module', 'trial balance', 'accounting', 'books', 'journal', 'clerk', 'make an entry', 'entries'],
+      a: "The Accounts module is a true double-entry ledger. Click any account to open its full ledger with a running balance and who posted each entry. Accounts clerks post manual journal entries with '+ New journal entry' — quick templates fill in every related line automatically (rent, premiums received, supplier payments, bank charges and more), and an entry only posts when debits equal credits. System events (orders, payments, payroll) post themselves. Everything is tagged manual or auto with the poster's name, and the trial balance must always read 'Balanced'.",
       links: [['Finance guide', 'guides.html#finance']], c: ['How does inventory stay accurate?'] },
 
     { k: ['inventory', 'stock', 'impahla', 'reorder'],

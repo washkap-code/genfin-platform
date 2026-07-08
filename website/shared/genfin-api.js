@@ -51,7 +51,7 @@
       if (sess.role === 'former_staff') return 'restricted-portal.html';
       if (sess.kind === 'member') return 'portal.html';
       if (sess.kind === 'admin' || sess.role === 'superadmin') return 'superadmin.html';
-      const map = { hr_head: 'staff-hr.html', finance: 'staff-finance.html', pharmacy: 'staff-inventory.html', driver: 'driver-app.html', logistics: 'staff-logistics.html' };
+      const map = { hr_head: 'staff-hr.html', finance: 'staff-finance.html', accounts_clerk: 'staff-finance.html', pharmacy: 'staff-inventory.html', driver: 'driver-app.html', logistics: 'staff-logistics.html' };
       return map[sess.role] || 'superadmin.html';
     },
 
@@ -66,6 +66,7 @@
         member: ['portal', 'portal-pharmacy', 'member-profile', 'documents'],
         hr_head: ['staff-hr', 'staff-profile', 'dashboard'],
         finance: ['staff-finance', 'staff-profile', 'dashboard'],
+        accounts_clerk: ['staff-finance', 'staff-profile'],
         pharmacy: ['staff-inventory', 'staff-logistics', 'staff-profile', 'dashboard'],
         logistics: ['staff-logistics', 'driver-app', 'staff-profile', 'dashboard'],
         driver: ['driver-app', 'staff-profile']

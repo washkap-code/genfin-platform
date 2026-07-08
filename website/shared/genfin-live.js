@@ -68,11 +68,11 @@
       member:   { title: 'Member sign in', sub: 'Your benefits, orders and documents', demos: ['member@genfin.demo'] },
       admin:    { title: 'Administrator sign in', sub: 'GENFIN enterprise administration — authorised personnel only', demos: ['admin@genfin.demo'] },
       hr:       { title: 'HR sign in', sub: 'Human resources & payroll', demos: ['hr@genfin.demo'] },
-      finance:  { title: 'Finance sign in', sub: 'Accounts & general ledger', demos: ['finance@genfin.demo'] },
+      finance:  { title: 'Finance sign in', sub: 'Accounts & general ledger', demos: ['finance@genfin.demo', 'clerk@genfin.demo'] },
       pharmacy: { title: 'Pharmacy sign in', sub: 'Inventory & logistics', demos: ['pharmacy@genfin.demo'] }
     };
     const cfg = PORTALS[portal] || { title: GT('auth.title'), sub: GT('auth.sub'),
-      demos: ['member@genfin.demo', 'admin@genfin.demo', 'hr@genfin.demo', 'finance@genfin.demo', 'pharmacy@genfin.demo'] };
+      demos: ['member@genfin.demo', 'admin@genfin.demo', 'hr@genfin.demo', 'finance@genfin.demo', 'clerk@genfin.demo', 'pharmacy@genfin.demo'] };
     /* Discreet admin entry from the member/default login, per spec */
     const adminLink = portal === 'admin' ? '' :
       '<p style="text-align:center;margin-top:0.75rem"><a href="login.html?portal=admin" style="font-size:0.68rem;color:var(--s-muted);text-decoration:none;opacity:0.7">Admin login</a></p>';
@@ -233,19 +233,86 @@
   /* ============ FINANCE ============ */
   async function pageFinance(sess) {
     $('#gfApp').innerHTML = staffShell(sess, 'Accounts & general ledger', 'staff-finance'); wireLogout();
+    let view = { mode: 'overview', account: null };
+    let jLines = [{ account: '', debit: '', credit: '' }, { account: '', debit: '', credit: '' }];
+    let jMemo = '', jRef = '', showEntry = false;
+    /* Quick templates: one manual action posts every related line automatically */
+    const TEMPLATES = [
+      { name: 'Premium received (cash)', memo: 'Member premium received', lines: (amt) => [{ account: '1000', debit: amt }, { account: '4300', credit: amt }] },
+      { name: 'Supplier expense paid from bank', memo: 'Supplier expense', lines: (amt) => [{ account: '6200', debit: amt }, { account: '1000', credit: amt }] },
+      { name: 'Rent / utilities paid', memo: 'Rent & utilities', lines: (amt) => [{ account: '6100', debit: amt }, { account: '1000', credit: amt }] },
+      { name: 'Bank charges', memo: 'Bank charges', lines: (amt) => [{ account: '6300', debit: amt }, { account: '1000', credit: amt }] },
+      { name: 'Expense on credit (payable)', memo: 'Expense incurred on credit', lines: (amt) => [{ account: '6200', debit: amt }, { account: '2000', credit: amt }] },
+      { name: 'Pay a supplier (settle payable)', memo: 'Supplier payment', lines: (amt) => [{ account: '2000', debit: amt }, { account: '1000', credit: amt }] },
+      { name: 'Capital injection', memo: 'Capital introduced', lines: (amt) => [{ account: '1000', debit: amt }, { account: '3000', credit: amt }] }
+    ];
     async function render() {
       const [accts, invoices, payments, entries, lines] = await Promise.all([
         GF.table('genfin_gl_accounts', { order: 'code', asc: true }),
         GF.table('genfin_invoices', { order: 'issued_at', limit: 12 }),
         GF.table('genfin_payments', { order: 'received_at', limit: 8 }),
-        GF.table('genfin_gl_entries', { order: 'created_at', limit: 10 }),
-        GF.table('genfin_gl_lines', { limit: 60 })
+        GF.table('genfin_gl_entries', { order: 'created_at', limit: 12 }),
+        GF.table('genfin_gl_lines', { limit: 400 })
       ]);
       const drTotal = accts.filter(a => ['asset', 'expense'].includes(a.type)).reduce((t, a) => t + Number(a.balance), 0);
       const crTotal = accts.filter(a => !['asset', 'expense'].includes(a.type)).reduce((t, a) => t + Number(a.balance), 0);
       const balanced = Math.abs(drTotal - crTotal) < 0.01;
       const linesByEntry = {}; lines.forEach(l => { (linesByEntry[l.entry_id] = linesByEntry[l.entry_id] || []).push(l); });
       const acctName = {}; accts.forEach(a => acctName[a.code] = a.name);
+      const acctOpts = (sel) => '<option value="">Account…</option>' + accts.map(a => '<option value="' + a.code + '"' + (sel === a.code ? ' selected' : '') + '>' + a.code + ' — ' + GF.esc(a.name) + '</option>').join('');
+
+      /* ---- Account drill-down ---- */
+      let acctDetail = '';
+      if (view.mode === 'account') {
+        const a = accts.find(x => x.code === view.account);
+        const entryById = {}; entries.forEach(e => entryById[e.id] = e);
+        const allEntries = await GF.table('genfin_gl_entries', { order: 'created_at', asc: true, limit: 200 });
+        allEntries.forEach(e => entryById[e.id] = e);
+        const myLines = lines.filter(l => l.account_code === view.account)
+          .map(l => ({ ...l, e: entryById[l.entry_id] || {} }))
+          .sort((x, y) => new Date(x.e.created_at || 0) - new Date(y.e.created_at || 0));
+        let run = 0;
+        const rows = myLines.map(l => {
+          const dr = Number(l.debit), cr = Number(l.credit);
+          run += (['asset', 'expense'].includes(a.type) ? dr - cr : cr - dr);
+          return ['#' + (l.e.entry_no || '—') + '<br><span style="color:var(--s-muted);font-size:0.7rem">' + GF.dt(l.e.created_at) + '</span>',
+            GF.esc(l.e.memo || '') + '<br><span style="color:var(--s-muted);font-size:0.7rem">' + GF.esc(l.e.ref || '') + '</span>',
+            GF.esc(l.e.posted_by || 'System'),
+            dr > 0 ? GF.money(dr) : '', cr > 0 ? GF.money(cr) : '', '<strong>' + GF.money(run) + '</strong>'];
+        }).reverse();
+        acctDetail = card('Account ' + a.code + ' — ' + GF.esc(a.name) + ' ' + GF.chip(a.type, { asset: 'blue', liability: 'red', equity: 'gold', income: 'green', expense: 'gray' }[a.type]),
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">' +
+          '<div style="font-size:1.25rem;font-weight:800">Balance: ' + GF.money(a.balance) + '</div>' +
+          '<div style="display:flex;gap:8px"><button class="s-btn s-btn-primary s-btn-sm" id="gfEntryFor">+ New entry to this account</button>' +
+          '<button class="s-btn s-btn-ghost s-btn-sm" id="gfBackAccts">← All accounts</button></div></div>' +
+          tbl(['Entry', 'Memo / ref', 'Posted by', 'Debit', 'Credit', 'Running balance'], rows));
+      }
+
+      /* ---- Manual journal entry form ---- */
+      const dTot = jLines.reduce((t, l) => t + (parseFloat(l.debit) || 0), 0);
+      const cTot = jLines.reduce((t, l) => t + (parseFloat(l.credit) || 0), 0);
+      const jBal = Math.abs(dTot - cTot) < 0.005 && dTot > 0;
+      const entryForm = !showEntry ? '' : card('New journal entry <span style="font-weight:400;color:var(--s-muted);font-size:0.72rem">— posted under your name: ' + GF.esc(sess.name) + '</span>',
+        '<div class="s-form-row"><div class="s-form-group"><label class="s-label">Quick template (fills all related lines)</label>' +
+        '<select class="s-input" id="jTpl"><option value="">Blank entry…</option>' + TEMPLATES.map((t, i) => '<option value="' + i + '">' + t.name + '</option>').join('') + '</select></div>' +
+        '<div class="s-form-group"><label class="s-label">Amount for template</label><input class="s-input" id="jTplAmt" type="number" min="0.01" step="0.01" placeholder="100.00"></div></div>' +
+        '<div class="s-form-row"><div class="s-form-group"><label class="s-label">Memo *</label><input class="s-input" id="jMemo" value="' + GF.esc(jMemo) + '" placeholder="What is this entry for?"></div>' +
+        '<div class="s-form-group"><label class="s-label">Reference</label><input class="s-input" id="jRef" value="' + GF.esc(jRef) + '" placeholder="e.g. RENT-JUL26 (optional)"></div></div>' +
+        '<table style="width:100%;border-collapse:collapse;font-size:0.83rem;margin:6px 0">' +
+        '<tr><th style="text-align:left;padding:4px;color:var(--s-muted);font-size:0.7rem;text-transform:uppercase">Account</th><th style="text-align:right;padding:4px;color:var(--s-muted);font-size:0.7rem;text-transform:uppercase">Debit</th><th style="text-align:right;padding:4px;color:var(--s-muted);font-size:0.7rem;text-transform:uppercase">Credit</th><th></th></tr>' +
+        jLines.map((l, i) =>
+          '<tr><td style="padding:3px"><select class="s-input jl-acct" data-i="' + i + '">' + acctOpts(l.account) + '</select></td>' +
+          '<td style="padding:3px;width:110px"><input class="s-input jl-dr" data-i="' + i + '" type="number" min="0" step="0.01" value="' + (l.debit || '') + '" style="text-align:right"></td>' +
+          '<td style="padding:3px;width:110px"><input class="s-input jl-cr" data-i="' + i + '" type="number" min="0" step="0.01" value="' + (l.credit || '') + '" style="text-align:right"></td>' +
+          '<td style="padding:3px;width:30px">' + (jLines.length > 2 ? '<button class="s-btn s-btn-ghost s-btn-sm jl-del" data-i="' + i + '">×</button>' : '') + '</td></tr>').join('') +
+        '</table>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">' +
+        '<button class="s-btn s-btn-ghost s-btn-sm" id="jAdd">+ Add line</button>' +
+        '<div style="font-size:0.8rem;font-weight:700;color:' + (jBal ? '#178247' : '#B93636') + '">DR ' + GF.money(dTot) + ' / CR ' + GF.money(cTot) + (jBal ? ' — balanced ✓' : ' — must balance') + '</div>' +
+        '<div style="display:flex;gap:8px"><button class="s-btn s-btn-ghost s-btn-sm" id="jCancel">Cancel</button>' +
+        '<button class="s-btn s-btn-primary" id="jPost"' + (jBal ? '' : ' disabled') + '>Post entry</button></div></div>' +
+        '<div id="jErr" style="color:#B93636;font-size:0.8rem;margin-top:6px"></div>');
+
       $('#gfBody').innerHTML =
         '<div class="s-kpi-grid">' +
         kpi('Cash at bank', GF.money((accts.find(a => a.code === '1000') || {}).balance)) +
@@ -253,17 +320,70 @@
         kpi('Inventory (GL)', GF.money((accts.find(a => a.code === '1200') || {}).balance)) +
         kpi('Trial balance', balanced ? '<span style="color:#178247">Balanced ✓</span>' : '<span style="color:#B93636">Out!</span>', GF.money(drTotal) + ' DR = ' + GF.money(crTotal) + ' CR') +
         '</div>' +
+        '<div style="margin-bottom:1rem;display:flex;gap:8px;flex-wrap:wrap">' +
+        '<button class="s-btn s-btn-primary" id="gfNewEntry">+ New journal entry</button>' +
+        '<button class="s-btn s-btn-ghost" id="gfAddAcct">+ Add ledger account</button></div>' +
+        entryForm + acctDetail +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:start"><div>' +
-        card('Chart of accounts', tbl(['Code', 'Account', 'Type', 'Balance'],
-          accts.map(a => [a.code, GF.esc(a.name), GF.chip(a.type, { asset: 'blue', liability: 'red', equity: 'gold', income: 'green', expense: 'gray' }[a.type]), '<strong>' + GF.money(a.balance) + '</strong>']))) +
+        card('Chart of accounts <span style="font-weight:400;color:var(--s-muted);font-size:0.72rem">(click an account to open its ledger)</span>',
+          tbl(['Code', 'Account', 'Type', 'Balance'],
+          accts.map(a => ['<a href="#" class="gf-acct" data-code="' + a.code + '" style="color:var(--s-info);font-weight:800;text-decoration:none">' + a.code + '</a>',
+            '<a href="#" class="gf-acct" data-code="' + a.code + '" style="color:inherit;text-decoration:none">' + GF.esc(a.name) + '</a>',
+            GF.chip(a.type, { asset: 'blue', liability: 'red', equity: 'gold', income: 'green', expense: 'gray' }[a.type]), '<strong>' + GF.money(a.balance) + '</strong>']))) +
         card('Journal (latest entries)', entries.map(e =>
-          '<div style="padding:8px 0;border-bottom:1px solid var(--s-border)"><div style="font-size:0.82rem"><strong>#' + e.entry_no + '</strong> ' + GF.esc(e.memo) + ' <span style="color:var(--s-muted);font-size:0.72rem">' + GF.dt(e.created_at) + '</span></div>' +
+          '<div style="padding:8px 0;border-bottom:1px solid var(--s-border)"><div style="font-size:0.82rem"><strong>#' + e.entry_no + '</strong> ' + GF.esc(e.memo) +
+          ' ' + GF.chip(e.source === 'manual' ? 'manual' : 'auto', e.source === 'manual' ? 'gold' : 'gray') +
+          '<span style="color:var(--s-muted);font-size:0.72rem"> · by ' + GF.esc(e.posted_by || 'System') + ' · ' + GF.dt(e.created_at) + '</span></div>' +
           (linesByEntry[e.id] || []).map(l => '<div style="font-size:0.76rem;color:var(--s-muted);padding-left:14px">' + l.account_code + ' ' + GF.esc(acctName[l.account_code] || '') + ' — ' + (Number(l.debit) > 0 ? 'DR ' + GF.money(l.debit) : 'CR ' + GF.money(l.credit)) + '</div>').join('') + '</div>').join('')) +
         '</div><div>' +
         card('Invoices', tbl(['Invoice', 'Amount', 'Status', ''], invoices.map(i => [GF.esc(i.invoice_no) + '<br><span style="color:var(--s-muted);font-size:0.72rem">' + GF.dt(i.issued_at) + '</span>', GF.money(i.amount), GF.statusChip(i.status),
           i.status === 'unpaid' ? '<button class="s-btn s-btn-primary s-btn-sm gf-pay" data-id="' + i.id + '">Record payment</button>' : (i.paid_at ? '<span style="font-size:0.72rem;color:var(--s-muted)">paid ' + GF.dt(i.paid_at) + '</span>' : '')]))) +
         card('Payments received', tbl(['Ref', 'Amount', 'Method', 'When'], payments.map(p => [GF.esc(p.reference), GF.money(p.amount), GF.esc(p.method), GF.dt(p.received_at)]))) +
         '</div></div>';
+
+      /* wiring */
+      document.querySelectorAll('.gf-acct').forEach(el => el.onclick = (ev) => { ev.preventDefault(); view = { mode: 'account', account: el.dataset.code }; render(); });
+      const back = $('#gfBackAccts'); if (back) back.onclick = () => { view = { mode: 'overview', account: null }; render(); };
+      const efor = $('#gfEntryFor'); if (efor) efor.onclick = () => { showEntry = true; jLines = [{ account: view.account, debit: '', credit: '' }, { account: '', debit: '', credit: '' }]; render(); };
+      $('#gfNewEntry').onclick = () => { showEntry = !showEntry; render(); };
+      $('#gfAddAcct').onclick = async () => {
+        const code = prompt('New account code (e.g. 6400):'); if (!code) return;
+        const name = prompt('Account name:'); if (!name) return;
+        const type = prompt('Type — asset, liability, equity, income or expense:', 'expense'); if (!type) return;
+        const res = await GF.rpc('genfin_add_account', { p_actor: sess.name, p_code: code.trim(), p_name: name.trim(), p_type: type.trim().toLowerCase() });
+        if (!(res && res.ok)) alert((res && res.error) || 'Failed');
+        render();
+      };
+      if (showEntry) {
+        const keep = () => {
+          jMemo = $('#jMemo').value; jRef = $('#jRef').value;
+          document.querySelectorAll('.jl-acct').forEach(s => jLines[s.dataset.i].account = s.value);
+          document.querySelectorAll('.jl-dr').forEach(s => jLines[s.dataset.i].debit = s.value);
+          document.querySelectorAll('.jl-cr').forEach(s => jLines[s.dataset.i].credit = s.value);
+        };
+        $('#jTpl').onchange = () => {
+          const t = TEMPLATES[$('#jTpl').value];
+          if (!t) return;
+          const amt = parseFloat($('#jTplAmt').value) || 0;
+          if (!(amt > 0)) { $('#jErr').textContent = 'Enter the template amount first — then pick the template and every related line is filled for you.'; $('#jTpl').value = ''; return; }
+          jMemo = t.memo; jRef = '';
+          jLines = t.lines(amt).map(l => ({ account: l.account, debit: l.debit || '', credit: l.credit || '' }));
+          render();
+        };
+        document.querySelectorAll('.jl-dr, .jl-cr, .jl-acct').forEach(el => el.onchange = () => { keep(); render(); });
+        $('#jAdd').onclick = () => { keep(); jLines.push({ account: '', debit: '', credit: '' }); render(); };
+        document.querySelectorAll('.jl-del').forEach(b => b.onclick = () => { keep(); jLines.splice(b.dataset.i, 1); render(); });
+        $('#jCancel').onclick = () => { showEntry = false; jMemo = ''; jRef = ''; jLines = [{ account: '', debit: '', credit: '' }, { account: '', debit: '', credit: '' }]; render(); };
+        $('#jPost').onclick = async () => {
+          keep();
+          const payload = jLines.filter(l => l.account && ((parseFloat(l.debit) || 0) > 0 || (parseFloat(l.credit) || 0) > 0))
+            .map(l => ({ account: l.account, debit: parseFloat(l.debit) || 0, credit: parseFloat(l.credit) || 0 }));
+          $('#jPost').textContent = 'Posting…';
+          const res = await GF.rpc('genfin_manual_entry', { p_actor: sess.name, p_memo: jMemo, p_ref: jRef, p_lines: payload });
+          if (res && res.ok) { showEntry = false; jMemo = ''; jRef = ''; jLines = [{ account: '', debit: '', credit: '' }, { account: '', debit: '', credit: '' }]; render(); }
+          else { $('#jErr').textContent = (res && res.error) || 'Failed to post'; $('#jPost').textContent = 'Post entry'; }
+        };
+      }
       document.querySelectorAll('.gf-pay').forEach(b => b.onclick = async () => {
         b.textContent = 'Posting…';
         const res = await GF.rpc('genfin_record_payment', { p_invoice: b.dataset.id, p_method: 'Bank transfer' });
@@ -272,7 +392,6 @@
       });
     }
     await render();
-    setInterval(render, 8000);
   }
 
   /* ============ HR ============ */
@@ -313,7 +432,7 @@
           '<div style="font-size:0.76rem;color:var(--s-muted);margin-top:3px">' + GF.esc(p.email) + ' · ' + GF.esc(p.phone || '') + ' · ID ' + GF.esc(p.national_id || '—') + '<br>Applied ' + GF.dt(p.created_at) + ' · Proposed start ' + GF.d(p.employment_date) + '</div></div>' +
           '<div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap">' +
           '<select class="s-input" id="role-' + p.id + '" style="width:auto"><option value="">Assign role…</option>' +
-          ['hr_head|Head of HR', 'finance|Finance', 'pharmacy|Pharmacy & Optical', 'logistics|Logistics', 'driver|Driver', 'claims|Claims', 'superadmin|Super admin'].map(r => { const [v, l] = r.split('|'); return '<option value="' + v + '">' + l + '</option>'; }).join('') + '</select>' +
+          ['hr_head|Head of HR', 'finance|Finance', 'accounts_clerk|Accounts clerk', 'pharmacy|Pharmacy & Optical', 'logistics|Logistics', 'driver|Driver', 'claims|Claims', 'superadmin|Super admin'].map(r => { const [v, l] = r.split('|'); return '<option value="' + v + '">' + l + '</option>'; }).join('') + '</select>' +
           '<input class="s-input" type="date" id="emp-' + p.id + '" value="' + (p.employment_date || '') + '" style="width:auto" title="Employment date">' +
           '<button class="s-btn s-btn-success s-btn-sm gf-approve" data-id="' + p.id + '">Approve</button>' +
           '<button class="s-btn s-btn-danger s-btn-sm gf-reject" data-id="' + p.id + '">Reject</button>' +
