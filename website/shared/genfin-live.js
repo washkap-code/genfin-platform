@@ -413,13 +413,14 @@
     const ETYPES = ['permanent', 'fixed-term contract', 'temporary', 'part-time', 'internship'];
 
     async function render() {
-      const [staff, log, slips, apprs, warns, docs] = await Promise.all([
+      const [staff, log, slips, apprs, warns, docs, amds] = await Promise.all([
         GF.table('genfin_staff', { order: 'created_at' }),
         GF.table('genfin_hr_log', { order: 'created_at', limit: 200 }),
         GF.table('genfin_payslips', { order: 'issued_at', limit: 200 }),
         GF.table('genfin_appraisals', { order: 'scheduled_for', asc: true, limit: 200 }),
         GF.table('genfin_warnings', { order: 'issued_at', limit: 100 }),
-        GF.table('genfin_hr_docs', { order: 'created_at', limit: 100 })
+        GF.table('genfin_hr_docs', { order: 'created_at', limit: 100 }),
+        GF.table('genfin_amendments', { order: 'created_at', limit: 100 })
       ]);
       const byId = {}; staff.forEach(s => byId[s.id] = s);
       const approved = staff.filter(s => s.status === 'approved');
@@ -461,6 +462,19 @@
             ['Salary (gross/mo)', GF.money(s.salary)], ['HR notes', GF.esc(s.hr_notes || '—')],
             ['Approved by', s.approved_by ? GF.esc(s.approved_by) + ' on ' + GF.dt(s.approved_at) : '—'],
             ['Payslips on file', mySlips.length]], false));
+
+        const staffAmds = amds.filter(a => a.staff_id === s.id);
+        const proposeCard = card('Propose a record amendment <span style="font-weight:400;color:var(--s-muted);font-size:0.72rem">— takes effect only after Head of HR approval; logged old → new</span>',
+          '<div class="s-form-row"><div class="s-form-group"><label class="s-label">Field</label><select class="s-input" id="hamField">' +
+          [['full_name','Full name'],['phone','Phone'],['whatsapp','WhatsApp'],['address','Home address'],['next_of_kin','Next of kin'],['national_id','National ID'],['dob','Date of birth'],['department','Department'],['salary','Salary (USD)'],['employment_type','Employment type'],['employment_date','Employment date'],['next_appraisal','Next appraisal'],['hr_notes','HR notes']].map(f => '<option value="' + f[0] + '">' + f[1] + '</option>').join('') + '</select></div>' +
+          '<div class="s-form-group"><label class="s-label">New value *</label><input class="s-input" id="hamNew"></div>' +
+          '<div class="s-form-group"><label class="s-label">Reason</label><input class="s-input" id="hamWhy"></div></div>' +
+          '<button class="s-btn s-btn-primary s-btn-sm" id="hamGo">Submit for approval</button>' +
+          '<div id="hamErr" style="color:#B93636;font-size:0.8rem;margin-top:6px"></div>' +
+          (staffAmds.length ? '<div style="margin-top:10px">' + tbl(['Requested', 'Field', 'Change', 'Status', 'Decided by'],
+            staffAmds.map(a => [GF.dt(a.created_at) + '<br><span style="color:var(--s-muted);font-size:0.7rem">by ' + GF.esc(a.requested_by) + '</span>', GF.esc(a.field.replace(/_/g, ' ')),
+              '<span style="color:var(--s-muted)">' + GF.esc(a.old_value || '—') + '</span> → <strong>' + GF.esc(a.new_value) + '</strong>',
+              GF.statusChip(a.status), a.decided_by ? GF.esc(a.decided_by) : '—'])) + '</div>' : ''));
 
         const approveCard = (s.status !== 'pending' && s.status !== 'invited') ? '' :
           card('Approve & set employment terms',
@@ -534,10 +548,18 @@
 
         const logCard = card('HR history', tbl(['When', 'Action', 'By', 'Note'], myLog.map(l => [GF.dt(l.created_at), GF.statusChip(l.action), GF.esc(l.actor), GF.esc(l.note || '')])));
 
-        $('#gfBody').innerHTML = kpis + recordCard + approveCard +
+        $('#gfBody').innerHTML = kpis + recordCard + approveCard + proposeCard +
           '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:start"><div>' + apprCard + warnCard + '</div><div>' + docCard + offboardCard + '</div></div>' + logCard;
 
         $('#hrBack').onclick = () => { hrView = { mode: 'roster' }; docEdit = null; conductId = null; render(); };
+        $('#hamGo').onclick = async () => {
+          const nv = $('#hamNew').value.trim();
+          if (!nv) { $('#hamErr').textContent = 'Enter the new value.'; return; }
+          $('#hamGo').textContent = 'Submitting…';
+          const res = await GF.rpc('genfin_request_amendment', { p_actor: sess.name, p_staff: s.id, p_field: $('#hamField').value, p_new: nv, p_reason: $('#hamWhy').value.trim() || null });
+          if (!(res && res.ok)) { $('#hamErr').textContent = (res && res.error) || 'Failed'; $('#hamGo').textContent = 'Submit for approval'; return; }
+          render();
+        };
         if (approveCard) {
           const go = $('#apGo');
           if (go) go.onclick = async () => {
@@ -610,6 +632,18 @@
         '<div id="adErr" style="color:#B93636;font-size:0.8rem;margin-top:6px"></div>' +
         (invite ? '<div class="s-alert s-alert-success" style="margin-top:10px;font-size:0.8rem"><strong>Invitation sent ✓</strong> Staff no. ' + GF.esc(invite.staff_no) + '. Temporary password: <code style="font-weight:800">' + GF.esc(invite.temp_password) + '</code><br>The activation email has been recorded (in production it is delivered via SendGrid, with the WhatsApp invite via the Business API). For this demo, share the temporary password with them directly — they sign in at /login and are guided through setup.</div>' : ''));
 
+      const isHead = sess.role === 'hr_head' || sess.kind === 'admin' || sess.role === 'superadmin';
+      const pendingAmds = amds.filter(a => a.status === 'pending');
+      const amdQueue = !pendingAmds.length ? '' : card('Record amendments awaiting Head of HR approval',
+        (isHead ? '' : '<p style="font-size:0.76rem;color:var(--s-muted)">Only the Head of HR can approve or decline these.</p>') +
+        pendingAmds.map(a => '<div style="border:1px solid var(--s-border);border-radius:10px;padding:10px;margin-bottom:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:0.83rem">' +
+          '<strong>' + GF.esc((byId[a.staff_id] || {}).full_name || '') + '</strong>' +
+          '<span>' + GF.esc(a.field.replace(/_/g, ' ')) + ': <span style="color:var(--s-muted)">' + GF.esc(a.old_value || '—') + '</span> → <strong>' + GF.esc(a.new_value) + '</strong></span>' +
+          '<span style="color:var(--s-muted);font-size:0.72rem">by ' + GF.esc(a.requested_by) + ' · ' + GF.dt(a.created_at) + (a.reason ? ' · ' + GF.esc(a.reason) : '') + '</span>' +
+          (isHead ? '<span style="margin-left:auto;display:flex;gap:6px"><button class="s-btn s-btn-success s-btn-sm am-yes" data-id="' + a.id + '">Approve</button>' +
+            '<button class="s-btn s-btn-danger s-btn-sm am-no" data-id="' + a.id + '">Decline</button></span>' : '') +
+          '</div>').join(''));
+
       const roster = card('Staff roster <span style="font-weight:400;color:var(--s-muted);font-size:0.72rem">(click a staff member to open their full file)</span>',
         tbl(['Staff', 'Role / position', 'Type', 'Status', 'Salary', 'Next appraisal'],
           staff.map(s => ['<a href="#" class="hr-open" data-id="' + s.id + '" style="color:var(--s-info);font-weight:800;text-decoration:none">' + GF.esc(s.full_name) + '</a><br><span style="color:var(--s-muted);font-size:0.72rem">' + GF.esc(s.staff_no || '') + ' · ' + GF.esc(s.email) + '</span>',
@@ -623,9 +657,17 @@
 
       $('#gfBody').innerHTML = kpis +
         '<div style="margin-bottom:1rem"><button class="s-btn s-btn-primary" id="hrAdd">+ Add staff member</button></div>' +
-        addCard + roster +
+        addCard + amdQueue + roster +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:start"><div>' + payrollCard + '</div><div>' + logCard + '</div></div>';
 
+      document.querySelectorAll('.am-yes').forEach(b => b.onclick = async () => {
+        await GF.rpc('genfin_decide_amendment', { p_actor: sess.name, p_id: b.dataset.id, p_approve: true, p_note: null }); render();
+      });
+      document.querySelectorAll('.am-no').forEach(b => b.onclick = async () => {
+        const note = prompt('Reason for declining (sent to the staff member):', '');
+        if (note === null) return;
+        await GF.rpc('genfin_decide_amendment', { p_actor: sess.name, p_id: b.dataset.id, p_approve: false, p_note: note || null }); render();
+      });
       $('#hrAdd').onclick = () => { showAdd = !showAdd; invite = null; render(); };
       document.querySelectorAll('.hr-open').forEach(a => a.onclick = (ev) => { ev.preventDefault(); hrView = { mode: 'detail', staffId: a.dataset.id }; docEdit = null; conductId = null; render(); });
       if (showAdd) {
@@ -914,10 +956,11 @@
   async function pageStaffProfile(sess) {
     $('#gfApp').innerHTML = staffShell(sess, 'My profile & documents', 'staff-profile'); wireLogout();
     const st = (await GF.table('genfin_staff', { eq: { id: sess.profile.id } }))[0] || sess.profile;
-    const [slips, log, myDocs] = await Promise.all([
+    const [slips, log, myDocs, myAmds] = await Promise.all([
       GF.table('genfin_payslips', { eq: { staff_id: st.id }, order: 'issued_at' }),
       GF.table('genfin_hr_log', { eq: { staff_id: st.id }, order: 'created_at' }),
-      GF.table('genfin_hr_docs', { eq: { staff_id: st.id, status: 'sent' }, order: 'created_at' })
+      GF.table('genfin_hr_docs', { eq: { staff_id: st.id, status: 'sent' }, order: 'created_at' }),
+      GF.table('genfin_amendments', { eq: { staff_id: st.id }, order: 'created_at' })
     ]);
     $('#gfBody').innerHTML =
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:start"><div>' +
@@ -930,10 +973,33 @@
       '</div><div>' +
       card('My documents', '<a class="s-btn s-btn-primary" href="employment-letter.html" style="text-decoration:none">Download proof of employment letter</a>' +
         '<p style="font-size:0.76rem;color:var(--s-muted);margin-top:8px">Opens as an official GENFIN letter — print or save as PDF.</p>') +
+      card('Request a record amendment <span style="font-weight:400;color:var(--s-muted);font-size:0.72rem">— applied only after Head of HR approval; every change is logged</span>',
+        '<div class="s-form-row"><div class="s-form-group"><label class="s-label">Field</label><select class="s-input" id="amField">' +
+        [['phone','Phone'],['whatsapp','WhatsApp'],['address','Home address'],['next_of_kin','Next of kin'],['national_id','National ID'],['dob','Date of birth']].map(f => '<option value="' + f[0] + '">' + f[1] + '</option>').join('') + '</select></div>' +
+        '<div class="s-form-group"><label class="s-label">Current value</label><input class="s-input" id="amOld" disabled></div></div>' +
+        '<div class="s-form-row"><div class="s-form-group"><label class="s-label">New value *</label><input class="s-input" id="amNew"></div>' +
+        '<div class="s-form-group"><label class="s-label">Reason</label><input class="s-input" id="amWhy" placeholder="e.g. Moved house"></div></div>' +
+        '<button class="s-btn s-btn-primary s-btn-sm" id="amGo">Submit for approval</button>' +
+        '<div id="amErr" style="color:#B93636;font-size:0.8rem;margin-top:6px"></div>' +
+        (myAmds.length ? '<div style="margin-top:10px">' + tbl(['Requested', 'Field', 'Change', 'Status', 'Decided by'],
+          myAmds.map(a => [GF.dt(a.created_at), GF.esc(a.field.replace(/_/g, ' ')),
+            '<span style="color:var(--s-muted)">' + GF.esc(a.old_value || '—') + '</span> → <strong>' + GF.esc(a.new_value) + '</strong>',
+            GF.statusChip(a.status), a.decided_by ? GF.esc(a.decided_by) + '<br><span style="color:var(--s-muted);font-size:0.7rem">' + GF.dt(a.decided_at) + '</span>' : '—'])) + '</div>' : '')) +
       card('My payslips', tbl(['Period', 'Gross', 'Net', ''], slips.map(p => [GF.esc(p.period), GF.money(p.gross), '<strong>' + GF.money(p.net) + '</strong>',
         '<a class="s-btn s-btn-ghost s-btn-sm" href="payslip.html?id=' + p.id + '" style="text-decoration:none">Download</a>']))) +
       card('HR documents issued to me', myDocs.length ? tbl(['Document', 'Ref', 'Issued', ''], myDocs.map(d => [GF.esc(d.title), GF.esc(d.ref), GF.dt(d.sent_at), '<a class="s-btn s-btn-ghost s-btn-sm" href="hr-doc.html?id=' + d.id + '" style="text-decoration:none">Open</a>'])) : '<p style="color:var(--s-muted);font-size:0.83rem">None issued yet.</p>') +
       '</div></div>';
+    const amCur = () => { const f = $('#amField').value; $('#amOld').value = (st[f] == null ? '' : String(st[f])); };
+    amCur();
+    $('#amField').onchange = amCur;
+    $('#amGo').onclick = async () => {
+      const nv = $('#amNew').value.trim();
+      if (!nv) { $('#amErr').textContent = 'Enter the new value.'; return; }
+      $('#amGo').textContent = 'Submitting…';
+      const res = await GF.rpc('genfin_request_amendment', { p_actor: sess.name, p_staff: st.id, p_field: $('#amField').value, p_new: nv, p_reason: $('#amWhy').value.trim() || null });
+      if (res && res.ok) location.reload();
+      else { $('#amErr').textContent = (res && res.error) || 'Failed'; $('#amGo').textContent = 'Submit for approval'; }
+    };
   }
 
   /* ============ RESTRICTED PORTAL (former staff) ============ */

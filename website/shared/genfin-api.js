@@ -107,7 +107,8 @@
         booked: 'gold', unpaid: 'gold', pending: 'gold', on_delivery: 'blue',
         rejected: 'red', terminated: 'red', off_duty: 'gray', placed: 'gray',
         invited: 'blue', sent: 'green', scheduled: 'gold', draft: 'gold', completed: 'green',
-        warning_issued: 'red', doc_sent: 'green', doc_drafted: 'gold', appraisal_scheduled: 'gold', appraisal_completed: 'green', profile_completed: 'blue'
+        warning_issued: 'red', doc_sent: 'green', doc_drafted: 'gold', appraisal_scheduled: 'gold', appraisal_completed: 'green', profile_completed: 'blue',
+        amendment_requested: 'gold', amendment_approved: 'green', amendment_declined: 'red', declined: 'red'
       };
       return GF.chip(String(st || '').replace(/_/g, ' '), m[st] || 'gray');
     }

@@ -76,17 +76,60 @@
       if (document.getElementById('gfLang')) return;
       const d = document.createElement('div');
       d.id = 'gfLang';
-      d.style.cssText = 'position:fixed;bottom:18px;left:18px;z-index:9998;background:#14141A;border:1px solid rgba(251,189,62,0.45);border-radius:999px;padding:5px 8px;display:flex;gap:2px;box-shadow:0 4px 14px rgba(20,20,26,0.3);font-family:Manrope,system-ui,sans-serif';
+      d.title = 'Language / Mutauro / Ulimi';
+      const base = 'display:flex;gap:2px;border-radius:999px;padding:4px 6px;font-family:Manrope,system-ui,sans-serif;align-items:center;';
       [['en', 'EN'], ['sn', 'SN'], ['nd', 'ND']].forEach(([code, label]) => {
         const b = document.createElement('button');
         b.textContent = label;
         b.title = { en: 'English', sn: 'chiShona', nd: 'isiNdebele' }[code];
-        b.style.cssText = 'border:none;cursor:pointer;font-weight:800;font-size:11px;padding:4px 9px;border-radius:999px;background:' +
+        b.style.cssText = 'border:none;cursor:pointer;font-weight:800;font-size:10px;padding:3px 8px;border-radius:999px;background:' +
           (GFI18N.lang === code ? '#FBBD3E' : 'transparent') + ';color:' + (GFI18N.lang === code ? '#14141A' : '#A6A5AF');
         b.onclick = () => GFI18N.setLang(code);
         d.appendChild(b);
       });
-      document.body.appendChild(d);
+      /* Placement: dock at the TOP of the staff sidebar, into the portal topbar, or into a
+         document header — never floating over content. Falls back to fixed bottom-left on
+         public pages where nothing overlaps. Live shells render after load, so keep trying. */
+      let placed = false;
+      const tryPlace = () => {
+        if (placed) return true;
+        const sideLogo = document.querySelector('.s-sidebar-logo');
+        if (sideLogo) {
+          d.style.cssText = base + 'background:rgba(255,255,255,0.06);border:1px solid rgba(251,189,62,0.35);margin:10px 14px 4px;width:fit-content';
+          sideLogo.insertAdjacentElement('afterend', d);
+          return placed = true;
+        }
+        const topbar = document.querySelector('.portal-topbar-inner');
+        if (topbar) {
+          d.style.cssText = base + 'background:#26252E;border:1px solid rgba(251,189,62,0.35)';
+          const user = topbar.querySelector('.portal-topbar-user');
+          if (user) topbar.insertBefore(d, user); else topbar.appendChild(d);
+          return placed = true;
+        }
+        const shActions = document.querySelector('.screen-header .sh-actions');
+        if (shActions) {
+          d.style.cssText = base + 'background:#26252E;border:1px solid rgba(251,189,62,0.35)';
+          shActions.insertBefore(d, shActions.firstChild);
+          return placed = true;
+        }
+        return false;
+      };
+      if (!tryPlace()) {
+        /* public/static pages: safe floating pill while we wait; re-dock if a shell renders */
+        d.style.cssText = base + 'position:fixed;bottom:18px;left:18px;z-index:9998;background:#14141A;border:1px solid rgba(251,189,62,0.45);box-shadow:0 4px 14px rgba(20,20,26,0.3)';
+        document.body.appendChild(d);
+        let tries = 0;
+        const iv = setInterval(() => {
+          tries++;
+          const sideLogo = document.querySelector('.s-sidebar-logo');
+          const topbar = document.querySelector('.portal-topbar-inner');
+          if (sideLogo || topbar) {
+            d.remove(); placed = false;
+            tryPlace();
+            clearInterval(iv);
+          } else if (tries > 25) clearInterval(iv);
+        }, 300);
+      }
     }
   };
   window.GFI18N = GFI18N;
