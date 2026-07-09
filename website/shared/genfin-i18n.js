@@ -93,10 +93,18 @@
       let placed = false;
       const tryPlace = () => {
         if (placed) return true;
-        const sideLogo = document.querySelector('.s-sidebar-logo');
-        if (sideLogo) {
-          d.style.cssText = base + 'background:rgba(255,255,255,0.06);border:1px solid rgba(251,189,62,0.35);margin:10px 14px 4px;width:fit-content';
-          sideLogo.insertAdjacentElement('afterend', d);
+        const sidebar = document.querySelector('.s-sidebar');
+        if (sidebar) {
+          const foot = sidebar.querySelector('.s-sidebar-foot:last-of-type');
+          if (foot && foot.style.marginTop !== '0px' && !foot.style.borderBottom) {
+            /* static pages: user block still at the bottom — pill sits just below it */
+            d.style.cssText = base + 'background:rgba(255,255,255,0.06);border:1px solid rgba(251,189,62,0.35);margin:0 14px 14px;width:fit-content';
+            foot.insertAdjacentElement('afterend', d);
+          } else {
+            /* live shell: user block is at the top — pill takes the bottom slot */
+            d.style.cssText = base + 'background:rgba(255,255,255,0.06);border:1px solid rgba(251,189,62,0.35);margin:auto 14px 14px;width:fit-content';
+            sidebar.appendChild(d);
+          }
           return placed = true;
         }
         const topbar = document.querySelector('.portal-topbar-inner');
@@ -121,9 +129,9 @@
         let tries = 0;
         const iv = setInterval(() => {
           tries++;
-          const sideLogo = document.querySelector('.s-sidebar-logo');
+          const sb = document.querySelector('.s-sidebar');
           const topbar = document.querySelector('.portal-topbar-inner');
-          if (sideLogo || topbar) {
+          if (sb || topbar) {
             d.remove(); placed = false;
             tryPlace();
             clearInterval(iv);

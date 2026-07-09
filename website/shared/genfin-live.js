@@ -24,9 +24,9 @@
     return '<div class="s-layout">' +
       '<aside class="s-sidebar">' +
       '<div class="s-sidebar-logo"><a href="' + GF.homeFor(sess) + '" style="display:block"><img class="s-logo-img" src="assets/genfin-logo.png" alt="GENFIN" width="158"></a></div>' +
-      '<div class="s-nav-section">Navigation</div>' + items +
-      '<div class="s-sidebar-foot"><div class="s-foot-av">' + initials + '</div>' +
+      '<div class="s-sidebar-foot" style="margin-top:0;border-top:none;border-bottom:1px solid rgba(255,255,255,0.07)"><div class="s-foot-av">' + initials + '</div>' +
       '<div><div class="s-foot-name">' + GF.esc(sess.name) + '</div><div class="s-foot-role">' + GF.esc((sess.role || sess.kind || '').replace(/_/g, ' ')) + '</div></div></div>' +
+      '<div class="s-nav-section">Navigation</div>' + items +
       '</aside>' +
       '<main class="s-main"><div class="s-topbar"><div class="s-topbar-title">' + GF.esc(title) + '</div>' +
       '<div class="s-topbar-actions"><span class="s-chip s-chip-green">' + GT('common.live') + '</span>' +
