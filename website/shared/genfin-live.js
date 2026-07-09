@@ -394,94 +394,251 @@
     await render();
   }
 
-  /* ============ HR ============ */
+  /* ============ HR — enterprise module ============ */
   async function pageHR(sess) {
     $('#gfApp').innerHTML = staffShell(sess, 'HR & payroll', 'staff-hr'); wireLogout();
+    let hrView = { mode: 'roster', staffId: null };
+    let showAdd = false, invite = null, docEdit = null, conductId = null;
+    const TERM_REASONS = [
+      'Retrenchment (redundancy) — s12C Labour Act, with works council/retrenchment board process',
+      'Mutual separation agreement — signed by both parties',
+      'Expiry of fixed-term contract — non-renewal',
+      'Resignation — employee initiated, notice served',
+      'Retirement — per contract/pension rules',
+      'Dismissal for misconduct — after disciplinary hearing per registered Code of Conduct',
+      'Termination on medical incapacity — after due process and medical evidence',
+      'Termination for poor performance — after documented performance procedure'
+    ];
+    const ROLES = ['hr_head|Head of HR', 'finance|Finance', 'accounts_clerk|Accounts clerk', 'pharmacy|Pharmacy & Optical', 'logistics|Logistics', 'driver|Driver', 'claims|Claims', 'superadmin|Super admin'];
+    const ETYPES = ['permanent', 'fixed-term contract', 'temporary', 'part-time', 'internship'];
+
     async function render() {
-      const [staff, log, slips] = await Promise.all([
+      const [staff, log, slips, apprs, warns, docs] = await Promise.all([
         GF.table('genfin_staff', { order: 'created_at' }),
-        GF.table('genfin_hr_log', { order: 'created_at', limit: 20 }),
-        GF.table('genfin_payslips', { order: 'issued_at', limit: 12 })
+        GF.table('genfin_hr_log', { order: 'created_at', limit: 200 }),
+        GF.table('genfin_payslips', { order: 'issued_at', limit: 200 }),
+        GF.table('genfin_appraisals', { order: 'scheduled_for', asc: true, limit: 200 }),
+        GF.table('genfin_warnings', { order: 'issued_at', limit: 100 }),
+        GF.table('genfin_hr_docs', { order: 'created_at', limit: 100 })
       ]);
       const byId = {}; staff.forEach(s => byId[s.id] = s);
-      const pending = staff.filter(s => s.status === 'pending');
-      const activeStaff = staff.filter(s => s.status === 'approved');
+      const approved = staff.filter(s => s.status === 'approved');
+      const awaiting = staff.filter(s => s.status === 'pending');
+      const invited = staff.filter(s => s.status === 'invited');
+      const totalSalaries = approved.reduce((t, s) => t + Number(s.salary || 0), 0);
+      const in30 = new Date(Date.now() + 30 * 864e5);
+      const dueSoon = apprs.filter(a => a.status === 'scheduled' && new Date(a.scheduled_for) <= in30);
       const period = new Date().toLocaleString('en-GB', { month: 'long', year: 'numeric' });
-      /* Lawful termination grounds — Zimbabwe Labour Act [Chapter 28:01].
-         Each requires the documented process noted; the reason is never shown on reference letters. */
-      const TERM_REASONS = [
-        'Retrenchment (redundancy) — s12C Labour Act, with works council/retrenchment board process',
-        'Mutual separation agreement — signed by both parties',
-        'Expiry of fixed-term contract — non-renewal',
-        'Resignation — employee initiated, notice served',
-        'Retirement — per contract/pension rules',
-        'Dismissal for misconduct — after disciplinary hearing per registered Code of Conduct',
-        'Termination on medical incapacity — after due process and medical evidence',
-        'Termination for poor performance — after documented performance procedure'
-      ];
-      $('#gfBody').innerHTML =
-        '<div class="s-kpi-grid">' +
-        kpi('Staff', staff.filter(s => s.status === 'approved').length, 'Approved & active') +
-        kpi('Pending approvals', pending.length, pending.map(p => p.full_name).slice(0, 2).join(', ') || 'Queue clear') +
-        kpi('Payslips issued', slips.length, 'Latest periods') +
-        '</div>' +
-        card('Pending staff applications', pending.length ? pending.map(p =>
-          '<div style="border:1px solid var(--s-border);border-radius:10px;padding:14px;margin-bottom:10px">' +
-          '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><div>' +
-          '<strong>' + GF.esc(p.full_name) + '</strong> — ' + GF.esc(p.position_applied) +
-          '<div style="font-size:0.76rem;color:var(--s-muted);margin-top:3px">' + GF.esc(p.email) + ' · ' + GF.esc(p.phone || '') + ' · ID ' + GF.esc(p.national_id || '—') + '<br>Applied ' + GF.dt(p.created_at) + ' · Proposed start ' + GF.d(p.employment_date) + '</div></div>' +
-          '<div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap">' +
-          '<select class="s-input" id="role-' + p.id + '" style="width:auto"><option value="">Assign role…</option>' +
-          ['hr_head|Head of HR', 'finance|Finance', 'accounts_clerk|Accounts clerk', 'pharmacy|Pharmacy & Optical', 'logistics|Logistics', 'driver|Driver', 'claims|Claims', 'superadmin|Super admin'].map(r => { const [v, l] = r.split('|'); return '<option value="' + v + '">' + l + '</option>'; }).join('') + '</select>' +
-          '<input class="s-input" type="date" id="emp-' + p.id + '" value="' + (p.employment_date || '') + '" style="width:auto" title="Employment date">' +
-          '<button class="s-btn s-btn-success s-btn-sm gf-approve" data-id="' + p.id + '">Approve</button>' +
-          '<button class="s-btn s-btn-danger s-btn-sm gf-reject" data-id="' + p.id + '">Reject</button>' +
-          '</div></div></div>').join('') : '<p style="color:var(--s-muted);font-size:0.85rem">No applications waiting.</p>') +
-        card('Offboarding <span style="font-weight:400;color:var(--s-muted);font-size:0.72rem">(reasons aligned to the Labour Act [Chapter 28:01] — due process must be completed and documented before offboarding)</span>',
-          activeStaff.length ? activeStaff.map(s =>
-            '<div style="border:1px solid var(--s-border);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">' +
-            '<div><strong>' + GF.esc(s.full_name) + '</strong> — ' + GF.esc((s.role || '').replace(/_/g, ' ')) +
-            '<div style="font-size:0.74rem;color:var(--s-muted)">' + GF.esc(s.staff_no || '') + ' · employed since ' + GF.d(s.employment_date) + '</div></div>' +
-            '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
-            '<select class="s-input" id="treason-' + s.id + '" style="width:280px;max-width:100%"><option value="">Reason for termination…</option>' +
-            TERM_REASONS.map(r => '<option>' + r + '</option>').join('') + '</select>' +
-            '<input class="s-input" type="date" id="tdate-' + s.id + '" style="width:auto" title="Last day of employment">' +
-            '<button class="s-btn s-btn-danger s-btn-sm gf-offboard" data-id="' + s.id + '">Offboard</button>' +
-            '</div></div>').join('') : '<p style="color:var(--s-muted);font-size:0.85rem">No active staff.</p>') +
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:start"><div>' +
-        card('Staff directory', tbl(['Staff', 'Role', 'Employed', 'Status', 'Approved by'], staff.map(s => [
-          GF.esc(s.full_name) + '<br><span style="color:var(--s-muted);font-size:0.72rem">' + GF.esc(s.staff_no || '') + '</span>',
-          GF.esc((s.role || s.position_applied || '').replace(/_/g, ' ')), GF.d(s.employment_date), GF.statusChip(s.status),
-          s.approved_by ? GF.esc(s.approved_by) + '<br><span style="color:var(--s-muted);font-size:0.72rem">' + GF.dt(s.approved_at) + '</span>' : '—']))) +
-        '</div><div>' +
-        card('Approval & HR log', tbl(['When', 'Action', 'Person', 'By', 'Note'], log.map(l => [GF.dt(l.created_at), GF.statusChip(l.action), GF.esc(byId[l.staff_id] ? byId[l.staff_id].full_name : ''), GF.esc(l.actor), GF.esc(l.note || '')]))) +
-        card('Payroll', '<button class="s-btn s-btn-primary" id="gfPayroll">Run payroll for ' + period + '</button><div id="gfPayrollMsg" style="font-size:0.8rem;color:var(--s-muted);margin:8px 0"></div>' +
-          tbl(['Staff', 'Period', 'Gross', 'Net'], slips.map(p => [GF.esc(byId[p.staff_id] ? byId[p.staff_id].full_name : ''), GF.esc(p.period), GF.money(p.gross), '<strong>' + GF.money(p.net) + '</strong>']))) +
-        '</div></div>';
-      document.querySelectorAll('.gf-approve').forEach(b => b.onclick = async () => {
-        const id = b.dataset.id;
-        const role = $('#role-' + id).value; const emp = $('#emp-' + id).value;
-        if (!role) { alert('Assign a role first — access rights depend on it.'); return; }
-        b.textContent = 'Approving…';
-        const res = await GF.rpc('genfin_approve_staff', { p_staff: id, p_approver: sess.name, p_role: role, p_department: null, p_employment_date: emp || null });
-        if (!(res && res.ok)) alert((res && res.error) || 'Failed');
-        render();
-      });
-      document.querySelectorAll('.gf-offboard').forEach(b => b.onclick = async () => {
-        const id = b.dataset.id;
-        const reason = $('#treason-' + id).value; const tdate = $('#tdate-' + id).value;
-        if (!reason) { alert('Select a lawful reason for termination — this is recorded in the HR log.'); return; }
-        if (!confirm('Offboard ' + byId[id].full_name + '?\n\nReason: ' + reason + '\n\nTheir access will be restricted immediately. Confirm that the required due process has been completed and documented.')) return;
-        b.textContent = 'Offboarding…';
-        const res = await GF.rpc('genfin_terminate_staff', { p_staff: id, p_actor: sess.name, p_reason: reason, p_date: tdate || null, p_note: null });
-        if (!(res && res.ok)) alert((res && res.error) || 'Failed');
-        render();
-      });
-      document.querySelectorAll('.gf-reject').forEach(b => b.onclick = async () => {
-        const res = await GF.rpc('genfin_reject_staff', { p_staff: b.dataset.id, p_approver: sess.name, p_note: 'Rejected at review' });
-        if (!(res && res.ok)) alert((res && res.error) || 'Failed');
-        render();
-      });
+
+      const kpis = '<div class="s-kpi-grid">' +
+        kpi('Headcount', approved.length, invited.length + ' invited · ' + awaiting.length + ' awaiting approval · ' + staff.filter(s => s.status === 'terminated').length + ' former') +
+        kpi('Total monthly salaries', GF.money(totalSalaries), 'Approved staff, gross') +
+        kpi('Appraisals due (30 days)', dueSoon.length, dueSoon.map(a => (byId[a.staff_id] || {}).full_name).slice(0, 2).join(', ') || 'None scheduled') +
+        kpi('Awaiting HR action', awaiting.length + invited.length, 'Approvals & pending invitations') +
+        '</div>';
+
+      /* ---------- DETAIL VIEW ---------- */
+      if (hrView.mode === 'detail') {
+        const s = byId[hrView.staffId];
+        if (!s) { hrView = { mode: 'roster' }; return render(); }
+        const myLog = log.filter(l => l.staff_id === s.id);
+        const mySlips = slips.filter(p => p.staff_id === s.id);
+        const myApprs = apprs.filter(a => a.staff_id === s.id);
+        const myWarns = warns.filter(w => w.staff_id === s.id);
+        const myDocs = docs.filter(d => d.staff_id === s.id);
+        const missing = ['national_id', 'dob', 'address', 'phone'].filter(k => !s[k]);
+
+        const recordCard = card('Employment record — ' + GF.esc(s.full_name) + ' ' + GF.statusChip(s.status),
+          '<div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="s-btn s-btn-ghost s-btn-sm" id="hrBack">← Staff roster</button></div>' +
+          (missing.length && s.status === 'invited' ? '<div class="s-alert s-alert-warn" style="margin-bottom:10px;font-size:0.8rem">Awaiting the employee: they must sign in with their temporary password to set their own password and complete ' + missing.join(', ').replace(/_/g, ' ') + '.</div>' : '') +
+          tbl(['', ''], [
+            ['Staff number', GF.esc(s.staff_no || '—')], ['Email', GF.esc(s.email)], ['WhatsApp', GF.esc(s.whatsapp || '—')],
+            ['Phone', GF.esc(s.phone || '—')], ['National ID', GF.esc(s.national_id || '—')], ['Date of birth', GF.d(s.dob)],
+            ['Address', GF.esc(s.address || '—')], ['Next of kin', GF.esc(s.next_of_kin || '—')],
+            ['Role', GF.esc((s.role || s.position_applied || '—').replace(/_/g, ' '))], ['Department', GF.esc(s.department || '—')],
+            ['Employment type', GF.esc(s.employment_type || '—')], ['Probation', s.probation_months ? s.probation_months + ' months' : '—'],
+            ['Date of employment', GF.d(s.employment_date)], ['Next appraisal', GF.d(s.next_appraisal)],
+            ['Salary (gross/mo)', GF.money(s.salary)], ['HR notes', GF.esc(s.hr_notes || '—')],
+            ['Approved by', s.approved_by ? GF.esc(s.approved_by) + ' on ' + GF.dt(s.approved_at) : '—'],
+            ['Payslips on file', mySlips.length]], false));
+
+        const approveCard = (s.status !== 'pending' && s.status !== 'invited') ? '' :
+          card('Approve & set employment terms',
+            '<div class="s-form-row"><div class="s-form-group"><label class="s-label">Role (decides portal access) *</label>' +
+            '<select class="s-input" id="apRole"><option value="">Assign role…</option>' + ROLES.map(r => { const [v, l] = r.split('|'); return '<option value="' + v + '">' + l + '</option>'; }).join('') + '</select></div>' +
+            '<div class="s-form-group"><label class="s-label">Department</label><input class="s-input" id="apDept" placeholder="e.g. Finance"></div></div>' +
+            '<div class="s-form-row"><div class="s-form-group"><label class="s-label">Date of employment</label><input class="s-input" id="apDate" type="date" value="' + (s.employment_date || '') + '"></div>' +
+            '<div class="s-form-group"><label class="s-label">Employment type</label><select class="s-input" id="apType">' + ETYPES.map(t => '<option>' + t + '</option>').join('') + '</select></div></div>' +
+            '<div class="s-form-row"><div class="s-form-group"><label class="s-label">Probation (months, blank if none)</label><input class="s-input" id="apProb" type="number" min="0" max="12"></div>' +
+            '<div class="s-form-group"><label class="s-label">Next appraisal date</label><input class="s-input" id="apNext" type="date"></div></div>' +
+            '<div class="s-form-row"><div class="s-form-group"><label class="s-label">Salary (USD gross/month) *</label><input class="s-input" id="apSal" type="number" min="0" step="0.01" value="' + (s.salary || '') + '"></div>' +
+            '<div class="s-form-group"><label class="s-label">Notes</label><input class="s-input" id="apNotes" placeholder="Any conditions or remarks"></div></div>' +
+            '<div style="display:flex;gap:8px"><button class="s-btn s-btn-success" id="apGo">Approve staff member</button>' +
+            '<button class="s-btn s-btn-danger" id="apReject">Reject</button></div>' +
+            '<div id="apErr" style="color:#B93636;font-size:0.8rem;margin-top:6px"></div>');
+
+        const apprCard = card('Appraisals',
+          '<div class="s-form-row" style="align-items:flex-end"><div class="s-form-group"><label class="s-label">Schedule next appraisal</label><input class="s-input" id="scDate" type="date"></div>' +
+          '<div class="s-form-group"><label class="s-label">Notes</label><input class="s-input" id="scNotes" placeholder="Focus areas (optional)"></div>' +
+          '<div class="s-form-group"><button class="s-btn s-btn-primary" id="scGo">Schedule</button></div></div>' +
+          (myApprs.length ? myApprs.map(a =>
+            '<div style="border:1px solid var(--s-border);border-radius:10px;padding:10px;margin-bottom:8px">' +
+            '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:0.83rem"><strong>' + GF.d(a.scheduled_for) + '</strong>' + GF.statusChip(a.status) +
+            (a.status === 'completed' ? '<span>Rating <strong>' + a.rating + '/5</strong> · by ' + GF.esc(a.conducted_by) + '</span>' :
+              '<button class="s-btn s-btn-primary s-btn-sm hr-conduct" data-id="' + a.id + '" style="margin-left:auto">Conduct appraisal</button>') + '</div>' +
+            (a.status === 'completed' ? '<div style="font-size:0.76rem;color:var(--s-muted);margin-top:4px">Strengths: ' + GF.esc(a.strengths || '—') + ' · Improve: ' + GF.esc(a.improvements || '—') + (a.comments ? ' · ' + GF.esc(a.comments) : '') + '</div>' : (a.notes ? '<div style="font-size:0.76rem;color:var(--s-muted);margin-top:4px">' + GF.esc(a.notes) + '</div>' : '')) +
+            (conductId === a.id ?
+              '<div style="margin-top:8px;border-top:1px solid var(--s-border);padding-top:8px">' +
+              '<div class="s-form-row"><div class="s-form-group"><label class="s-label">Rating</label><select class="s-input" id="cnRate">' + [5, 4, 3, 2, 1].map(r => '<option value="' + r + '">' + r + ' — ' + ['', 'unsatisfactory', 'needs improvement', 'meets expectations', 'exceeds expectations', 'outstanding'][r] + '</option>').join('') + '</select></div>' +
+              '<div class="s-form-group"><label class="s-label">Next appraisal</label><input class="s-input" id="cnNext" type="date"></div></div>' +
+              '<div class="s-form-group"><label class="s-label">Strengths</label><input class="s-input" id="cnStr"></div>' +
+              '<div class="s-form-group"><label class="s-label">Areas to improve</label><input class="s-input" id="cnImp"></div>' +
+              '<div class="s-form-group"><label class="s-label">Comments</label><input class="s-input" id="cnCom"></div>' +
+              '<button class="s-btn s-btn-success s-btn-sm" id="cnSave">Save appraisal</button></div>' : '') +
+            '</div>').join('') : '<p style="color:var(--s-muted);font-size:0.83rem">No appraisals yet.</p>'));
+
+        const warnCard = card('Formal warnings',
+          '<div class="s-form-row" style="align-items:flex-end"><div class="s-form-group"><label class="s-label">Severity</label><select class="s-input" id="wnSev"><option>verbal</option><option>written</option><option>final written</option></select></div>' +
+          '<div class="s-form-group"><label class="s-label">Reason *</label><input class="s-input" id="wnReason" placeholder="e.g. Repeated late attendance"></div>' +
+          '<div class="s-form-group"><button class="s-btn s-btn-danger" id="wnGo">Issue warning</button></div></div>' +
+          '<div class="s-form-group"><label class="s-label">Details (appears in the letter)</label><input class="s-input" id="wnDet" placeholder="Dates, incidents, prior discussions…"></div>' +
+          '<p style="font-size:0.72rem;color:var(--s-muted)">A branded warning letter is generated automatically, placed on the employment record, and sent to the staff member\'s portal and email.</p>' +
+          (myWarns.length ? tbl(['When', 'Severity', 'Reason', 'Issued by'], myWarns.map(w => [GF.dt(w.issued_at), GF.chip(w.severity, w.severity === 'verbal' ? 'gold' : 'red'), GF.esc(w.reason), GF.esc(w.issued_by)])) : ''));
+
+        const docRows = myDocs.map(d =>
+          '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:7px 0;border-bottom:1px solid var(--s-border);font-size:0.83rem">' +
+          '<strong>' + GF.esc(d.title) + '</strong>' + GF.chip(d.doc_type, 'blue') + GF.statusChip(d.status) +
+          '<span style="color:var(--s-muted);font-size:0.72rem">' + GF.esc(d.ref) + ' · drafted by ' + GF.esc(d.drafted_by) + (d.approved_by ? ' · approved by ' + GF.esc(d.approved_by) : '') + '</span>' +
+          '<span style="margin-left:auto;display:flex;gap:6px">' +
+          (d.status === 'draft' ? '<button class="s-btn s-btn-ghost s-btn-sm hr-doc-edit" data-id="' + d.id + '">Review & edit</button><button class="s-btn s-btn-success s-btn-sm hr-doc-send" data-id="' + d.id + '">Approve & send</button>' : '') +
+          '<a class="s-btn s-btn-ghost s-btn-sm" href="hr-doc.html?id=' + d.id + '" style="text-decoration:none">Open</a></span></div>').join('');
+        const editing = docEdit ? myDocs.find(d => d.id === docEdit) : null;
+        const docCard = card('Offer letters & contracts <span style="font-weight:400;color:var(--s-muted);font-size:0.72rem">— drafted by GENFIN AI from the role & terms; you review and approve before sending</span>',
+          '<div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">' +
+          '<button class="s-btn s-btn-primary s-btn-sm" id="hrDraftOffer">✦ Draft offer letter (GENFIN AI)</button>' +
+          '<button class="s-btn s-btn-primary s-btn-sm" id="hrDraftContract">✦ Draft employment contract (GENFIN AI)</button></div>' +
+          (editing ? '<div style="border:1.5px solid var(--gold-400,#FBBD3E);border-radius:10px;padding:12px;margin-bottom:10px">' +
+            '<div class="s-form-group"><label class="s-label">Title</label><input class="s-input" id="deTitle" value="' + GF.esc(editing.title) + '"></div>' +
+            '<div class="s-form-group"><label class="s-label">Body (edit before approving)</label><textarea class="s-input" id="deBody" rows="12" style="font-family:inherit;line-height:1.5">' + GF.esc(editing.body) + '</textarea></div>' +
+            '<div style="display:flex;gap:8px"><button class="s-btn s-btn-ghost s-btn-sm" id="deClose">Close</button>' +
+            '<button class="s-btn s-btn-primary s-btn-sm" id="deSave">Save draft</button>' +
+            '<button class="s-btn s-btn-success s-btn-sm" id="deSend">Approve & send</button></div></div>' : '') +
+          (docRows || '<p style="color:var(--s-muted);font-size:0.83rem">No documents yet — draft one with GENFIN AI.</p>'));
+
+        const offboardCard = s.status !== 'approved' ? '' : card('Offboarding',
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+          '<select class="s-input" id="obReason" style="width:300px;max-width:100%"><option value="">Reason for termination…</option>' + TERM_REASONS.map(r => '<option>' + r + '</option>').join('') + '</select>' +
+          '<input class="s-input" type="date" id="obDate" style="width:auto" title="Last day of employment">' +
+          '<button class="s-btn s-btn-danger s-btn-sm" id="obGo">Offboard</button></div>' +
+          '<p style="font-size:0.72rem;color:var(--s-muted);margin-top:6px">Reasons align to the Labour Act [Chapter 28:01]; due process must be completed and documented first.</p>');
+
+        const logCard = card('HR history', tbl(['When', 'Action', 'By', 'Note'], myLog.map(l => [GF.dt(l.created_at), GF.statusChip(l.action), GF.esc(l.actor), GF.esc(l.note || '')])));
+
+        $('#gfBody').innerHTML = kpis + recordCard + approveCard +
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:start"><div>' + apprCard + warnCard + '</div><div>' + docCard + offboardCard + '</div></div>' + logCard;
+
+        $('#hrBack').onclick = () => { hrView = { mode: 'roster' }; docEdit = null; conductId = null; render(); };
+        if (approveCard) {
+          const go = $('#apGo');
+          if (go) go.onclick = async () => {
+            const role = $('#apRole').value;
+            if (!role) { $('#apErr').textContent = 'Assign a role — it decides which portal they can access.'; return; }
+            go.textContent = 'Approving…';
+            const res = await GF.rpc('genfin_approve_staff', { p_staff: s.id, p_approver: sess.name, p_role: role, p_department: $('#apDept').value || null,
+              p_employment_date: $('#apDate').value || null, p_employment_type: $('#apType').value, p_probation_months: parseInt($('#apProb').value) || null,
+              p_next_appraisal: $('#apNext').value || null, p_salary: parseFloat($('#apSal').value) || null, p_notes: $('#apNotes').value || null });
+            if (!(res && res.ok)) { $('#apErr').textContent = (res && res.error) || 'Failed'; go.textContent = 'Approve staff member'; return; }
+            render();
+          };
+          const rej = $('#apReject');
+          if (rej) rej.onclick = async () => { await GF.rpc('genfin_reject_staff', { p_staff: s.id, p_approver: sess.name, p_note: 'Rejected at review' }); render(); };
+        }
+        $('#scGo').onclick = async () => {
+          if (!$('#scDate').value) return alert('Pick a date');
+          await GF.rpc('genfin_schedule_appraisal', { p_actor: sess.name, p_staff: s.id, p_date: $('#scDate').value, p_notes: $('#scNotes').value || null });
+          render();
+        };
+        document.querySelectorAll('.hr-conduct').forEach(b => b.onclick = () => { conductId = b.dataset.id; render(); });
+        const cn = $('#cnSave');
+        if (cn) cn.onclick = async () => {
+          await GF.rpc('genfin_complete_appraisal', { p_actor: sess.name, p_id: conductId, p_rating: parseInt($('#cnRate').value),
+            p_strengths: $('#cnStr').value, p_improvements: $('#cnImp').value, p_comments: $('#cnCom').value, p_next: $('#cnNext').value || null });
+          conductId = null; render();
+        };
+        $('#wnGo').onclick = async () => {
+          const reason = $('#wnReason').value.trim();
+          if (!reason) return alert('A reason is required');
+          if (!confirm('Issue a formal ' + $('#wnSev').value + ' warning to ' + s.full_name + '?\n\nReason: ' + reason)) return;
+          await GF.rpc('genfin_issue_warning', { p_actor: sess.name, p_staff: s.id, p_severity: $('#wnSev').value, p_reason: reason, p_details: $('#wnDet').value || null });
+          render();
+        };
+        $('#hrDraftOffer').onclick = async () => { const r = await GF.rpc('genfin_draft_hr_doc', { p_actor: sess.name, p_staff: s.id, p_type: 'offer' }); if (r && r.ok) { docEdit = r.id; } render(); };
+        $('#hrDraftContract').onclick = async () => { const r = await GF.rpc('genfin_draft_hr_doc', { p_actor: sess.name, p_staff: s.id, p_type: 'contract' }); if (r && r.ok) { docEdit = r.id; } render(); };
+        document.querySelectorAll('.hr-doc-edit').forEach(b => b.onclick = () => { docEdit = b.dataset.id; render(); });
+        document.querySelectorAll('.hr-doc-send').forEach(b => b.onclick = async () => {
+          if (!confirm('Approve this document and send it to ' + s.full_name + '?')) return;
+          await GF.rpc('genfin_send_hr_doc', { p_actor: sess.name, p_id: b.dataset.id }); docEdit = null; render();
+        });
+        if (editing) {
+          $('#deClose').onclick = () => { docEdit = null; render(); };
+          $('#deSave').onclick = async () => { await GF.rpc('genfin_update_hr_doc', { p_actor: sess.name, p_id: editing.id, p_title: $('#deTitle').value, p_body: $('#deBody').value }); render(); };
+          $('#deSend').onclick = async () => {
+            await GF.rpc('genfin_update_hr_doc', { p_actor: sess.name, p_id: editing.id, p_title: $('#deTitle').value, p_body: $('#deBody').value });
+            if (!confirm('Approve this document and send it to ' + s.full_name + '?')) return;
+            await GF.rpc('genfin_send_hr_doc', { p_actor: sess.name, p_id: editing.id }); docEdit = null; render();
+          };
+        }
+        const ob = $('#obGo');
+        if (ob) ob.onclick = async () => {
+          const reason = $('#obReason').value;
+          if (!reason) return alert('Select a lawful reason for termination — it is recorded in the HR log.');
+          if (!confirm('Offboard ' + s.full_name + '?\n\nReason: ' + reason + '\n\nAccess is restricted immediately. Confirm due process is completed and documented.')) return;
+          await GF.rpc('genfin_terminate_staff', { p_staff: s.id, p_actor: sess.name, p_reason: reason, p_date: $('#obDate').value || null, p_note: null });
+          render();
+        };
+        return;
+      }
+
+      /* ---------- ROSTER VIEW ---------- */
+      const addCard = !showAdd ? '' : card('Add a staff member',
+        '<p style="font-size:0.78rem;color:var(--s-muted);margin-bottom:8px">Enter what you have — name, email and WhatsApp are enough. The system creates the record and sends an activation invitation; the staff member sets their own password and completes their National ID, address and other required details on first login.</p>' +
+        '<div class="s-form-row"><div class="s-form-group"><label class="s-label">Full name *</label><input class="s-input" id="adName"></div>' +
+        '<div class="s-form-group"><label class="s-label">Email *</label><input class="s-input" id="adEmail" type="email"></div>' +
+        '<div class="s-form-group"><label class="s-label">WhatsApp</label><input class="s-input" id="adWa" placeholder="+263 …"></div></div>' +
+        '<div style="display:flex;gap:8px"><button class="s-btn s-btn-primary" id="adGo">Create & send invitation</button>' +
+        '<button class="s-btn s-btn-ghost" id="adCancel">Cancel</button></div>' +
+        '<div id="adErr" style="color:#B93636;font-size:0.8rem;margin-top:6px"></div>' +
+        (invite ? '<div class="s-alert s-alert-success" style="margin-top:10px;font-size:0.8rem"><strong>Invitation sent ✓</strong> Staff no. ' + GF.esc(invite.staff_no) + '. Temporary password: <code style="font-weight:800">' + GF.esc(invite.temp_password) + '</code><br>The activation email has been recorded (in production it is delivered via SendGrid, with the WhatsApp invite via the Business API). For this demo, share the temporary password with them directly — they sign in at /login and are guided through setup.</div>' : ''));
+
+      const roster = card('Staff roster <span style="font-weight:400;color:var(--s-muted);font-size:0.72rem">(click a staff member to open their full file)</span>',
+        tbl(['Staff', 'Role / position', 'Type', 'Status', 'Salary', 'Next appraisal'],
+          staff.map(s => ['<a href="#" class="hr-open" data-id="' + s.id + '" style="color:var(--s-info);font-weight:800;text-decoration:none">' + GF.esc(s.full_name) + '</a><br><span style="color:var(--s-muted);font-size:0.72rem">' + GF.esc(s.staff_no || '') + ' · ' + GF.esc(s.email) + '</span>',
+            GF.esc((s.role || s.position_applied || '—').replace(/_/g, ' ')), GF.esc(s.employment_type || '—'), GF.statusChip(s.status),
+            s.status === 'approved' ? GF.money(s.salary) : '—', GF.d(s.next_appraisal)])));
+
+      const payrollCard = card('Payroll', '<button class="s-btn s-btn-primary" id="gfPayroll">Run payroll for ' + period + '</button><div id="gfPayrollMsg" style="font-size:0.8rem;color:var(--s-muted);margin:8px 0"></div>' +
+        tbl(['Staff', 'Period', 'Gross', 'Net'], slips.slice(0, 10).map(p => [GF.esc((byId[p.staff_id] || {}).full_name || ''), GF.esc(p.period), GF.money(p.gross), '<strong>' + GF.money(p.net) + '</strong>'])));
+
+      const logCard = card('HR audit log', tbl(['When', 'Action', 'Person', 'By', 'Note'], log.slice(0, 15).map(l => [GF.dt(l.created_at), GF.statusChip(l.action), GF.esc((byId[l.staff_id] || {}).full_name || ''), GF.esc(l.actor), GF.esc(l.note || '')])));
+
+      $('#gfBody').innerHTML = kpis +
+        '<div style="margin-bottom:1rem"><button class="s-btn s-btn-primary" id="hrAdd">+ Add staff member</button></div>' +
+        addCard + roster +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:start"><div>' + payrollCard + '</div><div>' + logCard + '</div></div>';
+
+      $('#hrAdd').onclick = () => { showAdd = !showAdd; invite = null; render(); };
+      document.querySelectorAll('.hr-open').forEach(a => a.onclick = (ev) => { ev.preventDefault(); hrView = { mode: 'detail', staffId: a.dataset.id }; docEdit = null; conductId = null; render(); });
+      if (showAdd) {
+        $('#adCancel').onclick = () => { showAdd = false; invite = null; render(); };
+        $('#adGo').onclick = async () => {
+          const name = $('#adName').value.trim(), email = $('#adEmail').value.trim();
+          if (!name || !email) { $('#adErr').textContent = 'Name and email are required.'; return; }
+          $('#adGo').textContent = 'Creating…';
+          const res = await GF.rpc('genfin_hr_add_staff', { p_actor: sess.name, p_name: name, p_email: email, p_whatsapp: $('#adWa').value.trim() || null });
+          if (res && res.ok) { invite = res; render(); }
+          else { $('#adErr').textContent = (res && res.error) || 'Failed'; $('#adGo').textContent = 'Create & send invitation'; }
+        };
+      }
       const pr = $('#gfPayroll');
       if (pr) pr.onclick = async () => {
         pr.textContent = 'Running…';
@@ -491,6 +648,46 @@
       };
     }
     await render();
+  }
+
+  /* ============ ONBOARDING (invited staff first login) ============ */
+  async function pageOnboarding(sess) {
+    const st = (await GF.table('genfin_staff', { eq: { id: sess.profile.id } }))[0] || sess.profile;
+    $('#gfApp').innerHTML =
+      '<div class="s-login-page"><div class="s-login-card" style="max-width:600px">' +
+      '<div class="s-login-logo"><img src="assets/genfin-logo.png" alt="GENFIN" width="160"></div>' +
+      '<div class="s-login-title">Welcome, ' + GF.esc((st.full_name || '').split(' ')[0]) + '</div>' +
+      '<div class="s-login-sub">Set your own password and complete the details GENFIN is required to hold as your employer. HR will then approve your account.</div>' +
+      '<div class="s-form-row"><div class="s-form-group"><label class="s-label">New password *</label><input class="s-input" id="obPass" type="password"></div>' +
+      '<div class="s-form-group"><label class="s-label">Confirm password *</label><input class="s-input" id="obPass2" type="password"></div></div>' +
+      '<div class="s-form-row"><div class="s-form-group"><label class="s-label">National ID *</label><input class="s-input" id="obNid" placeholder="63-0000000 X00" value="' + GF.esc(st.national_id || '') + '"></div>' +
+      '<div class="s-form-group"><label class="s-label">Date of birth *</label><input class="s-input" id="obDob" type="date" value="' + (st.dob || '') + '"></div></div>' +
+      '<div class="s-form-group"><label class="s-label">Home address *</label><input class="s-input" id="obAddr" value="' + GF.esc(st.address || '') + '"></div>' +
+      '<div class="s-form-row"><div class="s-form-group"><label class="s-label">Phone *</label><input class="s-input" id="obPhone" value="' + GF.esc(st.phone || st.whatsapp || '') + '"></div>' +
+      '<div class="s-form-group"><label class="s-label">Next of kin (name & phone) *</label><input class="s-input" id="obKin"></div></div>' +
+      '<div class="s-form-group"><label class="s-label">Position (if agreed)</label><input class="s-input" id="obPos" value="' + GF.esc(st.position_applied || '') + '"></div>' +
+      '<div id="obErr" style="color:#B93636;font-size:0.8rem;margin-bottom:8px;display:none"></div>' +
+      '<div id="obOk"></div>' +
+      '<button class="s-btn s-btn-primary s-btn-lg" id="obGo" style="width:100%">Save & submit for HR approval</button>' +
+      '<button class="s-btn s-btn-ghost" id="gfLogout" style="width:100%;margin-top:8px">Log out</button>' +
+      '</div></div>';
+    wireLogout();
+    $('#obGo').onclick = async () => {
+      const p1 = $('#obPass').value, p2 = $('#obPass2').value;
+      if (p1 !== p2) { $('#obErr').textContent = 'Passwords do not match.'; $('#obErr').style.display = 'block'; return; }
+      $('#obGo').textContent = 'Saving…';
+      const res = await GF.rpc('genfin_complete_profile', { p_staff: sess.profile.id, p: {
+        password: p1, national_id: $('#obNid').value.trim(), dob: $('#obDob').value, address: $('#obAddr').value.trim(),
+        phone: $('#obPhone').value.trim(), next_of_kin: $('#obKin').value.trim(), position: $('#obPos').value.trim() } });
+      if (res && res.ok) {
+        $('#obOk').innerHTML = '<div class="s-alert s-alert-success" style="margin-bottom:8px;font-size:0.82rem"><strong>All set.</strong> Your details are saved and your password is updated. HR has been notified — you will be able to sign in fully once they approve your account.</div>';
+        $('#obGo').style.display = 'none'; $('#obErr').style.display = 'none';
+        setTimeout(() => GF.logout(), 6000);
+      } else {
+        $('#obErr').textContent = (res && res.error) || 'Failed'; $('#obErr').style.display = 'block';
+        $('#obGo').textContent = 'Save & submit for HR approval';
+      }
+    };
   }
 
   /* ============ LOGISTICS ============ */
@@ -717,9 +914,10 @@
   async function pageStaffProfile(sess) {
     $('#gfApp').innerHTML = staffShell(sess, 'My profile & documents', 'staff-profile'); wireLogout();
     const st = (await GF.table('genfin_staff', { eq: { id: sess.profile.id } }))[0] || sess.profile;
-    const [slips, log] = await Promise.all([
+    const [slips, log, myDocs] = await Promise.all([
       GF.table('genfin_payslips', { eq: { staff_id: st.id }, order: 'issued_at' }),
-      GF.table('genfin_hr_log', { eq: { staff_id: st.id }, order: 'created_at' })
+      GF.table('genfin_hr_log', { eq: { staff_id: st.id }, order: 'created_at' }),
+      GF.table('genfin_hr_docs', { eq: { staff_id: st.id, status: 'sent' }, order: 'created_at' })
     ]);
     $('#gfBody').innerHTML =
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:start"><div>' +
@@ -734,6 +932,7 @@
         '<p style="font-size:0.76rem;color:var(--s-muted);margin-top:8px">Opens as an official GENFIN letter — print or save as PDF.</p>') +
       card('My payslips', tbl(['Period', 'Gross', 'Net', ''], slips.map(p => [GF.esc(p.period), GF.money(p.gross), '<strong>' + GF.money(p.net) + '</strong>',
         '<a class="s-btn s-btn-ghost s-btn-sm" href="payslip.html?id=' + p.id + '" style="text-decoration:none">Download</a>']))) +
+      card('HR documents issued to me', myDocs.length ? tbl(['Document', 'Ref', 'Issued', ''], myDocs.map(d => [GF.esc(d.title), GF.esc(d.ref), GF.dt(d.sent_at), '<a class="s-btn s-btn-ghost s-btn-sm" href="hr-doc.html?id=' + d.id + '" style="text-decoration:none">Open</a>'])) : '<p style="color:var(--s-muted);font-size:0.83rem">None issued yet.</p>') +
       '</div></div>';
   }
 
@@ -794,7 +993,7 @@
     const guard = {
       dashboard: 'dashboard', inventory: 'staff-inventory', finance: 'staff-finance', hr: 'staff-hr',
       logistics: 'staff-logistics', driver: 'driver-app', portal: 'portal', shop: 'portal-pharmacy',
-      'member-profile': 'member-profile', 'staff-profile': 'staff-profile', restricted: 'restricted',
+      'member-profile': 'member-profile', 'staff-profile': 'staff-profile', restricted: 'restricted', onboarding: 'onboarding',
       preauth: 'portal-preauth'
     }[PAGE];
     const sess = GF.requireAuth(guard);
@@ -811,5 +1010,6 @@
     if (PAGE === 'staff-profile') return pageStaffProfile(sess);
     if (PAGE === 'restricted') return pageRestricted(sess);
     if (PAGE === 'preauth') return pagePreauth(sess);
+    if (PAGE === 'onboarding') return pageOnboarding(sess);
   });
 })();

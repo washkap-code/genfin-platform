@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Document — GENFIN Medical Aid Fund</title>
+<link rel="icon" type="image/png" href="assets/genfin-logo.png">
+<link rel="stylesheet" href="shared/fonts.css">
+<link rel="stylesheet" href="shared/tokens.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body { font-family: var(--font-sans); background: var(--surface-page); min-height: 100vh; color: var(--text-body); -webkit-font-smoothing: antialiased; }
+.screen-header { background: var(--surface-inverse); padding: var(--space-3) var(--space-8); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: var(--z-sticky); }
+.sh-brand { display: flex; align-items: center; gap: var(--space-3); }
+.sh-brand img { height: 30px; width: auto; display: block; }
+.sh-brand-label { font-size: var(--fs-2xs); font-weight: var(--fw-bold); letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--slate-400); border-left: var(--border-width) solid var(--slate-700); padding-left: var(--space-3); }
+.sh-actions { display: flex; gap: var(--space-2); }
+.sh-btn { font-family: var(--font-sans); font-weight: var(--fw-bold); font-size: var(--fs-xs); padding: 7px 16px; border-radius: var(--radius-sm); border: none; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+.sh-btn-primary { background: var(--brand); color: var(--brand-contrast); }
+.sh-btn-ghost { background: var(--ink-soft); color: var(--slate-300); }
+.doc-stage { padding: var(--space-10) var(--space-6); display: flex; flex-direction: column; align-items: center; }
+.doc { width: 800px; max-width: 100%; background: var(--surface-card); box-shadow: var(--shadow-xl); position: relative; overflow: hidden; }
+.doc-border { position: absolute; inset: 12px; border: var(--border-width-strong) solid var(--border-brand); pointer-events: none; z-index: 2; }
+.doc-masthead { background: var(--surface-inverse); padding: var(--space-8) var(--space-10); display: flex; align-items: center; justify-content: space-between; position: relative; }
+.doc-masthead::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: linear-gradient(90deg, var(--gold-400), var(--gold-600)); }
+.doc-masthead img { height: 56px; width: auto; }
+.doc-eyebrow { font-size: var(--fs-2xs); font-weight: var(--fw-bold); letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--gold-400); }
+.doc-org { font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: var(--fs-sm); color: var(--white); margin-top: var(--space-1); }
+.doc-reg { font-family: var(--font-mono); font-size: var(--fs-2xs); color: var(--slate-400); margin-top: 2px; }
+.title-band { background: var(--surface-brand); padding: var(--space-3) var(--space-10); display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); }
+.title-band strong { font-family: var(--font-display); font-weight: var(--fw-extra); font-size: var(--fs-base); color: var(--text-on-brand); text-transform: uppercase; letter-spacing: var(--ls-wide); }
+.title-band span { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--gold-900); white-space: nowrap; }
+.doc-body { padding: var(--space-10); position: relative; z-index: 1; font-size: var(--fs-sm); line-height: var(--lh-relaxed); color: var(--text-body); }
+.doc-date { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-muted); margin-bottom: var(--space-6); }
+.doc-text { white-space: pre-wrap; }
+.doc-text-title { font-family: var(--font-display); font-weight: var(--fw-extra); font-size: var(--fs-h4); color: var(--text-strong); margin-bottom: var(--space-5); }
+.sigs { display: flex; gap: var(--space-12); margin-top: var(--space-12); flex-wrap: wrap; }
+.sig { min-width: 200px; }
+.sig-line { width: 200px; border-bottom: var(--border-width-strong) solid var(--border-default); padding-top: var(--space-8); position: relative; }
+.sig-svg { position: absolute; bottom: 4px; left: 0; height: 28px; }
+.sig-name { font-size: var(--fs-xs); font-weight: var(--fw-extra); color: var(--text-strong); margin-top: var(--space-1); }
+.sig-role { font-size: var(--fs-2xs); color: var(--text-faint); text-transform: uppercase; letter-spacing: var(--ls-wide); }
+.doc-footer { background: var(--surface-inverse); padding: var(--space-4) var(--space-10); display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); }
+.doc-footer img { height: 30px; width: auto; }
+.doc-footer-left { font-size: 0.65rem; color: var(--slate-400); line-height: var(--lh-relaxed); display: flex; align-items: center; gap: var(--space-4); }
+.doc-footer-stamp { font-size: 0.6rem; color: var(--gold-400); font-family: var(--font-mono); letter-spacing: var(--ls-wide); text-align: right; line-height: var(--lh-relaxed); }
+@media print { body { background: var(--white); } .screen-header { display: none; } .doc-stage { padding: 0; } .doc { box-shadow: none; width: 100%; } }
+</style>
+</head>
+<body>
+<div class="screen-header">
+  <div class="sh-brand"><img src="assets/genfin-logo.png" alt="GENFIN"><div class="sh-brand-label">HR documents</div></div>
+  <div class="sh-actions">
+    <a class="sh-btn sh-btn-ghost" id="hdBack" href="staff-profile.html">← Back</a>
+    <button class="sh-btn sh-btn-primary" onclick="window.print()">Print / Save PDF</button>
+  </div>
+</div>
+<div class="doc-stage">
+  <div class="doc">
+    <div class="doc-border"></div>
+    <div class="doc-masthead">
+      <img src="assets/genfin-logo.png" alt="GENFIN Medical Aid Fund">
+      <div style="text-align:right">
+        <div class="doc-eyebrow" id="hdEyebrow">Human resources</div>
+        <div class="doc-org">GENFIN Medical Aid Fund</div>
+        <div class="doc-reg">Reg. No. MAF/0041/08</div>
+      </div>
+    </div>
+    <div class="title-band"><strong id="hdType">Document</strong><span id="hdRef">—</span></div>
+    <div class="doc-body">
+      <div class="doc-date" id="hdDate">—</div>
+      <div class="doc-text-title" id="hdTitle">—</div>
+      <div class="doc-text" id="hdBody">Loading…</div>
+      <div class="sigs">
+        <div class="sig">
+          <div class="sig-line"><svg class="sig-svg" viewBox="0 0 200 28" fill="none"><path d="M10 20 C25 6, 45 24, 62 15 C79 7, 92 21, 110 14 C128 8, 150 20, 172 15 C182 12, 190 16, 196 14" stroke="#14141A" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/></svg></div>
+          <div class="sig-name" id="hdApprover">—</div>
+          <div class="sig-role">For GENFIN Medical Aid Fund — Human Resources</div>
+        </div>
+        <div class="sig">
+          <div class="sig-line"></div>
+          <div class="sig-name" id="hdStaffName">—</div>
+          <div class="sig-role" id="hdStaffRole">Employee — signature & date</div>
+        </div>
+      </div>
+    </div>
+    <div class="doc-footer">
+      <div class="doc-footer-left">
+        <img src="assets/genfin-logo.png" alt="">
+        <div>GENFIN Medical Aid Fund · Registered MAF/0041/08 under the Medical Services Act [Chapter 15:13]<br>Heritage House, Cnr First St &amp; Kwame Nkrumah Ave, Harare · +263 867 700 4400 · hr@genfin.health</div>
+      </div>
+      <div class="doc-footer-stamp" id="hdStamp">—</div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="shared/config.js"></script>
+<script src="shared/genfin-api.js"></script>
+<script>
+(async function () {
+  const sess = GF.session();
+  if (!sess || sess.kind === 'member') { location.href = 'login.html'; return; }
+  const id = new URLSearchParams(location.search).get('id');
+  const doc = (id ? await GF.table('genfin_hr_docs', { eq: { id: id } }) : [])[0];
+  if (!doc) { document.getElementById('hdBody').textContent = 'Document not found.'; return; }
+  const isHR = sess.kind === 'admin' || sess.role === 'superadmin' || sess.role === 'hr_head';
+  const mine = sess.profile && sess.profile.id === doc.staff_id;
+  if (!isHR && !mine) { location.href = GF.homeFor(sess); return; }
+  if (!isHR && doc.status !== 'sent') { document.getElementById('hdBody').textContent = 'This document is still in draft with HR.'; return; }
+  if (isHR) document.getElementById('hdBack').href = 'staff-hr.html';
+  const st = (await GF.table('genfin_staff', { eq: { id: doc.staff_id } }))[0] || {};
+  const typeLabel = { offer: 'Offer of employment', contract: 'Contract of employment', warning: 'Formal warning' }[doc.doc_type] || 'HR document';
+  document.getElementById('hdType').textContent = typeLabel;
+  document.getElementById('hdEyebrow').textContent = doc.status === 'draft' ? 'Draft — pending HR approval' : 'Human resources';
+  document.getElementById('hdRef').textContent = doc.ref;
+  document.getElementById('hdTitle').textContent = doc.title;
+  document.getElementById('hdBody').textContent = doc.body;
+  document.getElementById('hdDate').textContent = new Date(doc.sent_at || doc.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) + ' · Harare, Zimbabwe';
+  document.getElementById('hdApprover').textContent = doc.approved_by || 'Pending approval';
+  document.getElementById('hdStaffName').textContent = st.full_name || '';
+  document.getElementById('hdStamp').innerHTML = 'REF: ' + doc.ref + '<br>' + (doc.sent_at ? 'ISSUED: ' + new Date(doc.sent_at).toLocaleDateString('en-GB').replace(/\//g, '.') : 'STATUS: DRAFT') + '<br>Drafted by ' + doc.drafted_by + ', reviewed & approved by HR';
+  window.onbeforeprint = () => { document.title = 'GENFIN ' + typeLabel + ' — ' + (st.full_name || ''); };
+})();
+</script>
+</body>
+</html>

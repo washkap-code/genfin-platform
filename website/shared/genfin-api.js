@@ -49,6 +49,7 @@
     homeFor(sess) {
       if (!sess) return 'login.html';
       if (sess.role === 'former_staff') return 'restricted-portal.html';
+      if (sess.role === 'onboarding') return 'onboarding.html';
       if (sess.kind === 'member') return 'portal.html';
       if (sess.kind === 'admin' || sess.role === 'superadmin') return 'superadmin.html';
       const map = { hr_head: 'staff-hr.html', finance: 'staff-finance.html', accounts_clerk: 'staff-finance.html', pharmacy: 'staff-inventory.html', driver: 'driver-app.html', logistics: 'staff-logistics.html' };
@@ -59,6 +60,7 @@
     can(sess, moduleKey) {
       if (!sess) return false;
       if (sess.role === 'former_staff') return moduleKey === 'restricted';
+      if (sess.role === 'onboarding') return moduleKey === 'onboarding';
       /* Member-context pages need a member profile — staff/admin have none to show */
       if (['portal', 'portal-pharmacy', 'member-profile', 'portal-preauth'].includes(moduleKey)) return sess.kind === 'member';
       if (sess.kind === 'admin' || sess.role === 'superadmin') return true;
@@ -103,7 +105,9 @@
         active: 'green', available: 'green', approved: 'green', paid: 'green', delivered: 'green',
         paid_scheduled: 'blue', out_for_delivery: 'blue', driver_booked: 'blue', invoiced: 'gold',
         booked: 'gold', unpaid: 'gold', pending: 'gold', on_delivery: 'blue',
-        rejected: 'red', terminated: 'red', off_duty: 'gray', placed: 'gray'
+        rejected: 'red', terminated: 'red', off_duty: 'gray', placed: 'gray',
+        invited: 'blue', sent: 'green', scheduled: 'gold', draft: 'gold', completed: 'green',
+        warning_issued: 'red', doc_sent: 'green', doc_drafted: 'gold', appraisal_scheduled: 'gold', appraisal_completed: 'green', profile_completed: 'blue'
       };
       return GF.chip(String(st || '').replace(/_/g, ' '), m[st] || 'gray');
     }

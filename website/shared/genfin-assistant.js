@@ -78,8 +78,8 @@
       a: "Welcome aboard! Choose 'Create your staff account' on the sign-in page and enter your personal details, position and proposed start date. Your account activates once the Head of HR approves you and assigns your role — the role decides exactly which modules you can open. You'll find your employment letter and payslips under My profile once approved.",
       links: [['Apply now', 'staff-signup.html'], ['Staff guide', 'guides.html#staff-start']], c: ['How do HR approvals work?', 'Where are my payslips?'] },
 
-    { k: ['hr approval', 'approve staff', 'hr module', 'how do hr'],
-      a: "HR sees every pending application at the top of the HR & Payroll module with the applicant's full details. Approving means assigning a role and confirming the employment date — and the HR log permanently records who approved and when. Rejections are logged the same way. This audit trail is what keeps onboarding accountable.",
+    { k: ['hr approval', 'approve staff', 'hr module', 'how do hr', 'add staff', 'appraisal', 'warning', 'offer letter', 'employment contract', 'roster'],
+      a: "HR adds staff with just a name, email and WhatsApp — the system sends an activation invitation with a temporary password, and the new person completes their own National ID, address and next of kin on first login. HR then opens their file from the roster and approves: role, department, employment date, employment type, probation, next appraisal, salary and notes — all permanently logged. From the same file HR schedules and conducts appraisals, issues formal warnings, and has GENFIN AI draft offer letters and employment contracts for review and approval before they're sent.",
       links: [['HR guide', 'guides.html#hr']], c: ['How does offboarding work?', 'How do I run payroll?'] },
 
     { k: ['payroll', 'payslip', 'salary', 'mihoro', 'iholo', 'wages'],
