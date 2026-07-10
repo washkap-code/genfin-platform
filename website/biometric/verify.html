@@ -303,5 +303,6 @@ function resetScan(){
 function showOverride(){ var id=prompt('Enter member ID or national ID number:'); if(id){ alert('Manual lookup for: '+id+'\n\nIn production this would query the BioVerify API.'); } }
 function dispenseRx(){ alert('Dispensing event logged:\nRX-889244 — Chiedza Nyamuzihwa\nVerified by: '+successMethod+'\nEvent ID: EVT-'+Math.random().toString(36).substr(2,9).toUpperCase()+'\nTimestamp: '+new Date().toISOString()); resetScan(); }
 </script>
+<script src="../shared/countdown.js" defer></script>
 </body>
 </html>

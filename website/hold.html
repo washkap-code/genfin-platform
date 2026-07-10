@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Site on hold — Jonomi Digital Studios</title>
+<link rel="stylesheet" href="shared/fonts.css" />
+<style>
+  :root{
+    --gold:#FBBD3E; --ink:#14141A; --ink-soft:#26252E;
+    --slate-400:#A6A5AF; --slate-600:#6A6870; --white:#FFF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(1200px 700px at 70% -10%, #26252E 0%, #14141A 55%);
+    font-family:Inter,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--white);
+    padding:24px;
+  }
+  .card{
+    width:100%;max-width:520px;background:rgba(38,37,46,.72);
+    border:1px solid #33323A;border-top:4px solid var(--gold);
+    border-radius:16px;padding:44px 40px;backdrop-filter:blur(6px);
+    box-shadow:0 24px 60px rgba(0,0,0,.45);text-align:center;
+  }
+  .badge{
+    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--gold);border:1px solid rgba(251,189,62,.4);
+    border-radius:999px;padding:6px 14px;margin-bottom:22px;
+  }
+  h1{font-size:26px;font-weight:800;letter-spacing:-.01em;margin-bottom:12px}
+  p{color:var(--slate-400);font-size:15px;line-height:1.6}
+  .contact{
+    margin:26px 0;padding:18px;border:1px solid #33323A;border-radius:12px;
+    background:rgba(20,20,26,.5);
+  }
+  .contact strong{color:var(--white);font-size:15px;display:block;margin-bottom:4px}
+  .contact a{color:var(--gold);text-decoration:none;font-weight:600}
+  .contact a:hover{text-decoration:underline}
+  form{margin-top:26px;display:flex;gap:10px}
+  input[type=password]{
+    flex:1;padding:12px 14px;border-radius:10px;border:1px solid #4E4D55;
+    background:#14141A;color:#FFF;font-size:14px;outline:none;
+  }
+  input[type=password]:focus{border-color:var(--gold)}
+  button{
+    padding:12px 22px;border-radius:10px;border:none;background:var(--gold);
+    color:#14141A;font-weight:700;font-size:14px;cursor:pointer;
+  }
+  button:hover{background:#F0A81C}
+  .err{display:none;color:#E5484D;font-size:13px;margin-top:10px;font-weight:600}
+  .foot{margin-top:30px;font-size:12px;color:var(--slate-600)}
+</style>
+</head>
+<body>
+  <main class="card">
+    <span class="badge">Development preview suspended</span>
+    <h1>This site has been placed on hold</h1>
+    <p>The review period for this web development preview has ended and the
+       site is now private.</p>
+    <div class="contact">
+      <strong>To view this web development, contact Jonomi Digital Studios</strong>
+      <a href="https://jonomi.digital" rel="noopener">jonomi.digital</a>
+    </div>
+    <form id="unlock" autocomplete="off">
+      <input type="password" id="pw" placeholder="Access password" aria-label="Access password" required />
+      <button type="submit">Unlock</button>
+    </form>
+    <div class="err" id="err">Incorrect password. Please contact Jonomi Digital Studios.</div>
+    <div class="foot">GENFIN platform preview &middot; Developed by Jonomi Digital Studios</div>
+  </main>
+<script>
+  (function () {
+    if (new URLSearchParams(location.search).get('e') === '1') {
+      document.getElementById('err').style.display = 'block';
+    }
+    document.getElementById('unlock').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = document.getElementById('pw').value || '';
+      var maxAge = 60 * 60 * 24 * 30; // 30 days
+      document.cookie = 'gf_access=' + encodeURIComponent(v) + '; path=/; max-age=' + maxAge + '; SameSite=Lax';
+      document.cookie = 'gf_unlocked=1; path=/; max-age=' + maxAge + '; SameSite=Lax';
+      location.href = '/';
+    });
+  })();
+</script>
+</body>
+</html>

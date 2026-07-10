@@ -2,7 +2,7 @@
    Strategy: precache the shell + shared assets; runtime cache-first for
    same-origin GET requests with a network fallback, so the platform keeps
    working on laptops and phones when there is no internet. */
-const CACHE = 'genfin-v1';
+const CACHE = 'genfin-v2';
 const CORE = [
   './',
   './login-select.html',
