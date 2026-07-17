@@ -5,8 +5,8 @@
 (function () {
   'use strict';
 
-  // Mon 13 Jul 2026, 12:00 CAT (UTC+2) => 10:00 UTC
-  var DEADLINE = Date.UTC(2026, 6, 13, 10, 0, 0);
+  // Tue 21 Jul 2026, 21:00 CAT (UTC+2) => 19:00 UTC
+  var DEADLINE = Date.UTC(2026, 6, 21, 19, 0, 0);
   var HOLD_PATH = '/hold.html';
 
   function hasUnlockCookie() {
@@ -59,7 +59,7 @@
     '<button class="gf-cd-x" aria-label="Minimise" title="Minimise">&#8722;</button>' +
     '<div class="gf-cd-t">Preview review period</div>' +
     '<div class="gf-cd-n">&nbsp;</div>' +
-    '<div class="gf-cd-s">Site goes on hold Mon 13 Jul 2026, 12:00 (CAT)</div>';
+    '<div class="gf-cd-s">Site goes on hold Tue 21 Jul 2026, 21:00 (CAT)</div>';
   if (collapsed) box.className = 'gf-min';
 
   function mount() { document.body.appendChild(box); }

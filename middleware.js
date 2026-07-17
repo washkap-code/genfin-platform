@@ -1,9 +1,9 @@
 /* GENFIN preview lock — Vercel Edge Middleware (Jonomi Digital Studios)
-   Before Mon 13 Jul 2026 12:00 CAT: site is fully open (review period).
+   Before Tue 21 Jul 2026 21:00 CAT: site is fully open (review period).
    After the deadline: every page redirects to /hold.html unless the
    visitor holds the correct access cookie (set by the hold page form). */
 
-const DEADLINE_UTC = Date.UTC(2026, 6, 13, 10, 0, 0); // 12:00 CAT (UTC+2)
+const DEADLINE_UTC = Date.UTC(2026, 6, 21, 19, 0, 0); // 21:00 CAT (UTC+2)
 const PASSWORD = 'Mukanya@1979';
 
 export const config = {
